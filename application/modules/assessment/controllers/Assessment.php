@@ -1,0 +1,63 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Assessment extends MX_Controller {
+
+	
+	public function __Construct(){
+
+		parent::__Construct();
+
+		$this->load->model('Assessment_mdl');
+
+	}
+	public function index(){
+
+		$data['title']='HRH Assessment';
+		$data['page'] ='support';
+		$data['module']="assessment";
+		echo Modules::run('template/layout', $data); 
+
+	}
+	public function addSupport(){
+	  $insert=$this->input->post();
+
+	
+	$timestamp = date('Y-m-d',strtotime($this->input->post('date')));
+	$insert=array
+	('date'=>$timestamp,
+	'name'=>$this->input->post('name'),
+	'email'=>$this->input->post('email'),
+	'contact'=>$this->input->post('contact'),
+	'is_focalperson'=>$this->input->post('is_focalperson'),
+	'institution'=>$this->input->post('institution'),
+	'current_staff'=>$this->input->post('current_staff'),
+	'reports'=>json_encode($this->input->post('reports')),
+	'other_report'=>$this->input->post('other_report'),
+	'budget_part'=>$this->input->post('budget_part'),
+	'is_support'=>$this->input->post('is_support'),
+	'support'=>$this->input->post('support_needed')
+
+	);
+
+	
+	$this->Assessment_mdl->addSupport($insert);
+      
+
+	// print_r($insert);
+	  $this->session->set_flashdata('message','Thanks, your feedback has been received');
+	  $data['title']='HRH Assessment';
+	  $data['page']='support';
+	  $data['module']="assessment";
+	  echo Modules::run('template/layout', $data); 
+	}
+	
+
+
+	
+
+	
+
+
+
+}
