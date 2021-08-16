@@ -19,7 +19,7 @@ Class Home extends 	MX_Controller {
 		$data['districts'] = $this->home_model->districtCount();
 		$data['jobs'] = $this->home_model->jobCount();
 		$data['staff'] = $this->home_model->staffcount();
-		$data['focalpersons'] = $this->home_model->focalpersons();
+		$data['focal_persons'] = $this->home_model->focalpersons();
 		$data['requests'] = $this->home_model->requestsCount();
 		if (empty($dashboard)){
 		$data['page']        = "home/main_dashboard";

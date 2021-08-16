@@ -1,5 +1,10 @@
 
-
+<script>
+  $.fn.datepicker.defaults.format = "yyyy-mm-dd";
+    $('.datepicker').datepicker({
+    startDate: '-3d'
+    });
+</script>
 
 </script>
 
@@ -7,7 +12,7 @@
       <div class="align-items-center" style="margin:0 auto;">
         <?php 
              $message = $_SESSION['message'];
-                  if(!empty($message)){?>
+                  if(isset($message)){?>
                   <div class="alert alert-info alert-dismissible fade show" role="alert">
                   <p style="text-align:center;"> <?php echo $message; ?></p>
                   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -27,7 +32,7 @@
                   <label for="award_name" class="col-sm-3 col-form-label">
                         Date</label>
                       <div class="col-sm-9">
-                       <input type="text" name="date" placeholder="" id="date-picker" value="<?php echo date('j F, Y');?>"  class="form-control date-picker" readonly>
+                       <input type="text" name="date" placeholder="" id="date-picker" value="<?php echo date('j F, Y');?>" data-provide="datepicker" class="form-control date-picker" readonly>
                            
                        </div>
                        
@@ -36,7 +41,7 @@
                  <div class="form-group row">
                        
                        <label for="award_name" class="col-sm-3 col-form-label">
-                             Surname & Firstname</label>
+                             Name</label>
                            <div class="col-sm-9">
                             <input type="text" name="name" placeholder="Name" id="" class="form-control" required>
                                 
@@ -65,16 +70,6 @@
                   </div>
                   <div class="form-group row">
                        
-                       <label for="award_name" class="col-sm-3 col-form-label">
-                             Number of People accssing iHRIS in your Institution</label>
-                           <div class="col-sm-9">
-                            <input type="number" name="login" placeholder="Active Users" id="" class="form-control" required>
-                                
-                        </div>
-                            
-                  </div>
-                  <div class="form-group row">
-                       
                        <label for="" class="col-sm-3 col-form-label">
                        Are you the iHRIS focal person  </label>
                        <div class="col-sm-9">
@@ -99,7 +94,7 @@
                         
                         ?>
                       
-                       <option value="<?php echo $element->facility;?>" selected="selected"><?php echo $element->facility;?></option>
+                       <option value="<?php echo $element->facility_id;?>" selected="selected"><?php echo $element->facility;?></option>
                        <?php } ?>
                       </select>  
                     
@@ -143,7 +138,7 @@
                       </label>
 
                       <label  class="checkbox-inline btn btn-default" style="margin-left:2px;"  >Retirement
-                      <input type="checkbox" name="reports[]" value="retirement">
+                      <input type="checkbox" name="reports[]" value="attendance">
                       </label>
 
                       

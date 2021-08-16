@@ -30,6 +30,7 @@ class Assessment extends MX_Controller {
 	'email'=>$this->input->post('email'),
 	'contact'=>$this->input->post('contact'),
 	'is_focalperson'=>$this->input->post('is_focalperson'),
+	'user_accounts'=>$this->input->post('login'),
 	'institution'=>$this->input->post('institution'),
 	'current_staff'=>$this->input->post('current_staff'),
 	'reports'=>json_encode($this->input->post('reports')),
@@ -41,11 +42,14 @@ class Assessment extends MX_Controller {
 	);
 
 	
-	$this->Assessment_mdl->addSupport($insert);
+	$count=$this->Assessment_mdl->addSupport($insert);
       
 
 	// print_r($insert);
-	  $this->session->set_flashdata('message','Thanks, your feedback has been received');
+	$gap=($count-($this->input->post('current_staff')));
+	 if($gap){
+	  $this->session->set_flashdata('message',"Thanks, your feedback has been received, Your have a gap of   $gap  Records");
+	 }
 	  $data['title']='HRH Assessment';
 	  $data['page']='support';
 	  $data['module']="assessment";

@@ -41,6 +41,11 @@
          <i class="fas fa-clock"></i><b class="hidden-mobile"> Duty Roster</b>
         </a> 
       </li>
+      <li class="nav-item" style="margin-right:2px;">
+         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="<?php echo base_url()?>assessment/addSupport">
+         <i class="fa fa-phone"></i><b class="hidden-mobile"> Support</b>
+        </a> 
+      </li>
     
       <li class="nav-item dropdown">
         <a class="nav-link btn btn-sm btn-default" data-toggle="dropdown" href="#" >
@@ -76,10 +81,10 @@
         <a class="nav-link btn btn-sm btn-default" data-toggle="dropdown" href="#" >
         <i class="fas fa-user"></i><b><?php echo $this->session->userdata('fullname'); ?></b>
         </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     
     <div class="dropdown-divider"></div>
-         <a href="<?php echo base_url('logout') ?>" class="dropdown-item"><i class="pe-7s-key"></i> <?php if($this->session->userdata('fullname')){ echo display('logout');}else{echo display('login');} ?></a>  
+      <a href="<?php echo base_url('logout') ?>" class="dropdown-item"><i class="pe-7s-key"></i> <?php if($this->session->userdata('fullname')){ echo display('logout');}else{echo display('login');} ?></a>  
      
       <?php if ($this->session->userdata('isAdmin')) { ?>
          <div class="dropdown-divider"></div>

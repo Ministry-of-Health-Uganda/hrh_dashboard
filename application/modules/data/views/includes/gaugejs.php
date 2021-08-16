@@ -116,7 +116,7 @@ Highcharts.chart('gauge<?php echo $chartkpi; ?>', {
 
     series: [{
       name: '<?php echo $gauge['details'][0]->indicator_statement; ?> ',
-      data: [<?php echo $current_value=round($gauge['data'][0]->current_value); ?>],
+      data: [<?php $current_value=round($gauge['data'][0]->current_value); if ($current_value>100){ echo (($current_value-200)*-1); } else { echo $current_value; }?>],
       tooltip: {
         valueSuffix: ' %'
       }

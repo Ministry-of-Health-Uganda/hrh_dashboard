@@ -85,7 +85,7 @@ public function gaugeData($kpi){
    if (!empty($query))
    $this->db->replace('report_kpi_summary',$gauge_value); 
 
-return $this->db->affected_rows(). "Records - Current  & previous Gauge Details" . $kpi;;
+return $this->db->affected_rows(). "Records - Current  & previous Gauge Details" . $kpi;
   
 }
 

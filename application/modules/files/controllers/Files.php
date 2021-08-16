@@ -21,6 +21,9 @@ class Files extends MX_Controller {
 		echo Modules::run('template/layout', $data); 
 
 	}
+    function checkIsAValidDate($date){
+        return (bool)strtotime($date);
+    }
     function importcsv() {
             if(isset($_FILES["upload_csv_file"]["name"]))
             {
@@ -42,8 +45,6 @@ class Files extends MX_Controller {
                         $dim1k= NULL;
 
                     }
-
-                
                     if(!empty($sale->getCellByColumnAndRow(3, $row)->getValue())){
                         $dim2=trim($sale->getCellByColumnAndRow(3, $row)->getValue());
                         $dim2k=trim($sale->getCellByColumnAndRow(4, $row)->getValue());
@@ -64,11 +65,11 @@ class Files extends MX_Controller {
                     }
 
                    $data = array('kpi_id'  =>  str_replace(" ", "",$sale->getCellByColumnAndRow(0, $row)->getValue()), 
-                        'dimension1' => $dim1, 
+                        'dimension1' => str_replace("'","",$dim1), 
                         'dimension1_key'    =>  $dim1k, 	
-                        'dimension2'  =>  $dim2, 	
+                        'dimension2'  =>  str_replace("'","",$dim2), 	
                         'dimension2_key'  =>  $dim2k, 	
-                        'dimension3'  =>  $dim3, 	
+                        'dimension3'  =>  str_replace("'","",$dim3), 	
                         'dimension3_key'  =>  $dim3k, 
                         'financial_year'  =>  str_replace(" ", "",$sale->getCellByColumnAndRow(7, $row)->getValue()),
                         'period_year'  =>  str_replace(" ", "",$sale->getCellByColumnAndRow(8, $row)->getValue()),  

@@ -22,29 +22,44 @@ public function addSupport($data){
 
 	  
 	  if ($query){
-		$this->facilitycount($data);
-		  $message ="Succesful";
+		$count=$this->facilitycount($data);
 	  } else{
-	     $message = "Failed";
-
-      return $data;
+	     $count = 0;
+     
 	  }
+	  return $count;
 }
 public function facilitycount($data){
 
 	$institution=$data['institution'];
+	$sinstitution=$data['institution'];
 	$inst=$data['institution'];
 	$date=$data['date'];
 	$name=$data['name'];
 	$staff=$data['current_staff'];
-
+	//get institution Type
 	// Test if institution contains the DHO
 	if(strpos($institution, 'DHO') !== false){
 	$district = explode(" ", $institution)[0];
-	$query=$this->db->query("select distinct (ihris_pid) from ihrisdata where district like '$district'");
+	$query=$this->db->query("select distinct (ihris_pid) from ihrisdata where district like '$district' AND institution_type='District'");
 	$ihriscount= $query->num_rows();
-	} else{
-	$query=$this->db->query("select distinct (ihris_pid) from ihrisdata where facility='$inst'");
+	} 
+	elseif((strpos($institution, 'MUNICIPAL') !== false)||(strpos($institution, 'Municipal') !== false)){
+		
+		$district = explode(" ", $institution)[0];
+		$query=$this->db->query("select distinct (ihris_pid) from ihrisdata where district like '$district' AND institution_type='Municipality'");
+		$ihriscount= $query->num_rows();
+		}
+	elseif((strpos($institution, 'CITY') !== false)||(strpos($institution, 'City') !== false)){
+		
+			$district = explode(" ", $institution)[0];
+			$query=$this->db->query("select distinct (ihris_pid) from ihrisdata where district like '$district' AND institution_type='City'");
+			$ihriscount= $query->num_rows();
+			}
+	else{
+	$type=$this->insititutionType($sinstitution);
+	// cater for municipal offices
+	$query=$this->db->query("select distinct (ihris_pid) from ihrisdata where facility='$inst' AND institution_type='$type'");
 	$ihriscount = $query->num_rows();
     }
 	$this->db->set("ihris_staff", "$ihriscount");
@@ -54,6 +69,13 @@ public function facilitycount($data){
     $this->db->where('current_staff', "$staff");
 	$this->db->update('support');
 
+ return $ihriscount;
+}
+
+public function insititutionType($institution){
+	$query=$this->db->query("SELECT institution_type from ihrisdata where facility like '".$institution."' ");
+    $type=$query->result();
+	return $type->institution_type;
 }
 public function kpiDisplayData(){
 

@@ -17,6 +17,7 @@ class Cronjobs extends MX_Controller {
    }
 	public function gaugeData(){
         $kpis=$this->getKpi();
+        //print_r($kpis);
         foreach ($kpis as $kpi):
 	       $data=$this->cjobs_ml->gaugeData($kpi->kpi_id);
             echo $data.'<br>';
