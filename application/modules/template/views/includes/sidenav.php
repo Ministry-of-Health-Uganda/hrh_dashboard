@@ -123,7 +123,7 @@ body::-webkit-scrollbar-thumb
 
 
          <li class="nav-item">
-            <a href="<?php echo base_url()?>dashboard/home/index/ihris_dashboard" class="nav-link">
+            <a href="<?php echo base_url()?>performance" class="nav-link">
               <i class="fas fa-database dash-icon"></i>
               <p>
                   iHRIS Dashboard

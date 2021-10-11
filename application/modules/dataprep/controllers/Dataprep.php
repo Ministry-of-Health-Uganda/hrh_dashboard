@@ -23,6 +23,9 @@ class Dataprep extends MX_Controller {
 			$this->getRosterData($i);
 		}
 	}
+	public function getStaff(){
+	return $data;
+	}
 
 	//fetch roster data
 	public function getRoster(){
