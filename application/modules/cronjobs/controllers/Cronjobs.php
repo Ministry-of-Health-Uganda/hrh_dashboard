@@ -39,9 +39,8 @@ class Cronjobs extends MX_Controller {
 	       $data=$this->cjobs_ml->dimension0Data($kpi->kpi_id);
             echo $data.'<br>';
         endforeach;
-
-
     }
+    
     public function dimension1(){
            $kpis=$this->getKpi();
         foreach ($kpis as $kpi):

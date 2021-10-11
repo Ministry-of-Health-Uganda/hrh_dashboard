@@ -7,56 +7,51 @@ class Indicator extends MX_Controller {
 	public function __Construct(){
 
 		parent::__Construct();
-
 		$this->load->model('Indicator_mdl','kpi_mdl');
 		$this->load->model('Graph_mdl','graph_mdl');
-
+		$this->module = "indicator";
 	}
 
 	public function kpis(){
-
 		$data['title']='Key Performance Indicators';
 		$data['page'] ='kpi';
-		$data['module']="indicator";
+		$data['module']=$this->module;
 		echo Modules::run('template/layout', $data); 
-
 	}
 
 	public function kpiData(){
-
       return   $this->kpi_mdl->kpiData();
 	}
+
 	public function dashKpi($id=FALSE){
 		$kpis = $this->kpi_mdl->navkpi($id);
-
-      return $kpis;
+        return $kpis;
 	}
 
 	public function subject(){
 
 		$data['title']='Subject Areas';
 		$data['page']='subject';
-		$data['module']="indicator";
+		$data['module']=$this->$this->module;
 		echo Modules::run('template/layout', $data); 
 	}
 
 	public function subjectData(){
 
-    $menu=$this->kpi_mdl->subjectData();
-
-    return $menu;
-
+		$menu=$this->kpi_mdl->subjectData();
+		return $menu;
 	}
-
+	
 	public function addKpi(){
 	  $insert=$this->input->post();
 	  $data['message']=$this->kpi_mdl->addKpi($insert);
 	  $this->session->set_flashdata('message','Added');
 	  $data['title']='Key Performance Indicators';
 	  $data['page']='kpi';
-	  $data['module']="indicator";
+	  $data['module']=$this->$this->module;
 	  echo Modules::run('template/layout', $data); 
 	}
+
 	public function updateKpi(){
 	    $kpi=$this->input->post('kpi_id');
 		$is=$this->input->post('indicator_statement');
@@ -78,15 +73,15 @@ class Indicator extends MX_Controller {
 	
 		 $data['message']=$this->kpi_mdl->updatekpiData($insert);
 		// print_r($insert);
-		
 		} 
 	
 		$this->session->set_flashdata('message','Saved');
 		$data['title']='Key Performance Indicators';
 		$data['page']='kpi';
-		$data['module']="indicator";
+		$data['module']=$this->$this->module;
 		echo Modules::run('template/layout', $data); 
 	  }
+
 	public function addSubject(){
 	  $insert=$this->input->post();
 	  //print_r($insert);
@@ -94,7 +89,7 @@ class Indicator extends MX_Controller {
 	   $this->session->set_flashdata('message',$data['message']);
       $data['title']='Subject Areas';
 	  $data['page']='subject';
-	  $data['module']="indicator";
+	  $data['module']=$this->$this->module;
 	 // echo Modules::run('template/layout', $data); 
 	}
 
@@ -117,23 +112,18 @@ class Indicator extends MX_Controller {
 	
 		$data['title']='KPI Display ';
 		$data['page']='kpi_display';
-		$data['module']="indicator";
+		$data['module']=$this->$this->module;
 		echo Modules::run('template/layout', $data); 
-      
-		
-		
-		
-
 		//$data['message']=$this->kpi_mdl->InsertDisplay($insert);
-	   //print_r($save);
-
-     // return   $this->kpiDisplay()();
+	    //print_r($save);
+     	// return   $this->kpiDisplay()();
 	}
+
 	public function kpiDisplay(){
 	 
       $data['title']='KPI Display ';
 	  $data['page']='kpi_display';
-	  $data['module']="indicator";
+	  $data['module']=$this->$this->module;
 	  echo Modules::run('template/layout', $data); 
 	}
 
@@ -141,7 +131,7 @@ class Indicator extends MX_Controller {
 	 
 		$data['title']='KPI Summary ';
 		$data['page']='kpi_summary';
-		$data['module']="indicator";
+		$data['module']=$this->$this->module;
 		echo Modules::run('template/layout', $data); 
 	}
 
@@ -149,6 +139,7 @@ class Indicator extends MX_Controller {
 
 		return   $this->kpi_mdl->kpiSummaryData();
 	}
+
 	public function kpiTrendcolors($current_target,$gauge_value,$previousgauge_value,$current_period=FALSE, $previous_period=FALSE){
 		if ($previous_period!=0){
 			$previous_period='for '. $previous_period;
@@ -194,7 +185,6 @@ class Indicator extends MX_Controller {
 		$data['gauge'] = $this->graph_mdl->gaugeData(str_replace(" ",'',$kpi));
 		$data['financial_year'] = $_SESSION['financial_year'];
 		$data['module']="data";
-	
 		//print_r(json_encode($data['gauge']));
 		//$data['tests']=$this->test();
 	    return $data;
@@ -206,7 +196,7 @@ class Indicator extends MX_Controller {
 			$data['title']='iHRIS Assessment';
 			$data['uptitle']='iHRIS Assessment';
 			$data['page']='assessments';
-			$data['module']="indicator";
+			$data['module']=$this->$this->module;
 			$this->load->library('pagination');
 			$config=array();
 			$config['base_url']=base_url()."indicator/assessments";
@@ -235,10 +225,12 @@ class Indicator extends MX_Controller {
 			$config['num_tag_close'] = '</li>';
 			$config['use_page_numbers'] = true;
 			$this->pagination->initialize($config);
-			$page=($this->uri->segment(3))? $this->uri->segment(3):0; //default starting point for limits 
-			$data['links']=$this->pagination->create_links();
+			
 			$dateFrom =$this->input->post('dateFrom');
 			$dateTo =$this->input->post('dateTo');
+
+			$page=($this->uri->segment(3))? $this->uri->segment(3):0; //default starting point for limits 
+			$data['links']=$this->pagination->create_links();
 			$institution =$this->input->post('facility');
             $data['elements']=$this->kpi_mdl->getassessment($dateFrom,$dateTo,$institution);
 			echo Modules::run('template/layout', $data); 

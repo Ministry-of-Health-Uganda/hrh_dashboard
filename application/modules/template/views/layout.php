@@ -9,28 +9,30 @@ require_once("includes/sidenav.php");
 //db connection
 ?>
 
-
-
   <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
+  <br>
     <!-- Content Header (Page header) -->
+    <?php 
+           if($this->uri->segment(4)=="ihris_dashboard"||$this->uri->segment(1)=="data"): 
+                        $subjects=Modules::run('kpi/subjectData');
+                        ?>
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
-          <div class="col-sm-6">
-            <!-- <h1>Fixed Layout</h1> -->
-          </div>
+
+          
           <div class="col-sm-12" style="background: #feffff; font-size:12px; border-radius:4px;">
           <ol>
               <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
               <li class="breadcrumb-item"><a href="#">Layout</a></li>
               <li class="breadcrumb-item active">Fixed Layout</li> -->
 
-              <?php 
-                   if($this->uri->segment(4)=="ihris_dashboard"||$this->uri->segment(1)=="data"): 
-                        $subjects=Modules::run('kpi/subjectData');
+             
 
                       //  print_r($subjects);
+                      <?php
+                      if($subjects):
                       ?>
                         
                       <ul class="nav nav-pills nav-fill" >
@@ -53,10 +55,12 @@ require_once("includes/sidenav.php");
                      
           
 
-                       <?php  endforeach; 
+                       <?php  
+                       endforeach; 
                        ?>
                         </ul>
                         <?php
+                        
                        endif; ?>
                        <hr>
              
@@ -97,6 +101,7 @@ require_once("includes/sidenav.php");
         </div>
       </div>
     </section>
+    <?php endif; ?>
     <!-- /.container-fluid -->
 
     <!-- Main content -->

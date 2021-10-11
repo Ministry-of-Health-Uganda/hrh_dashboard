@@ -55,6 +55,9 @@
 <script src="<?php echo base_url(); ?>assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
+<script src="<?php echo base_url(); ?>assets/dist/js/angular/angular.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/dist/js/app.js"></script>
+
 
 
 

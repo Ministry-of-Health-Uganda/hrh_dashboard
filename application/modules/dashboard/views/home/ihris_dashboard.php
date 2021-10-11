@@ -70,8 +70,7 @@
       
         </div>
 </a>
-<!--    
-        <section class="col-lg-9 connectedSortable">
+  <section class="col-lg-9 connectedSortable">
             
             <div class="card">
               <div class="card-header">
@@ -99,7 +98,7 @@
             </div>
            
           
-        </section> -->
+        </section>
           <!-- Left col -->
         <!-- get kpi gauges from data -->
       
@@ -109,7 +108,7 @@
             // Bug fix load kpis which only have data(in Home mode DashData function)
             foreach ($dashkpis as $dashkpi) {
             // print_r($dashkpi->kpi_id);
-            echo Modules::run($dashkpi->module.'/kpi',$dashkpi->kpi_id,'on');
+               echo Modules::run($dashkpi->module.'/kpi',$dashkpi->kpi_id,'on');
             
             }
  
