@@ -28,3 +28,7 @@ ERROR - 2021-10-11 12:15:31 --> Could not find the specified $config['composer_a
 ERROR - 2021-10-11 12:15:31 --> Unable to load the requested class: M_pdf
 ERROR - 2021-10-11 12:15:34 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
 ERROR - 2021-10-11 13:15:35 --> Module controller failed to run: facilities/getTypes
+ERROR - 2021-10-11 12:20:48 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 12:20:53 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 12:20:55 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 12:21:21 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
