@@ -271,7 +271,7 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="https://hris2.ucmb.co.ug/ucmb_manage"  target="_blank" class="nav-link">
+                <a href="https://hris.ucmb.co.ug/ucmb_manage"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Catholic Med. Bureau</p>
                 </a>
