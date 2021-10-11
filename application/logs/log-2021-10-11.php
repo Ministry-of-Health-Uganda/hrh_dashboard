@@ -32,3 +32,4 @@ ERROR - 2021-10-11 12:20:48 --> Could not find the specified $config['composer_a
 ERROR - 2021-10-11 12:20:53 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
 ERROR - 2021-10-11 12:20:55 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
 ERROR - 2021-10-11 12:21:21 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 12:44:52 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
