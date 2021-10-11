@@ -44,3 +44,12 @@ ERROR - 2021-10-11 14:05:30 --> Module controller failed to run: kpi/subjectData
 ERROR - 2021-10-11 13:05:31 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
 ERROR - 2021-10-11 13:05:48 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
 ERROR - 2021-10-11 13:05:57 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:13:53 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:13:58 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:14:01 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:14:43 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:17:27 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:17:46 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:20:47 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 14:47:49 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 14:49:09 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php

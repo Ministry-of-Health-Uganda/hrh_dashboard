@@ -32,7 +32,7 @@
    
       
       <li class="nav-item" style="margin-right:2px;">
-         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="https://hris2.health.go.ug/national" >
+         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="https://hris.health.go.ug/national" >
          <i class="fas fa-flag"></i><b class="hidden-mobile"> National Manage</b>
         </a> 
       </li>
