@@ -196,7 +196,7 @@ class Indicator extends MX_Controller {
 			$data['title']='iHRIS Assessment';
 			$data['uptitle']='iHRIS Assessment';
 			$data['page']='assessments';
-			$data['module']=$this->$this->module;
+			$data['module']=$this->module;
 			$this->load->library('pagination');
 			$config=array();
 			$config['base_url']=base_url()."indicator/assessments";
