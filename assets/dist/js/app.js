@@ -57,7 +57,7 @@ $scope.ageGraph = (ageData)=>{
         type: 'column'
     },
     title: {
-      text: 'Uganda  Health Workers Age Distribution'
+      text: 'iHRIS Manage Uganda  Health Workers Age Distribution'
     },
     xAxis: {
         categories: ageData.labels,
@@ -95,7 +95,7 @@ $scope.ageGraph = (ageData)=>{
            type: 'pie',
          },
          title: {
-          text: 'iHRIS National Health Worker Force Gender Distribution'
+          text: 'iHRIS Manage National Health Worker Force Gender Distribution'
            },
            tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
