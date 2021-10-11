@@ -33,3 +33,14 @@ ERROR - 2021-10-11 12:20:53 --> Could not find the specified $config['composer_a
 ERROR - 2021-10-11 12:20:55 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
 ERROR - 2021-10-11 12:21:21 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
 ERROR - 2021-10-11 12:44:52 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 12:56:28 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 12:56:34 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 12:56:50 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:04:18 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:04:25 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:05:29 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:05:29 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 14:05:30 --> Module controller failed to run: kpi/subjectData
+ERROR - 2021-10-11 13:05:31 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:05:48 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php
+ERROR - 2021-10-11 13:05:57 --> Could not find the specified $config['composer_autoload'] path: C:\xampp\htdocs\hrh_dashboard\vendor/autoload.php

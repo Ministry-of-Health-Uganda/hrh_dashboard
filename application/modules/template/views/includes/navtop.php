@@ -32,12 +32,12 @@
    
       
       <li class="nav-item" style="margin-right:2px;">
-         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="http://hris.health.go.ug/districts" >
+         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="https://hris2.health.go.ug/national" >
          <i class="fas fa-flag"></i><b class="hidden-mobile"> National Manage</b>
         </a> 
       </li>
       <li class="nav-item" style="margin-right:2px;">
-         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="http://hris.health.go.ug/hrattendance">
+         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="https://hris2.health.go.ug/attendance">
          <i class="fas fa-clock"></i><b class="hidden-mobile"> Duty Roster</b>
         </a> 
       </li>
@@ -53,23 +53,23 @@
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <div class="dropdown-divider"></div>
-          <a href="http://hris.health.go.ug/demo_manage" target="_blank" class="dropdown-item">
+          <a href="https://hris2.health.go.ug/demo_manage" target="_blank" class="dropdown-item">
             <i class="fas fa-globe"></i>iHRIS Manage Demo
           </a>
           <div class="dropdown-divider"></div>
-          <a href="http://hris.health.go.ug/train_demo/login" target="_blank" class="dropdown-item">
+          <a href="https://hris2.health.go.ug/train_demo/login" target="_blank" class="dropdown-item">
             <i class="fas fa-globe"></i> iHRIS Train
           </a>
           <div class="dropdown-divider"></div>
-          <a href="http://hris.health.go.ug/iHRIS/releases/4.1/DES_demo/login" target="_blank" class="dropdown-item">
+          <a href="https://hris2.health.go.ug/iHRIS/releases/4.1/DES_demo/login" target="_blank" class="dropdown-item">
             <i class="fas fa-globe"></i> DES Demo
           </a>
           <div class="dropdown-divider"></div>
-          <a href="//hris.health.go.ug/iHRIS/dev/demo-chwr" target="_blank" class="dropdown-item">
+          <a href="https://hris2.health.go.ug/iHRIS/dev/demo-chwr" target="_blank" class="dropdown-item">
             <i class="fas fa-globe"></i> CHWR Demo
           </a>
           <div class="dropdown-divider"></div>
-          <a href="http://hris.health.go.ug/dutyrosterdemo" target="_blank" class="dropdown-item">
+          <a href="https://hris2.health.go.ug/dutyrosterdemo" target="_blank" class="dropdown-item">
             <i class="fas fa-globe"></i> Duty Roster/ Attend
           </a>
          
@@ -96,7 +96,6 @@
      
       <!-- <li class="nav-item">
         <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
         </a>
       </li> -->
       

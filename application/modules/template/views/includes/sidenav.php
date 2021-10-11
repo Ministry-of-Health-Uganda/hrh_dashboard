@@ -285,7 +285,7 @@ body::-webkit-scrollbar-thumb
             </ul>
           </li>
           <li class="nav-item">
-            <a href="https://hris2.health.go.ug/districts"  target="_blank" class="nav-link">
+            <a href="https://hris.health.go.ug/national"  target="_blank" class="nav-link">
               <i class="fa fa-flag dash-icon"></i>
               <p>
               National Manage
@@ -293,7 +293,7 @@ body::-webkit-scrollbar-thumb
             </a>
           </li>
           <li class="nav-item">
-            <a href="https://hris2.health.go.ug/hrattendance"  target="_blank" class="nav-link">
+            <a href="https://hris2.health.go.ug/attendance"  target="_blank" class="nav-link">
               <i class="fa fa-clock dash-icon"></i>
               <p>
               Duty Roster & Attendance
