@@ -53,7 +53,7 @@ $route['default_controller'] = 'dashboard/home';
 
 $route['login']  = "dashboard/auth/index";
 $route['logout'] = "dashboard/auth/logout";
-$route['performance']="dashboard/home/index/(:any)";
+$route['performance']="dashboard/home/index/ihris_dashboard";
 
 
 $route['404_override'] = '';
