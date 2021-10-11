@@ -142,7 +142,7 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?php echo base_url() ?>dataprep/rates"  target="_blank" class="nav-link">
+                <a href="<?php echo base_url() ?>dataprep/rates" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Reporting Rate</p>
                 </a>
