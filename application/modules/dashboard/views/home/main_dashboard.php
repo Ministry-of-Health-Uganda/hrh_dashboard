@@ -43,8 +43,8 @@
               <span class="info-box-icon"><i class="fas fa-mobile-alt" ></i></span>
 
               <div class="info-box-content">
-                <span class="info-box-text">Phone Directory</span>
-                <span class="info-box-number"><?php echo $focalpersons ?></span>
+                <span class="info-box-text">Jobs</span>
+                <span class="info-box-number"><?php echo $jobs ?></span>
               </div -->
               <!-- /.info-box-content-->
         </div>
