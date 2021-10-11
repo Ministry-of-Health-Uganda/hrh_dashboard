@@ -130,7 +130,26 @@ body::-webkit-scrollbar-thumb
               </p>
             </a>
           </li>
-          
+         
+      
+          <li class="nav-item has-treeview ">
+            <a href="#" class="nav-link">
+              <i class="fas fa-clock dash-icon"></i>
+              <p>
+               Attendance
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?php echo base_url() ?>dataprep/rates"  target="_blank" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p class="nav-drop">Reporting Rate</p>
+                </a>
+              </li>
+        
+            </ul>
+          </li>
           <li class="nav-item">
             <a href="<?php echo base_url()?>audit/showEstablishments" class="nav-link">
               <i class="fa fa-history dash-icon"></i>
