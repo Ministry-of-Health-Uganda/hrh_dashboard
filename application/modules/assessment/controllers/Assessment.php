@@ -15,7 +15,7 @@ class Assessment extends MX_Controller {
 
 		$data['title']='HRH Assessment';
 		$data['page'] ='support';
-		$data['module']="assessment";
+		$data['module']="support";
 		echo Modules::run('template/layout', $data); 
 
 	}
