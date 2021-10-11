@@ -45,7 +45,7 @@ $scope.test = function () {
        $scope.attendanceChart(attendanceData);
 
     }, (error) => {
-      console.log('error')
+      console.g('error')
     });
   }
 
