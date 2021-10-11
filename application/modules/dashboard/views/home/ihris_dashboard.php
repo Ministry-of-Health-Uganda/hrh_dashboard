@@ -70,35 +70,7 @@
       
         </div>
 </a>
-  <section class="col-lg-9 connectedSortable">
-            
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">
-                iHRIS National Health Worker Force Age Distribution
-                </h3>
-                <div class="card-tools">
-                  <ul class="nav nav-pills ml-auto">
-                   
-                  </ul>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="tab-content p-0">
-                 
-                  <div class="chart tab-pane active" id="revenue-chart"
-                       style="position: relative; height: 300px;">
-                      <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>                         
-                   </div>
-                  <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
-                    <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>                         
-                  </div>  
-                </div>
-              </div>
-            </div>
-           
-          
-        </section>
+
           <!-- Left col -->
         <!-- get kpi gauges from data -->
       

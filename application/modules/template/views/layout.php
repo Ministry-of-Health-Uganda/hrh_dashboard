@@ -26,11 +26,7 @@ require_once("includes/sidenav.php");
           <ol>
               <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
               <li class="breadcrumb-item"><a href="#">Layout</a></li>
-              <li class="breadcrumb-item active">Fixed Layout</li> -->
-
-             
-
-                      //  print_r($subjects);
+              <li class="breadcrumb-item active">Fixed Layout</li> -->                    
                       <?php
                       if($subjects):
                       ?>
