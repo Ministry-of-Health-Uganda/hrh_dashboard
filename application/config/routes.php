@@ -53,10 +53,12 @@ $route['default_controller'] = 'dashboard/home';
 
 $route['login']  = "dashboard/auth/index";
 $route['logout'] = "dashboard/auth/logout";
+$route['performance']="dashboard/home/index/(:any)";
 
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
 
 
 //set modules/config/routes.php
