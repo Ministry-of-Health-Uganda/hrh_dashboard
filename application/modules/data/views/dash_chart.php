@@ -8,7 +8,7 @@
 
 <?php 
 
-if(($this->uri->segment(1)=="dashboard")||($this->uri->segment(1)=="")){
+if(($this->uri->segment(1)=="performance")||($this->uri->segment(1)=="")){
     
     $col="col-lg-".$setting->dash_rows;
 }
