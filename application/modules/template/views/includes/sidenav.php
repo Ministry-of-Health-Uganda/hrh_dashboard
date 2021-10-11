@@ -150,14 +150,14 @@ body::-webkit-scrollbar-thumb
         
             </ul>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="<?php echo base_url()?>audit/showEstablishments" class="nav-link">
               <i class="fa fa-history dash-icon"></i>
               <p>
                   Audit
               </p>
             </a>
-          </li>
+          </li> -->
 
           <li class="nav-item has-treeview ">
             <a href="#" class="nav-link">
