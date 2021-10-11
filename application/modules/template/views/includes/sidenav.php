@@ -150,25 +150,25 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/reports/ahpc/registration.html"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/reports/ahpc/registration.html"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Allied Health Professionals Council</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/reports/umdpc/registration.html"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/reports/umdpc/registration.html"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Medical & Dental Practitioners</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/reports/unmc/registration.html"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/reports/unmc/registration.html"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Nurses and Midwives Council</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/reports/pc/person_last_reg.html" target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/reports/pc/person_last_reg.html" target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Pharmacy Society / Pharmacy Board</p>
                 </a>
@@ -176,7 +176,7 @@ body::-webkit-scrollbar-thumb
             </ul>
           </li>
           <li class="nav-item">
-            <a href="http://hris.health.go.ug/iHRIS/dev/chwr"  target="_blank" class="nav-link">
+            <a href="https://hris2.health.go.ug/iHRIS/dev/chwr"  target="_blank" class="nav-link">
               <i class="fa fa-h-square dash-icon"></i>
               <p>
                   CHW Registry
@@ -193,13 +193,13 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/ahpc-qualify"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/ahpc-qualify"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Allied Health Professionals Council</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/umdpc"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/umdpc"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Medical & Dental Practitioners</p>
                 </a>
@@ -211,7 +211,7 @@ body::-webkit-scrollbar-thumb
                 </a>
               </li>
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/pharmacy_society"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/pharmacy_society"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Pharmacy Society / Pharmacy Board</p>
                 </a>
@@ -229,13 +229,13 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/Train"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/Train"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">In Service Training</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="http://hris.health.go.ug/iHRIS/releases/4.1/DES"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/iHRIS/releases/4.1/DES"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">DES</p>
                 </a>
@@ -252,13 +252,13 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="http://hris.ucmb.co.ug/ucmb_manage"  target="_blank" class="nav-link">
+                <a href="https://hris2.ucmb.co.ug/ucmb_manage"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Catholic Med. Bureau</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="http://hris.upmb.co.ug:8080/upmb"  target="_blank" class="nav-link">
+                <a href="https://hris2.upmb.co.ug:8080/upmb"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Protestant Med. Bureau</p>
                 </a>
@@ -266,7 +266,7 @@ body::-webkit-scrollbar-thumb
             </ul>
           </li>
           <li class="nav-item">
-            <a href="http://hris.health.go.ug/districts"  target="_blank" class="nav-link">
+            <a href="https://hris2.health.go.ug/districts"  target="_blank" class="nav-link">
               <i class="fa fa-flag dash-icon"></i>
               <p>
               National Manage
@@ -274,7 +274,7 @@ body::-webkit-scrollbar-thumb
             </a>
           </li>
           <li class="nav-item">
-            <a href="http://hris.health.go.ug/hrattendance"  target="_blank" class="nav-link">
+            <a href="https://hris2.health.go.ug/hrattendance"  target="_blank" class="nav-link">
               <i class="fa fa-clock dash-icon"></i>
               <p>
               Duty Roster & Attendance
