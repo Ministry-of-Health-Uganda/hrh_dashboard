@@ -3,7 +3,6 @@ var app = angular.module('hrhApp', []);
 
 app.constant('constants', {
   BASE_URL: 'https://hris.health.go.ug/hrh_dashboard/dataprep/',
-  getDistrictAttendnace: "person_attend/2021-08-01/2021-08-01",
   getAgeDataUrl: "ageRanges",
   appVersion: 1.0
 });

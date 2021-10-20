@@ -3,208 +3,142 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Audit_mdl extends CI_Model {
 
-	
 	public function __Construct(){
-
 		parent::__Construct();
-
 	}
+   
+	public function getAuditReport(){
 
+		$search = (Object) $this->input->post();
+		
+		$this->auditReportFilters($search);
 
+		$this->db->select("
+			job_name,
+			salary_scale,
+			institution_type,
+			district_name,
+			facility_name,
+			facility_type_name,
+			cadre_name,
+			sum(approved) as approved,
+			sum(total)  as filled,
+			sum(male)   as male,
+			sum(female) as female,
+			sum(excess) as excess,
+			sum(vacant) as vacant
+			");
 
+		$aggregation = (!empty($search->aggregate))?$search->aggregate:"job_name";
 
-
-	public function getJobs($district,$facility_id,$facility_type)
+		$this->db->group_by($aggregation);
+		return $this->db->get('national_jobs')->result();
+		
+	}
+	
+	private function auditReportFilters($search)
 	{
+
+		if(!empty($search->district)){
+
+			$this->db->where('district_name',$search->district);
+
+		}
 		
-		//$this->db->cache_delete_all();
+		if(!empty($search->institution)){
 
-		if($district){
-
-			$this->db->where('establishment.district_id',"district|".$district);
-
+			$this->db->where('institution_type',$search->institution);
 		}
 
-		if($facility_id){
+		if(!empty($search->job_category)){
 
-			$this->db->where('establishment.facility_id',$facility_id);
-
+			$this->db->where('job_category',$search->job_category);
 		}
 
-		if($facility_type){
-
-			$this->db->where('establishment.facility_type',$facility_type);
-
+		if(!empty($search->job)){
+			//job name
+			$this->db->where('job_name',$search->job);
 		}
 
-	/*	if(!$district){
+		if(!empty($search->facility)){
+			//facility
+			$this->db->where('facility_name',$search->facility);
+		}
 
-			$this->db->limit(20,0);
+		if(!empty($search->region)){
+			//facility
+			$this->db->where('region_name',$search->region);
+		}
 
-		}*/
+		if(!empty($search->ownership)){
+			//ownership
+			$this->db->where('ownership',$search->ownership);
+		}
 
-		$this->db->select('distinct(establishment.job_id),job');
-
-		$this->db->where("establishment.job!=''");
-		$query=$this->db->get('establishment');
-
-		return $query->result();
- 
+		if(!empty($search->cadre)){
+			//cadre_name
+			$this->db->where('cadre_name',$search->cadre);
+		}
 	}
 
-
-
-
-	public function getEstablishment($district,$facility,$job_id,$facility_type){
-
-		
-		  $this->db->select('sum(approved) as esta,sum(filled)  as filled,sum(excess_vacant) as excess_vacant');
-
-		     
-
-			if($district){
-
-		      $this->db->where('establishment.district_id',"district|".$district);
-
-		      
-			}
-
-			if($facility){
-		       $this->db->where('establishment.facility_id',$facility);
-
-			}
-
-			if($facility_type){
-
-				$this->db->where('establishment.facility_type',$facility_type);
-			}
-
-		$this->db->where('establishment.job_id',"job|".$job_id);
-
-       $query=$this->db->get('establishment');
-
-		$result=$query->row();
-
-		return $result;
-
-		
-
-	}
-
-
-	public function getJob($id)
+	public function auditReportLegend($search)
 	{
-		$this->db->select('distinct(job_id),job');
-		$this->db->where('job_id',$id);
-		$query=$this->db->get('establishment');
+		$legend = "";
 
-		return $query->row();
- 
-	}
+		if(!empty($search->district)){
 
-	public function getFacilities($district){
-
-		$this->db->select('distinct(facility),facility_id');
-		$this->db->where('district_id',"district|".$district);
-		$query=$this->db->get('ihris_att');
-
-		return $query->result();
-
-
-	}
-
-	public function getSchedules(){
-
-		$this->db->where('purpose','a');
-
-		$qry=$this->db->get('schedules');
-
-		return $qry->result();
-	}
-
-
-
-
-	public function getAtt($district,$facility_id,$year,$month,$facility_type){
-
-			$this->db->select('distinct(job),job_id');
-
-            if($facility_id){
-
-			$this->db->where('facility_id',$facility_id);
+			$legend .= "<b class='text-success'>District: </b>".$search->district;
 
 		}
 		
-		  if($facility_type){
-
-			$this->db->where('facility_type',$facility_type);
-
+		if(!empty($search->institution)){
+			$legend .= " <b class='text-success'>Institution Type: </b>".$search->institution;
 		}
 
-		if($district){
+		if(!empty($search->job_category)){
 
-			$this->db->where('district_id',"district|".$district);
-
+			$legend .= " <b class='text-success'>Job Category: </b>".$search->job_category;
 		}
 
+		if(!empty($search->job)){
+			//job name
+			$legend .= " <b class='text-success'>Job : </b>".$search->job;
+		}
 
-			$this->db->where("month",$month);
-			$this->db->where("year",$year);
+		if(!empty($search->job_class)){
+			//job class
+			$legend .= " <b class='text-success'>Job Classification : </b>".$search->job_class;
+		}
 
+		if(!empty($search->facility_type)){
+			//facility type
+			$legend .= " <b class='text-success'>Facility Type : </b>".$search->facility_type;
+		}
+
+		if(!empty($search->region)){
+			//facility type
+			$legend .= " <b class='text-success'>Region : </b>".$search->region;
+		}
+
+		if(!empty($search->facility)){
+			//facility type
+			$legend .= " <b class='text-success'>Facility : </b>".$search->facility;
+		}
+
+        if(!empty($search->aggregate)){
 			
-						
-		$query=$this->db->get('ihris_att');
+			$legend .= " <b class='text-success'>Aggregated By : </b>".$this->getAggregateLabel($search->aggregate);
+		}
 
-		$result=$query->result();
 
-		return $result;
+		return $legend;
 	}
 
-	public function sumAtt($schedule,$job_id,$facility,$district,$year,$month,$facility_type){
-
-
-
-		$this->db->select("sum(".$schedule.") as att");
-
-		if($facility){
-
-			$this->db->where('facility_id',$facility);
-
-		}
-
-		if($district){
-
-			$this->db->where('district_id',"district|".$district);
-
-		}
-		
-		
-		if($facility_type){
-
-			$this->db->where('facility_type',$facility_type);
-
-		}
-
-		$this->db->where('job_id',$job_id);
-
-			$this->db->where("month='$month'");
-			$this->db->where("year ='$year'");
-
-			$query=$this->db->get('ihris_att');
-
-			$result=$query->row();
-
-			return $result->att;
-
-
+	public function getAggregateLabel($aggregateLabel){
+		$aggregate = str_replace('name',"",str_replace('_'," ",(!empty($aggregateLabel))?$aggregateLabel:"job_name"));
+		return $aggregate;
 	}
 
-
-	
-
-
-
-	
 
 
 }

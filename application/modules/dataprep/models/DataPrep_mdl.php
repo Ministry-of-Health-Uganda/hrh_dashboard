@@ -49,15 +49,20 @@ class DataPrep_mdl extends CI_Model {
 	        $totalStaffAttendance = count($inFacility);//has attendance
 			$totalAtFacility = $this->countFacilityStaff($row->facility_id);
 
+            $staff = $this->getStaffData($row->ihris_pid);
+
 			$rates = array(
 				'facility_id'=>$row->facility_id,
 				'attendance_count'=>$totalStaffAttendance,
-				//'facility_name'=>$row->facility_name,
+				'district_id'=>$staff->district_id,
+				'district_name'=>$staff->district_name,
 				'month'=>$date->month,
 				'year'=>$date->year,
 				'staff_count'=>$totalAtFacility,
 				'entry_id'=>$row->facility_id.$date->year.$date->month);
+
 		    $this->trackRates($rates);
+
 		endif;
 
 
@@ -136,12 +141,17 @@ class DataPrep_mdl extends CI_Model {
 				//considered on duty
 				$totalAtFacility = $this->countFacilityStaff($row->facility_id);
 				$totalAttendance = $this->countFacilityAttedance($row->facility_id,$date->month,$date->year);
+
+
+				$staff = $this->getStaffData($row->ihris_pid);
+
 				
 				$rates = array(
 					'facility_id'=>$row->facility_id,
 					'roster_count'=>$totalOnDutyRoster,
 					'month'=>$date->month,
-					//'facility_name'=>$row->facility_name,
+					'district_id'=>$staff->district_id,
+					'district_name'=>$staff->district_name,
 					'year'=>$date->year,
 					'staff_count'=>$totalAtFacility,
 					'entry_id'=>$row->facility_id.$date->year.$date->month
@@ -150,8 +160,7 @@ class DataPrep_mdl extends CI_Model {
 				$this->trackRates($rates);
 
 
-				$staff = $this->getStaffData($row->ihris_pid);
-
+				
 				$present = count( array_filter($inFacility,function($element){
 					return $element['D'] > 0; //
 				}));
@@ -268,14 +277,15 @@ class DataPrep_mdl extends CI_Model {
 		$count = 0;
 
 		foreach($search as $key => $value ):
+			
 			$cond = ($count == 0)?' WHERE':' AND';
 			if(!empty($value)){
 				$condition .="$cond m.$key='$value'";
+			     $count++;
 			}
 		endforeach;
 
 		if($search_input->toDate){
-
 
 			$toDate 	= explode('-',$search_input->toDate);
 
@@ -286,13 +296,15 @@ class DataPrep_mdl extends CI_Model {
 
 		if($search_input->fromDate){
 
-
 			$fromDate = explode('-',$search_input->fromDate);
 
 			$condition .= ($condition == '')?' WHERE':' AND';
 			$condition .=' a.year>='.$fromDate[0];
 			$condition .=' AND a.month>='.$fromDate[1];
 		}
+
+		// print_r($condition);
+		// exit();
 
 		return $condition;
 	}
@@ -303,31 +315,49 @@ class DataPrep_mdl extends CI_Model {
 		$search_input = (Object) $this->input->post();
 		$condition 	  = $this->getCondition($search_input);
 
+		$grouping = (!empty($search_input->grouping))?$search_input->grouping:'facility_id';
+
 		$sql = 'SELECT 
 				a.facility_name,
+				a.district_name,
 				m.monthWords,
 				m.year,
-				a.staff_count,
-				a.roster_count,
-				a.attendance_count
+				sum(a.staff_count) as staff_count,
+				sum(a.roster_count) as roster_count,
+				sum(a.attendance_count) as attendance_count
 		        FROM monthly_static_figures m
 		        RIGHT JOIN `attendance_rate` a 
 		        on a.facility_id = m.facility_id
-		        '.$condition;
+		        '.$condition." group by a.".$grouping;
 
 		$qry = $this->db->query($sql);
 		return $qry->result();
 	}
 
-	public function getFilters(){
+	public function getFilters($showAll=false){
 
-		$data['facilities']=$this->db->get("facilities")->result();
-		$data['districts']=$this->db->get("districts")->result();
-		$data['institutions']=$this->db->get("institutions")->result();
-		$data['regions']=$this->db->get("regions")->result();
+		$data['facilities']   = $this->db->get("facilities")->result();
+		$data['districts']    = $this->db->get("districts")->result();
+		$data['institutions'] = $this->db->get("institutions")->result();
+		$data['regions'] 	  = $this->db->get("regions")->result();
+
+		if($showAll):
+			$data['jobs']         = $this->db->get("jobs")->result();
+			$data['facility_types']  = $this->db->get("facility_types")->result();
+			$data['job_cadres']      = $this->db->get("job_cadres")->result();
+			$data['job_classifications']  = $this->db->get("job_classifications")->result();
+			$data['job_categories']  = $this->db->get("job_categories")->result();
+			$data['ownership']  = $this->db->get("ownership")->result();
+	    endif;
 
 		return (Object) $data;
 	}
+
+	public function getAggregateLabel($aggregateLabel){
+		$aggregate = str_replace('id',"",str_replace('_'," ",(!empty($aggregateLabel))?$aggregateLabel:"facility"));
+		return $aggregate;
+	}
+
 
 
 }

@@ -90,6 +90,8 @@
           
           </section>
           <!-- right col -->
+
+          <?php /*
           <section class="col-lg-12 connectedSortable">
             <!-- Custom tabs (Charts with tabs)-->
             <div class="card">
@@ -125,6 +127,7 @@
 
           
           </section>
+          */ ?>
 
           <section class="col-lg-6 connectedSortable">
             <!-- Custom tabs (Charts with tabs)-->

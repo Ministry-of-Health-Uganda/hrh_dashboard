@@ -24,5 +24,47 @@ class Template extends MX_Controller {
 		$data['setting'] = $this->template_model->setting();
 		$this->load->view('login', $data);
 	}
+
+
+public function makePdf($html,$filename,$action)
+	{	
+
+	 $this->load->library('ML_pdf');  //or i used ML_pdf for landscape
+
+	 ini_set('max_execution_time',0);
+	 $PDFContent = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+	 
+	 ini_set('max_execution_time',0);
+
+	$this->ml_pdf->pdf->WriteHTML($PDFContent); 
+	 
+	//download it D save F.
+	ob_clean();
+	flush();
+	$this->ml_pdf->pdf->Output($filename,$action);
+
+	}
+
+	
+	
+    public function exportToExcel($exportData,$filename) {
+        
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+
+        if(is_array($exportData))
+         $exportData=json_decode(json_encode($exportData), true);
+        
+        $isPrintHeader = false;
+        
+        foreach ($exportData as $row) {
+            if (! $isPrintHeader) {
+                echo implode("\t", array_keys($row)) . "\n";
+                $isPrintHeader = true;
+            }
+            echo implode("\t", array_values($row)) . "\n";
+        }
+        exit();
+    }
  
 }

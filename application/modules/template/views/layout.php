@@ -108,9 +108,6 @@ require_once("includes/sidenav.php");
         <div class="row">
           <div class="col-12" style="margin-bottom:3px;">
              <div class="card">
-                <div class="card-header">
-                   <h3 class="card-title"></h3>
-                </div>
                    <div class="card-body">
                         <?php 
                         $this->load->view($module.'/'.$page) ?>
