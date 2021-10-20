@@ -315,7 +315,15 @@ body::-webkit-scrollbar-thumb
             <a href="https://hris2.health.go.ug/attendance"  target="_blank" class="nav-link">
               <i class="fa fa-clock dash-icon"></i>
               <p>
-              Duty Roster & Attendance
+              Districts Attendance
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="https://attend.health.go.ug"  target="_blank" class="nav-link">
+              <i class="fa fa-clock dash-icon"></i>
+              <p>
+              HRM Attend
               </p>
             </a>
           </li>
