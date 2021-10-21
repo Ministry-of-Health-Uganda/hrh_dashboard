@@ -19,7 +19,7 @@ class Dataprep extends MX_Controller {
 
 		for($i=1;$i<3;$i++){
 
-			$this->getAttendanceData($i);
+			//$this->getAttendanceData($i);
 			$this->getRosterData($i);
 		}
 	}
