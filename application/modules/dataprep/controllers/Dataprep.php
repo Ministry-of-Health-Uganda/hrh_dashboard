@@ -23,8 +23,9 @@ class Dataprep extends MX_Controller {
 			$this->getRosterData($i);
 		}
 	}
+
 	public function getStaff(){
-	return $data;
+		return $data;
 	}
 
 	//fetch roster data
@@ -74,7 +75,7 @@ class Dataprep extends MX_Controller {
 	//Fetches roster data using the above baseurl, calls SendRequest
 	public function getRosterData($opt=1){
 
-		$endpoint ='person_roster/2021-08-01/2021-08-31';
+		$endpoint ='person_roster/2021-05-01/2021-09-30';
 		$url = self::BASE_URL[$opt]."$endpoint";
 
 		$data = $this->sendRequest($url);
@@ -86,7 +87,7 @@ class Dataprep extends MX_Controller {
 	//Fetches attendance data using the above baseurl, calls SendRequest
 	public function getAttendanceData($opt=2){
 
-		$endpoint ='person_attend/2021-08-01/2021-08-31';
+		$endpoint ='person_attend/2021-05-01/2021-09-30';
 		$url  = self::BASE_URL[$opt]."$endpoint";
 		$data = $this->sendRequest($url);
 		$result  = $this->mdl->saveAttendance($data);
@@ -154,18 +155,21 @@ class Dataprep extends MX_Controller {
 
 	public function rates(){
 		
-		$data['search'] = (Object) $this->input->post();
+		$search = (Object) $this->input->post();
 
 		$rows = [];
 		if($this->input->post()):
 		  $rows =  $this->mdl->getReportingRates();
 		endif;
 
-		$data['data'] = $rows;
-		$data['filters']= $this->mdl->getFilters();
-		$data['page']   = 'reporting_rate';
-		$data['module'] = 'dataprep';
-		$data['title']	= 'Hello';
+		$data['search']   = $search;
+		$data['data']     = $rows;
+		$data['filters']  = $this->mdl->getFilters();
+		$data['page']     = 'reporting_rate';
+		$data['module']   = 'dataprep';
+		$data['title']	  = 'Hello';
+		$data['aggTitle'] = $this->mdl->getAggregateLabel(@$search->grouping);
+		$data['aggColumn'] = (!empty($search->grouping))?str_replace('id', 'name',$search->grouping):'facility_name';
 
 		echo Modules::run('template/layout',$data);
 	}

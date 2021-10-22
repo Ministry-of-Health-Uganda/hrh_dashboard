@@ -45,3 +45,6 @@
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
 <div class="wrapper">
+<div class="base_url" style="display:none;">
+<?php echo base_url()?>
+</div> 

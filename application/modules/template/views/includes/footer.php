@@ -84,13 +84,38 @@
 
 <script>
 $( document ).ready(function() {
+
   $.fn.datepicker.defaults.format = "yyyy-mm-dd";
     $('.datepicker').datepicker({
         todayHighlight: true,
         autoclose: true,
    
     });
-  });
+
+  $('.mytable').DataTable( {
+        dom: 'Bfrtip',
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        lengthMenu: [
+            [ 25, 50, 100,150, -1 ],
+            [ '25', '50', '100','150','200', 'Show all' ]
+        ],
+      
+        buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pageLength',
+            
+            
+        ]
+    } );
+});
 </script>
 
     

@@ -1,20 +1,20 @@
 <form class="form-horizontal row" method="post" action="">
-<div class="form-group col-md-2">
+<div class="form-group col-md-1">
 		<label>From</label>
 		<input type="text"
 		  value="<?php echo isset($search->fromDate)?$search->fromDate:'';?>" 
-		name="fromDate" class="datepicker form-control">
+		name="fromDate" class="datepicker form-control" autocomplete="off">
 	</div>
 
-	<div class="form-group col-md-2">
+	<div class="form-group col-md-1">
 		<label>To</label>
 		<input type="text"
 		  value="<?php echo isset($search->toDate)?$search->toDate:'';?>" 
-		 name="toDate"  class="datepicker form-control">
+		 name="toDate"  class="datepicker form-control" autocomplete="off">
 	</div>
 	<div class="form-group col-md-2">
 		<label>Institution Type</label>
-		<select class="select form-control" name="institution">
+		<select class="select form-control select2" name="institution">
 			<option value="">All</option>
 			<?php foreach($filters->institutions as $inst): 
 				
@@ -31,7 +31,7 @@
 	
 	<div class="form-group col-md-2">
 		<label>Region</label>
-		<select class="select form-control" name="region">
+		<select class="select form-control select2" name="region">
 			<option value="">All</option>
 			<?php foreach($filters->regions as $region):
 
@@ -48,9 +48,9 @@
 		</select>
 	</div>
 	
-	<div class="form-group col-md-2">
+	<div class="form-group col-md-1">
 		<label>District</label>
-		<select class="select form-control" name="district">
+		<select class="select form-control select2" name="district">
 			<option value="">All</option>
 			<?php foreach($filters->districts as $dist): 
 
@@ -69,7 +69,7 @@
 
 	<div class="form-group col-md-2">
 		<label>Facility</label>
-		<select class="select form-control" name="facility">
+		<select class="select form-control select2" name="facility">
 			<option value="">All</option>
 			<?php foreach($filters->facilities as $facility):
 
@@ -86,9 +86,21 @@
 		</select>
 	</div>
 
+	<div class="form-group col-md-2">
+		<label>Aggregation</label>
+		<select class="select form-control" name="grouping">
+			<option value="facility_id" <?php echo (isset($search->grouping) && $search->grouping=='facility_id')?"selected":""; ?>>
+			 Facility
+		    </option>
+			<option value="district_id" <?php echo (isset($search->grouping) && $search->grouping=='district_id')?"selected":""; ?>>
+				District
+			</option>
+		</select>
+	</div>
+
 	
 	<div class="form-group col-md-2">
-		<input  type="submit" class="btn btn-success" value="Search" />
+		<input  type="submit" class="btn btn-success" value="Apply Filter" />
 	</div>
 
 	

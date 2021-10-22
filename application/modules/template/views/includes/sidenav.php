@@ -159,6 +159,25 @@ body::-webkit-scrollbar-thumb
             </a>
           </li> -->
 
+           <li class="nav-item has-treeview ">
+            <a href="#" class="nav-link">
+              <i class="fas fa-users dash-icon"></i>
+              <p>
+               Staffing
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?php echo base_url() ?>audit/auditReport" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p class="nav-drop">Audit Report</p>
+                </a>
+              </li>
+        
+            </ul>
+          </li>
+
           <li class="nav-item has-treeview ">
             <a href="#" class="nav-link">
               <i class="fas fa-registered dash-icon"></i>
@@ -296,7 +315,15 @@ body::-webkit-scrollbar-thumb
             <a href="https://hris2.health.go.ug/attendance"  target="_blank" class="nav-link">
               <i class="fa fa-clock dash-icon"></i>
               <p>
-              Duty Roster & Attendance
+              Districts Attendance
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="https://attend.health.go.ug"  target="_blank" class="nav-link">
+              <i class="fa fa-clock dash-icon"></i>
+              <p>
+              HRM Attend
               </p>
             </a>
           </li>
