@@ -218,7 +218,6 @@
 		</select>
 	</div>
 
-	
 	<div class="form-group col-md-1">
 		<br>
 		<input  type="submit" class="btn btn-success" value="Apply Filter" />
@@ -227,11 +226,19 @@
 		<br>
 		<button  type="reset" class="btn btn-default" >Reset Filters</button>
 	</div>
+<<<<<<< HEAD
 	<div class="form-group col-md-1">
 		<br>
 		 <input type="hidden" name="getPdf" id="print">
 		 <button onclick="$('#print').val(1); $('.searchForm').submit();$('#print').val(0);"  type="button" class="btn btn-default" >Download</button>
 	</div>
+=======
+	<!-- <div class="form-group col-md-1">
+		<br>
+		 <input type="hidden" name="getPdf" id="print">
+		 <button onclick="$('#print').val(1); $('.searchForm').submit();"  type="button" class="btn btn-default" >Download</button>
+	</div> -->
+>>>>>>> 6ad8c2866264d2c0b4e931152926247f37a74aed
 
 	
 </form>

@@ -1,7 +1,7 @@
 <html>
 <head>
     <style>
-body {font-family: Arial;
+body {font-family: Arial
 	font-size: 10pt;
 	max-width:22cm;
 	max-height:29.7cm;
@@ -74,7 +74,8 @@ table tr:nth-child(even){
 </style>
     
 </head>
-<body>
+<body
+
 <table>
     <tr>
       <td><img src="<?php echo base_url(); ?>assets/images/MOH.png" width="80px" /></td>
@@ -92,6 +93,7 @@ table tr:nth-child(even){
 <br/>
 
 <table class="items" style="font-size: 10pt; border-collapse: collapse; " cellpadding="8" width="100%">
+
   <thead>
        <tr>
            <th width="25%" style="text-transform: capitalize;">
