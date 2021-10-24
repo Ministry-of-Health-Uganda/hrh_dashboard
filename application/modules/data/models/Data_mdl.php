@@ -40,8 +40,8 @@ public function period(){
 	$data=$query->result();
 
 	
-$maxperiod= str_replace("Q","",$data[0]->period);
-return $maxperiod;
+	$maxperiod= str_replace("Q","",$data[0]->period);
+	return $maxperiod;
   
 }
 
