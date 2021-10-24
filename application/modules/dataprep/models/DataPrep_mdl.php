@@ -269,7 +269,7 @@ class DataPrep_mdl extends CI_Model {
 		$search = array(
 			'facility_id' => $search_input->facility,
 			'district_id' => $search_input->district,
-			'region_id' => $search_input->region,
+			'region_id'   => $search_input->region,
 			'institution_type' => $search_input->institution,
 		);
 
@@ -290,8 +290,8 @@ class DataPrep_mdl extends CI_Model {
 			$toDate 	= explode('-',$search_input->toDate);
 
 			$condition .= ($condition == '')?' WHERE':' AND';
-			$condition .=' a.year<='.$toDate[0];
-			$condition .=' AND a.month<='.$toDate[1];
+			$condition .=' m.year<='.$toDate[0];
+			$condition .=' AND m.month<='.$toDate[1];
 		}
 
 		if($search_input->fromDate){
@@ -299,8 +299,8 @@ class DataPrep_mdl extends CI_Model {
 			$fromDate = explode('-',$search_input->fromDate);
 
 			$condition .= ($condition == '')?' WHERE':' AND';
-			$condition .=' a.year>='.$fromDate[0];
-			$condition .=' AND a.month>='.$fromDate[1];
+			$condition .=' m.year>='.$fromDate[0];
+			$condition .=' AND m.month>='.$fromDate[1];
 		}
 
 		// print_r($condition);
@@ -313,7 +313,7 @@ class DataPrep_mdl extends CI_Model {
 	public function getReportingRates(){
 
 		$search_input = (Object) $this->input->post();
-		$condition 	  = $this->getCondition($search_input);
+		$condition 	  =""; // $this->getCondition($search_input);
 
 		$grouping = (!empty($search_input->grouping))?$search_input->grouping:'facility_id';
 
@@ -328,7 +328,7 @@ class DataPrep_mdl extends CI_Model {
 		        FROM monthly_static_figures m
 		        RIGHT JOIN `attendance_rate` a 
 		        on a.facility_id = m.facility_id
-		        '.$condition." group by a.".$grouping;
+		        '.$condition." group by m.".$grouping;
 
 		$qry = $this->db->query($sql);
 		return $qry->result();

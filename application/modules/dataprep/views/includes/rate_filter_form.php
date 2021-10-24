@@ -1,12 +1,12 @@
 <form class="form-horizontal row" method="post" action="">
-<div class="form-group col-md-1">
+<div class="form-group col-md-2">
 		<label>From</label>
 		<input type="text"
 		  value="<?php echo isset($search->fromDate)?$search->fromDate:'';?>" 
 		name="fromDate" class="datepicker form-control" autocomplete="off">
 	</div>
 
-	<div class="form-group col-md-1">
+	<div class="form-group col-md-2">
 		<label>To</label>
 		<input type="text"
 		  value="<?php echo isset($search->toDate)?$search->toDate:'';?>" 
@@ -48,7 +48,7 @@
 		</select>
 	</div>
 	
-	<div class="form-group col-md-1">
+	<div class="form-group col-md-2">
 		<label>District</label>
 		<select class="select form-control select2" name="district">
 			<option value="">All</option>
@@ -100,6 +100,7 @@
 
 	
 	<div class="form-group col-md-2">
+		<br>
 		<input  type="submit" class="btn btn-success" value="Apply Filter" />
 	</div>
 
