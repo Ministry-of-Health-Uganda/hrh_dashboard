@@ -35,8 +35,13 @@ class Audit extends MX_Controller {
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
 			$html     = $this->load->view("audit/audit_report_pdf",$data,true);
+<<<<<<< HEAD
 			$filename = time().".pdf";
 			Modules::run('template/makePdf',$html,$filename,"I");
+=======
+			$filename = "audit_report_".time().".pdf";
+			Modules::run('template/makePdf',$html,$filename,"D");
+>>>>>>> origin/dev
 		endif;
 		
 		echo Modules::run('template/layout',$data);

@@ -2,8 +2,13 @@
 <head>
     <style>
 body {font-family: Arial;
+<<<<<<< HEAD
 	font-size: 12pt;
 	max-width:21cm;
+=======
+	font-size: 10pt;
+	max-width:22cm;
+>>>>>>> origin/dev
 	max-height:29.7cm;
 }
 p {	margin: 0pt; }
@@ -67,12 +72,39 @@ table tr:nth-child(even){
     background-color:#e6f2f0;
 }
 
+<<<<<<< HEAD
+=======
+.text-success{
+  color:green;
+}
+
+>>>>>>> origin/dev
 </style>
     
 </head>
 <body>
+<<<<<<< HEAD
 
 <table class="items" style="font-size: 12pt; border-collapse: collapse; " cellpadding="8" width="100%">
+=======
+<table>
+    <tr>
+      <td><img src="<?php echo base_url(); ?>assets/images/MOH.png" width="80px" /></td>
+      <td>
+          <br/>
+          <h2> Staffing Audit Report</h2>
+          <?php if(!empty($legend)): ?>
+              <br/>
+              <p style="text-transform: capitalize;"><?php echo $legend; ?></p>
+          <?php endif; ?>
+      </td>
+    </tr>
+</table>
+<hr />
+<br/>
+
+<table class="items" style="font-size: 10pt; border-collapse: collapse; " cellpadding="8" width="100%">
+>>>>>>> origin/dev
   <thead>
        <tr>
            <th width="25%" style="text-transform: capitalize;">

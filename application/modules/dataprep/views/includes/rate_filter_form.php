@@ -100,6 +100,10 @@
 
 	
 	<div class="form-group col-md-2">
+<<<<<<< HEAD
+=======
+		<br>
+>>>>>>> origin/dev
 		<input  type="submit" class="btn btn-success" value="Apply Filter" />
 	</div>
 
