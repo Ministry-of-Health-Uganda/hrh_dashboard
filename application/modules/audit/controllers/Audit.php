@@ -9,7 +9,7 @@ class Audit extends MX_Controller {
 		parent::__Construct();
 
 		$this->load->model('Audit_mdl','auditMdl');
-		$this->load->model('dataprep/DataPrep_mdl','prep_mdl');
+		$this->load->model('dataprep/dataPrep_mdl','prep_mdl');
 		
 		$this->watermark=FCPATH."assets/watermark.png";
 	}
