@@ -29,17 +29,20 @@ class Template extends MX_Controller {
 public function makePdf($html,$filename,$action)
 	{	
 
-	 $this->load->library('ML_pdf');  //or i used ML_pdf for landscape
-
-     ob_clean();
-
-	 $PDFContent = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
-	
-	$this->ml_pdf->pdf->WriteHTML($PDFContent); 
-	 
-	//download it D save F.
-	ob_end_clean();
-	$this->ml_pdf->pdf->Output($filename,$action);
+		$this->load->library('ML_pdf');  //or i used ML_pdf for landscape
+     
+		ob_clean();
+		
+		ini_set('max_execution_time',0);
+		$PDFContent = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+		
+		ini_set('max_execution_time',0);
+   
+	   $this->ml_pdf->pdf->WriteHTML($PDFContent); 
+		
+	   //download it D save F.
+	   ob_end_clean();
+	   $this->ml_pdf->pdf->Output($filename,$action);
 
 	}
 
