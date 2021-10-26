@@ -30,13 +30,6 @@ public function makePdf($html,$filename,$action)
 	{	
 
 	 $this->load->library('ML_pdf');  //or i used ML_pdf for landscape
-<<<<<<< HEAD
-
-=======
-     
-     ob_clean();
-     
->>>>>>> origin/dev
 	 ini_set('max_execution_time',0);
 	 $PDFContent = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
 	 
@@ -45,13 +38,8 @@ public function makePdf($html,$filename,$action)
 	$this->ml_pdf->pdf->WriteHTML($PDFContent); 
 	 
 	//download it D save F.
-<<<<<<< HEAD
 	ob_clean();
 	flush();
-=======
-
-	ob_end_clean();
->>>>>>> origin/dev
 	$this->ml_pdf->pdf->Output($filename,$action);
 
 	}
