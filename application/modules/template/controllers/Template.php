@@ -41,7 +41,6 @@ public function makePdf($html,$filename,$action)
 	$this->ml_pdf->pdf->WriteHTML($PDFContent); 
 	 
 	//download it D save F.
-
 	ob_end_clean();
 	$this->ml_pdf->pdf->Output($filename,$action);
 
