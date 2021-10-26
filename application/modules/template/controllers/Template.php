@@ -30,9 +30,8 @@ public function makePdf($html,$filename,$action)
 	{	
 
 	 $this->load->library('ML_pdf');  //or i used ML_pdf for landscape
-     
+
      ob_clean();
-     
 	 ini_set('max_execution_time',0);
 	 $PDFContent = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
 	 

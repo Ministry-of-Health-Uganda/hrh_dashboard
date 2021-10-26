@@ -101,6 +101,7 @@
 	
 	<div class="form-group col-md-2">
 		<br>
+		<br>
 		<input  type="submit" class="btn btn-success" value="Apply Filter" />
 	</div>
 
