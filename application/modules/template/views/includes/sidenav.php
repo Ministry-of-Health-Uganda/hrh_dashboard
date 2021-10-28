@@ -150,14 +150,14 @@ body::-webkit-scrollbar-thumb
         
             </ul>
           </li>
-          <!-- <li class="nav-item">
-            <a href="<?php echo base_url()?>audit/showEstablishments" class="nav-link">
+          <li class="nav-item">
+            <a href="<?php echo base_url()?>dataprep/absenteesm" class="nav-link">
               <i class="fa fa-history dash-icon"></i>
               <p>
-                  Audit
+                  Absenteesm Report
               </p>
             </a>
-          </li> -->
+          </li>
 
            <li class="nav-item has-treeview ">
             <a href="#" class="nav-link">
@@ -188,39 +188,47 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="https://hris2.health.go.ug/reports/ahpc/registration.html"  target="_blank" class="nav-link">
+                <a href="<?php echo base_url(); ?>councils/allied"   class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Allied Health Professionals Council</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="https://hris2.health.go.ug/reports/umdpc/registration.html"  target="_blank" class="nav-link">
+                <a href="<?php echo base_url(); ?>councils/medical"   class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Medical & Dental Practitioners</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="https://hris2.health.go.ug/reports/unmc/registration.html"  target="_blank" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p class="nav-drop">Uganda Nurses and Midwives Council</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="https://hris2.health.go.ug/reports/pc/person_last_reg.html" target="_blank" class="nav-link">
+                <a href="<?php echo base_url(); ?>councils/pharmacy"   class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Pharmacy Society / Pharmacy Board</p>
                 </a>
               </li>
+              <!-- <li class="nav-item">
+                <a href="https://hris2.health.go.ug/reports/unmc/registration.html"  target="_blank" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p class="nav-drop">Uganda Nurses and Midwives Council</p>
+                </a>
+              </li> -->
+              <li class="nav-item">
+                <a href="<?php echo base_url(); ?>councils/pharma_society"  class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p class="nav-drop">License pharmaceutical Society</p>
+                </a>
+              </li>
             </ul>
           </li>
+
           <li class="nav-item">
-            <a href="https://hris2.health.go.ug/iHRIS/dev/chwr"  target="_blank" class="nav-link">
+            <a href="https://hris2.health.go.ug/iHRIS/dev/chwr"   class="nav-link">
               <i class="fa fa-h-square dash-icon"></i>
               <p>
                   CHW Registry
               </p>
             </a>
           </li>
+
           <li class="nav-item has-treeview ">
             <a href="#" class="nav-link">
               <i class="fas fa-graduation-cap dash-icon"></i>
@@ -248,12 +256,7 @@ body::-webkit-scrollbar-thumb
                   <p class="nav-drop">Uganda Nurses and Midwives Council</p>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="https://hris2.health.go.ug/pharmacy_society"  target="_blank" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p class="nav-drop">Pharmacy Society / Pharmacy Board</p>
-                </a>
-              </li>
+              
             </ul>
           </li>
       
