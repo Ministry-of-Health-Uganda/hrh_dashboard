@@ -30,6 +30,8 @@ class DataClient_model extends CI_Model {
 
             $staff = $this->getStaffData($row->ihris_pid);
 
+			if($staff):
+
             $entryId = $row->facility_id.$date->year.$date->month;
 
 			$rates = array(
@@ -44,9 +46,13 @@ class DataClient_model extends CI_Model {
 
 		    $this->trackRates($rates);
 
+		   endif;
+
 		endif;
 
 
+		if($staff):
+			
 		$off       = $row->O; //off duty
 		$present   = $row->P; //present
 		$leave     = $row->L; //Leave
@@ -60,9 +66,8 @@ class DataClient_model extends CI_Model {
 		//not worked
 		$daysNotAround =  $date->monthdays - $present;
 
-		$staff = $this->getStaffData($row->ihris_pid);
+		//$staff = $this->getStaffData($row->ihris_pid);
 
-		if($staff):
 
 			$attendRow = array(
 
@@ -76,7 +81,7 @@ class DataClient_model extends CI_Model {
 				"daysRequest"=>$requested,
 				"absolute_days_absent"=>$absent,
 				"days_not_at_facility"=>$daysNotAround,
-				//"person_id"=>$staff->person_id,
+				"person_id"=>$staff->person_id,
 				"cadre_name"=>$staff->cadre_name,
 				"job_name"=>$staff->job_name,
 				"salary_scale"=>$staff->salary_scale,
@@ -84,13 +89,14 @@ class DataClient_model extends CI_Model {
 				"region_name"=>$staff->region_name,
 				"facility_type_name"=>$staff->facility_type_name,
 				"facility_id"=>$staff->facility_id,
+				"district_id"=>$staff->district_id,
 				"facility_name"=>$staff->facility_name,
 				"institution_type"=>$staff->institution_type,
                 'entry_id'=> $entryId
 			);
 			
 			array_push($attendanceData,$attendRow);
-			$this->db->insert('staff_attendance_dr',$attendRow);
+			$this->db->replace('staff_attendance_dr',$attendRow);
 		endif;
 
 		endforeach;
@@ -237,91 +243,5 @@ class DataClient_model extends CI_Model {
 		$qry = $this->db->get('staff_attendance_dr');
 		return $qry->num_rows();
 	}
-
-
-    public function saveAttendanceSummary($data){
-
-        $attendanceData = array();
-        $finished = array(); //marks worked on facilities
- 
-        foreach($data as $row):
- 
-         $row = (Object) $row;
-         $date = $this->dateData($row->duty_date);
- 
-         $inFacility = array_filter($data,function($element) use($row) {
-             return $element['facility_id'] == $row->facility_id;
-         });
- 
-         if(!in_array($row->facility_id,$finished)):
-             array_push($finished,$row->facility_id);
- 
-             $totalStaffAttendance = count($inFacility);//has attendance
-             $totalAtFacility = $this->countFacilityStaff($row->facility_id);
- 
-             $staff   = $this->getStaffData($row->ihris_pid);
-             $entryId = $row->facility_id.$date->year.$date->month;
-
-			 
-			 if( isset($staff->district_id) ):
-				//array_sum(array_column($inFacility, 'P'))
-             $present = count( array_filter($inFacility,function($element){
-				return $element['P'] > 0; }));
-             $off     = count( array_filter($inFacility,function($element){
-				return $element['O'] > 0; }));
-             $leave   = count( array_filter($inFacility,function($element){
-				return $element['L'] > 0; }));
-             $officialRequest = count( array_filter($inFacility,function($element){
-				return $element['R'] > 0; }));
- 
-             $rates = array(
-                 'facility_id'=>$row->facility_id,
-                 'attendance_count'=>$totalStaffAttendance,
-                 'district_id'=>$staff->district_id,
-                 'district_name'=>$staff->district_name,
-                 'month'=>$date->month,
-                 'year'=>$date->year,
-                 'staff_count'=>$totalAtFacility,
-                 'entry_id'=> $entryId 
-                );
-
-                $attendance = array(
-                    "month"=>$date->month,
-                    "monthWords"=>$date->monthName,
-                    "year"=>$date->year,
-                    "district_name"=>$staff->district_name,
-                    "region_id"=>$staff->region_id,
-                    "region_name2"=>$staff->region_name,
-                    "facility_type_name"=>$staff->facility_type_name,
-                    "facility_id"=>$staff->facility_id,
-                    "district_id"=>$staff->district_id,
-                    "facility_name"=>$staff->facility_name,
-                    "institution_type"=>$staff->institution_type,
-                    'total'=>$totalAtFacility,
-                    'total_attendance'=>$totalStaffAttendance,
-                    'present'=>$present,
-                    'on_leave'=>$leave,
-                    'official_request'=>$officialRequest,
-                    'off_duty'=>$off,
-                    'entry_id'=> $entryId 
-                   );
-            
-            $this->db->where('entry_id',$entryId);
-            $this->db->replace('monthly_static_figures',$attendance);
-
-            $this->trackRates($rates);
-			endif;
-
-         endif;
-
-         $data = @array_diff_assoc($data, $inFacility);
- 
-         endforeach;
- 
-        return $attendanceData;
- 
-     }
-
-
 
 }

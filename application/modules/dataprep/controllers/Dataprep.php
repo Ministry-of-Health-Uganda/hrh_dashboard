@@ -14,11 +14,16 @@ class Dataprep extends MX_Controller {
 		$this->load->model('DataPrep_mdl','mdl');
 	}
 
+
+	//shares model with other modules
+	public function shareModel(){
+
+		$this->load->model('DataPrep_mdl');
+	}
 	//Fetches  remote data and fills the db
 	public function syncData(){
 
 		for($i=1;$i<3;$i++){
-
 			$this->getAttendanceData($i);
 			$this->getRosterData($i);
 		}

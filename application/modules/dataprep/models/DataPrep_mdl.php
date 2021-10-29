@@ -103,6 +103,7 @@ class DataPrep_mdl extends CI_Model {
 				"region_name"=>$staff->region_name,
 				"facility_type_name"=>$staff->facility_type_name,
 				"facility_id"=>$staff->facility_id,
+				"district_id"=>$staff->district_id,
 				"facility_name"=>$staff->facility_name,
 				"institution_type"=>$staff->institution_type
 			);
@@ -349,12 +350,13 @@ class DataPrep_mdl extends CI_Model {
 				m.institution_type,
 				m.monthWords,
 				m.year,
-				sum(m.total) as staff_count,
-				sum(m.present)  as present,
-				sum(m.on_leave) as on_leave,
-				sum(m.off_duty) as off_duty,
-				sum(m.official_request) as official
-		        FROM monthly_static_figures m
+				sum(m.days_tracked) as days_tracked,
+				sum(m.daysPresent)  as daysPresent,
+				sum(m.daysOnLeave)  as daysOnLeave,
+				sum(m.daysOffDuty)  as daysOffDuty,
+				sum(m.daysRequest) as daysRequest,
+				sum(m.absolute_days_absent) as absolute_days_absent
+		        FROM staff_attendance_dr m
 		        '.$condition." group by m.".$grouping;
 
 		$qry = $this->db->query($sql);
