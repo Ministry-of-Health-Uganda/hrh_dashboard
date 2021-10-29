@@ -41,7 +41,6 @@ app.service('httpService', function ($http, constants) {
 //Dashbaord Controller
 app.controller('DashboardCtrl', function ($scope, $rootScope, $timeout, $interval, httpService, constants) {
 
-
   $scope.staff = 0;
 
   $scope.test = function () {
@@ -59,7 +58,7 @@ app.controller('DashboardCtrl', function ($scope, $rootScope, $timeout, $interva
       $scope.attendanceChart(attendanceData);
 
     }, (error) => {
-      console.g('error')
+      console.log('error')
     });
   }
 

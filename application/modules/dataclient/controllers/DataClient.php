@@ -22,7 +22,7 @@ class DataClient extends MX_Controller {
 		$url  = self::BASE_URL[3]."$endpoint";
 		$data = $this->sendRequest($url);
 		
-        $result  = $this->mdl->saveAttendanceSummary($data);
+        $result  = $this->mdl->saveAttendance($data);
 		$res     = $this->prettyJSON($result);
 
         echo $res;
