@@ -27,7 +27,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/Ministry-of-Health-Uganda/hrh_dashboard">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="assets/logo_git.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">MoH HRH Dashboard</h3>
@@ -79,9 +79,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email`, `email_client`, `project_title`, `project_description`
+[![Product Name Screen Shot][product-screenshot]](https://hris.health.go.ug)
+Welcome to our project. Feel free to request to contribute.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -136,8 +135,6 @@ This product is used to summarise statistics from different systems used by the 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
 <!-- LICENSE -->
 ## License
 
@@ -164,7 +161,7 @@ Project Link: [https://github.com/Ministry-of-Health-Uganda/hrh_dashboard](https
 * [](Nkuke Henry)
 * [](Wadembere Ismail)
 * [](Kibiye Denis)
-* [](CodeIgniter3)
+
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -184,5 +181,5 @@ Project Link: [https://github.com/Ministry-of-Health-Uganda/hrh_dashboard](https
 [license-shield]: https://img.shields.io/github/license/Ministry-of-Health-Uganda/hrh_dashboard.svg?style=for-the-badge
 [license-url]: https://github.com/Ministry-of-Health-Uganda/hrh_dashboard/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
+[linkedin-url]: https://linkedin.com/agaba-andrew-44540bb9/
+[product-screenshot]: assets/screenshot.png
