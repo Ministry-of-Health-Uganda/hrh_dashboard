@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Backup extends MX_Controller {
+class Backups extends MX_Controller {
 	
 	
 	public function __Construct(){
@@ -24,7 +24,7 @@ private function dbcon(){
     }
 return $dbConn;
 }
-private function dbbackup(){
+private function db_backup(){
     $dbs = $this->dbcon->query("SELECT schema_name FROM schemata where schema_name NOT IN ( '" . implode( "','", $this->ignore_list ) . "' )" );
     $backups = array();
     while( $data = $dbs->fetch_assoc() ) {
