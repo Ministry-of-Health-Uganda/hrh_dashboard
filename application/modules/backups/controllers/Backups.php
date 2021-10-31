@@ -51,7 +51,7 @@ foreach( $backups as $backup_db ) {
     //mysqli_free_result( $result );
     $result->free();
     echo "Backing up $backup_db...\n";
-    exec( "mysqldump -u $this->db_user -h $this->host --password=$this->db_pass $backup_db  " . implode( " ", $tables ) . "| bzip2 > $use_dir/backup_${backup_db}_$suffix.sql.bz2" );
+    exec( "mysqldump -u $this->db_user -h $this->host --password=$this->db_pass $backup_db  " . implode( " ", $tables ) . "| bzip2 > $use_dir/backup_${backup_db}_$this->suffix.sql.bz2" );
     //exec( "bzip2 $use_dir/backup_${backup_db}_$this->suffix.sql" );
 }
 
