@@ -1,6 +1,12 @@
 <?php
    require_once 'includes/audit_report_filter.php';
 ?>
+<style>
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: right;
+    display:none;
+}
+</style>
 
 <hr/>
 <br />
