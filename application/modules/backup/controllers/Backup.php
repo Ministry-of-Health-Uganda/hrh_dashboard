@@ -24,9 +24,6 @@ private function dbcon(){
     }
 return $dbConn;
 }
-private function errorconn(){
-
-}
 private function dbbackup(){
     $dbs = $this->dbcon->query("SELECT schema_name FROM schemata where schema_name NOT IN ( '" . implode( "','", $this->ignore_list ) . "' )" );
     $backups = array();
