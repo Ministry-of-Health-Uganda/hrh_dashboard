@@ -3,12 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Dataprep extends MX_Controller {
 	
-	const BASE_URL = [
-		1 => "https://hris2.health.go.ug/attendance/api/", 
-		2 => "https://attend.health.go.ug/api/data/"
-	];
-
-	
 	public function __Construct(){
 		parent::__Construct();
 		$this->load->model('DataPrep_mdl','mdl');
@@ -20,16 +14,6 @@ class Dataprep extends MX_Controller {
 
 		$this->load->model('DataPrep_mdl');
 	}
-	//Fetches  remote data and fills the db
-	public function syncData(){
-
-		for($i=1;$i<3;$i++){
-			$this->getAttendanceData($i);
-			$this->getRosterData($i);
-		}
-		Modules::run('dataclient/getFacilityAttendance');
-	}
-
 
 	//fetch roster data
 	public function getRoster(){
@@ -75,31 +59,6 @@ class Dataprep extends MX_Controller {
 		return $res;
 	}
 
-	
-
-	//Fetches roster data using the above baseurl, calls SendRequest
-	public function getRosterData($opt=1){
-
-		$endpoint ='person_roster/2021-09-01/2021-09-30';
-		$url = self::BASE_URL[$opt]."$endpoint";
-
-		$data = $this->sendRequest($url);
-		$result = $this->mdl->saveRoster($data);
-		$res = $this->prettyJSON($result);
-		return true;
-	}
-
-	//Fetches attendance data using the above baseurl, calls SendRequest
-	public function getAttendanceData($opt=2){
-
-
-		$endpoint ='person_attend/2021-05-01/2021-09-30';
-		$url  = self::BASE_URL[$opt]."$endpoint";
-		$data = $this->sendRequest($url);
-		$result  = $this->mdl->saveAttendance($data);
-		$res  = $this->prettyJSON($result);
-		return true;
-	}
 
 	private function cardreReport(){
 
@@ -115,6 +74,7 @@ class Dataprep extends MX_Controller {
 
 		return  array("labels"=>'',"values"=>$data);
 	}
+
 
 	public function genderReport(){
 
@@ -134,6 +94,7 @@ class Dataprep extends MX_Controller {
 
 		return $genderdata;
 	}
+
 
 	public function ageRanges(){
 
@@ -159,6 +120,7 @@ class Dataprep extends MX_Controller {
 		echo  $res ;
 	}
 
+
 	public function rates(){
 		
 		$search = (Object) $this->input->post();
@@ -179,6 +141,7 @@ class Dataprep extends MX_Controller {
 
 		echo Modules::run('template/layout',$data);
 	}
+
 
 	//attendance analysis
 	public function absenteesm(){
@@ -202,24 +165,9 @@ class Dataprep extends MX_Controller {
 		echo Modules::run('template/layout',$data);
 	}
 
-	
-	//Sends out requests
-	public  function  sendRequest($url){
-
-		$ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,$url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $output = curl_exec($ch);
-        curl_close($ch);
-
-		return json_decode($output,true);
-	}
-
 	//pretty JSON
 	private function prettyJSON($data){
-
 		return json_encode($data);
-		
 	}
 
 

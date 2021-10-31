@@ -7,7 +7,6 @@ class DataClient_model extends CI_Model {
 		parent::__Construct();
 	}
 
-
 	public function saveAttendance($data){
 
 	   $attendanceData = array();

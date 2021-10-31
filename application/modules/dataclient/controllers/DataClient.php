@@ -8,11 +8,53 @@ class DataClient extends MX_Controller {
 		2 => "https://attend.health.go.ug/api/data/",
         3 => "https://hris.health.go.ug/apiv1/api/" 
 	];
-
 	
 	public function __Construct(){
 		parent::__Construct();
         $this->load->model('dataclient_model','mdl');
+	}
+
+	
+	public function sysncData(){
+
+		$this->getAttendanceData();
+		$this->getRosterData();
+		$this->getFacilityAttendance();
+
+	}
+	
+
+	//Fetches roster data using the above baseurl, calls SendRequest
+	public function getRosterData($opt=1){
+
+		$endpoint ='person_roster/2021-09-01/2021-09-30';
+		$url = self::BASE_URL[$opt]."$endpoint";
+
+		$data   = $this->sendRequest($url);
+		$result = $this->mdl->saveRoster($data);
+		$res    = $this->prettyJSON($result);
+
+		if($opt ==1):
+			 $this->getRosterData(2);
+		endif;
+
+		return true;
+	}
+
+	//Fetches attendance data using the above baseurl, calls SendRequest
+	public function getAttendanceData($opt=1){
+
+		$endpoint ='person_attend/2021-05-01/2021-09-30';
+		$url  = self::BASE_URL[$opt]."$endpoint";
+		$data = $this->sendRequest($url);
+		$result  = $this->mdl->saveAttendance($data);
+		$res  = $this->prettyJSON($result);
+
+		if($opt ==1):
+			$this->getAttendanceData(2);
+	    endif;
+	   
+		return true;
 	}
 
     //Fetches attendance data to update
@@ -24,9 +66,7 @@ class DataClient extends MX_Controller {
 		
         $result  = $this->mdl->saveAttendance($data);
 		$res     = $this->prettyJSON($result);
-
         echo $res;
-		//print_r($data);
 	}
 
 
