@@ -62,10 +62,10 @@
 			<option value="">All</option>
 			<?php foreach($filters->facilities as $facility):
 
-				$selected = ($search->facility == $facility->facility)?'selected':'';
+				$selected = ($search->facility == str_replace("'","",$facility->facility))?'selected':'';
 			 ?>
 				<option <?php echo $selected ?> 
-				   value="<?php echo $facility->facility; ?>">
+				   value="<?php echo str_replace("'","",$facility->facility); ?>">
 
 				       <?php echo $facility->facility; ?>
 				   	
