@@ -194,9 +194,7 @@ input[type=submit], p.field span.i {
                                 <label class="control-label" for="password"><?php echo display('password') ?></label>
                                 <input type="password"  placeholder="<?php echo display('password') ?>" name="password" id="password" class="form-control"> 
                             </div>
-                          
-
-                   
+                        
                             <div style="margin-top:10px !important;"> 
                                  
                                 <button  type="submit" class="btn btn-success" style="width:100%; margin-bottom:7px; border-radius:4px;"><?php echo display('login') ?></button> 

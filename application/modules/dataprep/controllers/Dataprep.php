@@ -14,19 +14,22 @@ class Dataprep extends MX_Controller {
 		$this->load->model('DataPrep_mdl','mdl');
 	}
 
+
+	//shares model with other modules
+	public function shareModel(){
+
+		$this->load->model('DataPrep_mdl');
+	}
 	//Fetches  remote data and fills the db
 	public function syncData(){
 
 		for($i=1;$i<3;$i++){
-
 			$this->getAttendanceData($i);
 			$this->getRosterData($i);
 		}
+		Modules::run('dataclient/getFacilityAttendance');
 	}
 
-	public function getStaff(){
-		return $data;
-	}
 
 	//fetch roster data
 	public function getRoster(){
@@ -71,6 +74,8 @@ class Dataprep extends MX_Controller {
 
 		return $res;
 	}
+
+	
 
 	//Fetches roster data using the above baseurl, calls SendRequest
 	public function getRosterData($opt=1){
@@ -167,6 +172,28 @@ class Dataprep extends MX_Controller {
 		$data['data']     = $rows;
 		$data['filters']  = $this->mdl->getFilters();
 		$data['page']     = 'reporting_rate';
+		$data['module']   = 'dataprep';
+		$data['title']	  = 'Hello';
+		$data['aggTitle'] = $this->mdl->getAggregateLabel(@$search->grouping);
+		$data['aggColumn'] = (!empty($search->grouping))?str_replace('id', 'name',$search->grouping):'facility_name';
+
+		echo Modules::run('template/layout',$data);
+	}
+
+	//attendance analysis
+	public function absenteesm(){
+		
+		$search = (Object) $this->input->post();
+
+		$rows = [];
+		if($this->input->post()):
+		  $rows =  $this->mdl->getAttendanceAnalysis();
+		endif;
+
+		$data['search']   = $search;
+		$data['data']     = $rows;
+		$data['filters']  = $this->mdl->getFilters();
+		$data['page']     = 'attendance_analysis';
 		$data['module']   = 'dataprep';
 		$data['title']	  = 'Hello';
 		$data['aggTitle'] = $this->mdl->getAggregateLabel(@$search->grouping);

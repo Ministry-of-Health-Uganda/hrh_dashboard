@@ -9,14 +9,13 @@ class Audit extends MX_Controller {
 		parent::__Construct();
 
 		$this->load->model('Audit_mdl','auditMdl');
-		$this->load->model('dataprep/DataPrep_mdl','prep_mdl');
-		
 		$this->watermark=FCPATH."assets/watermark.png";
 	}
 
 
 	public function auditReport(){
 
+		Modules::run('dataprep/shareModel'); //model sharing handle 
 
 		$search = (Object) $this->input->post();
       
@@ -30,7 +29,7 @@ class Audit extends MX_Controller {
 		$data['aggColumn']  = (!empty($search->aggregate))?$search->aggregate:"job_name";
 
 		$data['legend']	= $this->auditMdl->auditReportLegend($search);
-		$data['filters']= $this->prep_mdl->getFilters(true);
+		$data['filters']= $this->DataPrep_mdl->getFilters(true);
 		$data['audit']  = $this->auditMdl->getAuditReport();
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
