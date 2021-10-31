@@ -107,3 +107,9 @@
 
 	
 </form>
+<style>
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: right;
+    display:none;
+}
+</style>
