@@ -41,7 +41,7 @@ foreach( $backups as $backup_db ) {
     if ( !is_dir( $use_dir ) ) {
     mkdir( $use_dir );
     }       
-    $result = $this->dbcon->query("SELECT table_name FROM tables WHERE table_schema = '$this->backup_db' AND table_name not like 'hippo_%' AND table_name not like 'zebra_%'" ) ;
+    $result = $this->dbcon()->query("SELECT table_name FROM tables WHERE table_schema = '$this->backup_db' AND table_name not like 'hippo_%' AND table_name not like 'zebra_%'" ) ;
     $tables = array();
     // print_r($tables);}
     while ( $data = $result->fetch_assoc()) {
