@@ -271,7 +271,7 @@ class DataPrep_mdl extends CI_Model {
 		$search = array(
 			'facility_id' => $search_input->facility,
 			'district_id' => $search_input->district,
-			'region_id'   => $search_input->region,
+			'region_name'   => $search_input->region_name,
 			'institution_type' => $search_input->institution,
 		);
 

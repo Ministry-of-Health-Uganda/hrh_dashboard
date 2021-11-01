@@ -35,10 +35,10 @@
 			<option value="">All</option>
 			<?php foreach($filters->regions as $region):
 
-				$selected = (isset($search->region ) && $search->region == $region->region_id)?'selected':'';
+				$selected = (isset($search->region_name ) && $search->region == $region->region_name)?'selected':'';
 			 ?>
 			   <option <?php echo $selected ?> 
-				value="<?php echo $region->region_id; ?>">
+				value="<?php echo $region->region_name; ?>">
 
 				<?php echo $region->region_name; ?>
 					
