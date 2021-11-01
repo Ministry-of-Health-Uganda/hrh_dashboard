@@ -189,7 +189,7 @@ class Dataclient_model extends CI_Model {
 							"off_duty"=>$off,
 							"on_leave"=>$annualleave,
 							"official_request"=>$request,
-							"entry_id"=>$staff->facility_id.$date->year.$date->month
+							"entry_id"=>$row->facility_id.$date->year.$date->month
 						);
 
 						array_push($rosterData,$attendRow);
