@@ -62,7 +62,8 @@ class Audit_mdl extends CI_Model {
 
 		if(!empty($search->facility)){
 			//facility
-			$this->db->where('facility_name',$search->facility);
+			$facility = str_replace("'","",$search->facility);
+			$this->db->where('facility_name',$facility);
 		}
 
 		if(!empty($search->region)){
