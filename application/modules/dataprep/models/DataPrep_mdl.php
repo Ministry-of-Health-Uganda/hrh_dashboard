@@ -315,7 +315,7 @@ class DataPrep_mdl extends CI_Model {
 	public function getReportingRates(){
 
 		$search_input = (Object) $this->input->post();
-		$condition 	  =""; // $this->getCondition($search_input);
+		$condition 	  =""; // $this->getCondition($search_input); Timeline
 
 		$grouping = (!empty($search_input->grouping))?$search_input->grouping:'facility_id';
 
