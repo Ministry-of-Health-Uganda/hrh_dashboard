@@ -169,6 +169,7 @@ class Dataclient_model extends CI_Model {
 				if($staff):
 
 						$attendRow = array(
+							
 			
 							"month"=>$date->month,
 							"monthWords"=>$date->monthName,
