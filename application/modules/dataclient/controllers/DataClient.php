@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class DataClient extends MX_Controller {
+class Dataclient extends MX_Controller {
 	
 	const BASE_URL = [
 		1 => "https://hris2.health.go.ug/attendance/api/", 
