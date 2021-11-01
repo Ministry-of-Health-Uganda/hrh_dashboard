@@ -72,7 +72,7 @@ class Dataclient_model extends CI_Model {
 
 
 			$attendRow = array(
-
+				'entry_id'=> $entryId,
 				"month"=>$date->month,
 				"monthWords"=>$date->monthName,
 				"days_tracked"=>$daysAttributed,
@@ -93,8 +93,8 @@ class Dataclient_model extends CI_Model {
 				"facility_id"=>$staff->facility_id,
 				"district_id"=>$staff->district_id,
 				"facility_name"=>$staff->facility_name,
-				"institution_type"=>$staff->institution_type,
-                'entry_id'=> $entryId
+				"institution_type"=>$staff->institution_type
+                
 			);
 			
 			array_push($attendanceData,$attendRow);
