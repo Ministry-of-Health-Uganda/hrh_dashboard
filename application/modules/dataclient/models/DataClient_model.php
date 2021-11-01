@@ -6,6 +6,9 @@ class DataClient_model extends CI_Model {
 	public function __Construct(){
 		parent::__Construct();
 	}
+	public function index(){
+		echo "Created";
+	}
 
 	public function saveAttendance($data){
 

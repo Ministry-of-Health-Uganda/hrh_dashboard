@@ -14,7 +14,7 @@ class Dataclient extends MX_Controller {
         $this->load->model('dataclient_model','mdl');
 	}
     public function index(){
-		echo "I am Here";
+		echo "I am Here Dont Joke";
 	}
 	
 	public function syncData(){
