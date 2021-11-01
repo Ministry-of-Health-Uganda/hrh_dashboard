@@ -1,10 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class DataClient_model extends CI_Model {
+class Dataclient_model extends CI_Model {
 
 	public function __Construct(){
 		parent::__Construct();
+	}
+	public function index(){
+		echo "Created";
 	}
 
 	public function saveAttendance($data){
@@ -69,7 +72,7 @@ class DataClient_model extends CI_Model {
 
 
 			$attendRow = array(
-
+				'entry_id'=> $entryId,
 				"month"=>$date->month,
 				"monthWords"=>$date->monthName,
 				"days_tracked"=>$daysAttributed,
@@ -90,8 +93,8 @@ class DataClient_model extends CI_Model {
 				"facility_id"=>$staff->facility_id,
 				"district_id"=>$staff->district_id,
 				"facility_name"=>$staff->facility_name,
-				"institution_type"=>$staff->institution_type,
-                'entry_id'=> $entryId
+				"institution_type"=>$staff->institution_type
+                
 			);
 			
 			array_push($attendanceData,$attendRow);
@@ -166,7 +169,8 @@ class DataClient_model extends CI_Model {
 				if($staff):
 
 						$attendRow = array(
-			
+							
+			                
 							"month"=>$date->month,
 							"monthWords"=>$date->monthName,
 							"year"=>$date->year,

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class DataClient extends MX_Controller {
+class Dataclient extends MX_Controller {
 	
 	const BASE_URL = [
 		1 => "https://hris2.health.go.ug/attendance/api/", 
@@ -13,9 +13,11 @@ class DataClient extends MX_Controller {
 		parent::__Construct();
         $this->load->model('dataclient_model','mdl');
 	}
-
+    public function index(){
+		echo "I am Here Dont Joke";
+	}
 	
-	public function sysncData(){
+	public function syncData(){
 
 		$this->getAttendanceData();
 		$this->getRosterData();
@@ -27,7 +29,7 @@ class DataClient extends MX_Controller {
 	//Fetches roster data using the above baseurl, calls SendRequest
 	public function getRosterData($opt=1){
 
-		$endpoint ='person_roster/2021-09-01/2021-09-30';
+		$endpoint ='person_roster/2021-01-01/2021-04-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
 
 		$data   = $this->sendRequest($url);
@@ -44,7 +46,7 @@ class DataClient extends MX_Controller {
 	//Fetches attendance data using the above baseurl, calls SendRequest
 	public function getAttendanceData($opt=1){
 
-		$endpoint ='person_attend/2021-05-01/2021-09-30';
+		$endpoint ='person_attend/2021-01-01/2021-04-31';
 		$url  = self::BASE_URL[$opt]."$endpoint";
 		$data = $this->sendRequest($url);
 		$result  = $this->mdl->saveAttendance($data);
@@ -60,7 +62,7 @@ class DataClient extends MX_Controller {
     //Fetches attendance data to update
 	public function getFacilityAttendance(){
 
-		$endpoint ='person_attend/2021-08-01/2021-08-01';
+		$endpoint ='person_attend/2021-01-01/2021-04-31';
 		$url  = self::BASE_URL[3]."$endpoint";
 		$data = $this->sendRequest($url);
 		
