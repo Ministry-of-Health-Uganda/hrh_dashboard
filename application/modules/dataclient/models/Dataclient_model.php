@@ -55,10 +55,10 @@ class Dataclient_model extends CI_Model {
 
 		if($staff):
 			
-		$off       = $row->O; //off duty
-		$present   = $row->P; //present
-		$leave     = $row->L; //Leave
-		$requested = $row->R; //Official Request
+		$off       = ($row->O)?$row->O:0; //off duty
+		$present   = ($row->P)?$row->P:0; //present
+		$leave     = ($row->L)?$row->L:0; //Leave
+		$requested = ($row->R)?$row->R:0; //Official Request
 		$holiday   = (isset($row->H))?$row->H:0; //Holidays
 
 		//considered on roster whatsoever
@@ -94,7 +94,6 @@ class Dataclient_model extends CI_Model {
 				"district_id"=>$staff->district_id,
 				"facility_name"=>$staff->facility_name,
 				"institution_type"=>$staff->institution_type
-                
 			);
 			
 			array_push($attendanceData,$attendRow);
@@ -188,8 +187,8 @@ class Dataclient_model extends CI_Model {
 							"present"=>$present,
 							"off_duty"=>$off,
 							"on_leave"=>$annualleave,
-							"official_request"=>$request,
-							"entry_id"=>$row->facility_id.$date->year.$date->month
+							"official_request"=>$request
+							//"entry_id"=>$row->facility_id.$date->year.$date->month
 						);
 
 						array_push($rosterData,$attendRow);
