@@ -15,7 +15,7 @@ class Dataclient extends MX_Controller {
 	}
 
 	
-	public function sysncData(){
+	public function syncData(){
 
 		$this->getAttendanceData();
 		$this->getRosterData();
