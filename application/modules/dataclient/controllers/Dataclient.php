@@ -29,7 +29,7 @@ class Dataclient extends MX_Controller {
 	//Fetches roster data using the above baseurl, calls SendRequest
 	public function getRosterData($opt=1){
 
-		$endpoint ='person_roster/2021-05-01/2021-09-31';
+		$endpoint ='person_roster/2021-01-01/2021-09-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
 
 		$data   = $this->sendRequest($url);
@@ -46,7 +46,7 @@ class Dataclient extends MX_Controller {
 	//Fetches attendance data using the above baseurl, calls SendRequest
 	public function getAttendanceData($opt=1){
 
-		$endpoint ='person_attend/2021-05-01/2021-09-31';
+		$endpoint ='person_attend/2021-01-01/2021-09-31';
 		$url  = self::BASE_URL[$opt]."$endpoint";
 		$data = $this->sendRequest($url);
 		$result  = $this->mdl->saveAttendance($data);
@@ -62,7 +62,7 @@ class Dataclient extends MX_Controller {
     //Fetches attendance data to update
 	public function getFacilityAttendance(){
 
-		$endpoint ='person_attend/2021-05-01/2021-09-31';
+		$endpoint ='person_attend/2021-01-01/2021-09-31';
 		$url  = self::BASE_URL[3]."$endpoint";
 		$data = $this->sendRequest($url);
 		
