@@ -170,7 +170,7 @@ class Dataclient_model extends CI_Model {
 
 						$attendRow = array(
 							
-			
+			                
 							"month"=>$date->month,
 							"monthWords"=>$date->monthName,
 							"year"=>$date->year,
