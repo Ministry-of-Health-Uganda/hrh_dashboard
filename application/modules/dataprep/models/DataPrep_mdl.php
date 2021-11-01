@@ -271,7 +271,7 @@ class DataPrep_mdl extends CI_Model {
 		$search = array(
 			'facility_id' => $search_input->facility,
 			'district_id' => $search_input->district,
-			'region_name'   => $search_input->region_name,
+			'region_name'   => $search_input->region,
 			'institution_type' => $search_input->institution,
 		);
 
@@ -315,7 +315,7 @@ class DataPrep_mdl extends CI_Model {
 	public function getReportingRates(){
 
 		$search_input = (Object) $this->input->post();
-		$condition 	  =""; // $this->getCondition($search_input); Timeline
+		$condition 	  =""; // $this->getCondition($search_input);
 
 		$grouping = (!empty($search_input->grouping))?$search_input->grouping:'facility_id';
 

@@ -35,12 +35,12 @@
 			<option value="">All</option>
 			<?php foreach($filters->regions as $region):
 
-				$selected = (isset($search->region_name ) && $search->region == $region->region_name)?'selected':'';
+				$selected = (isset($search->region ) && $search->region == $region->region)?'selected':'';
 			 ?>
 			   <option <?php echo $selected ?> 
-				value="<?php echo $region->region_name; ?>">
+				value="<?php echo $region->region_id; ?>">
 
-				<?php echo $region->region_name; ?>
+				<?php echo $region->region; ?>
 					
 				</option>
 			<?php endforeach; ?>
@@ -107,9 +107,3 @@
 
 	
 </form>
-<style>
-div.dataTables_wrapper div.dataTables_filter {
-    text-align: right;
-    display:none;
-}
-</style>
