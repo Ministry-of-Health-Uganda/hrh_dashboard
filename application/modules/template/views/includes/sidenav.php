@@ -121,7 +121,7 @@ body::-webkit-scrollbar-thumb
        
 
 
-
+    <?php if(!empty($this->session->userdata('fullname'))){ ?>
          <li class="nav-item">
             <a href="<?php echo base_url()?>performance" class="nav-link">
               <i class="fas fa-database dash-icon"></i>
@@ -177,6 +177,7 @@ body::-webkit-scrollbar-thumb
         
             </ul>
           </li>
+        <?php }?>
 
           <li class="nav-item has-treeview ">
             <a href="#" class="nav-link">
