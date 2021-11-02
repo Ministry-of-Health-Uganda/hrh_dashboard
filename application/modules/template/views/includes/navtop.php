@@ -42,7 +42,7 @@
         </a> 
       </li>
       <li class="nav-item" style="margin-right:2px;">
-         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="<?php echo base_url()?>assessment/addSupport">
+         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="<?php echo base_url()?>assessment/">
          <i class="fa fa-phone"></i><b class="hidden-mobile"> Support</b>
         </a> 
       </li>
