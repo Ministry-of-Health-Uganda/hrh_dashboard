@@ -37,8 +37,8 @@
         </a> 
       </li>
       <li class="nav-item" style="margin-right:2px;">
-         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="https://hris2.health.go.ug/attendance">
-         <i class="fas fa-clock"></i><b class="hidden-mobile"> Duty Roster</b>
+         <a class="nav-link btn btn-sm btn-default"  target="_blank" href="https://attend.health.go.ug/">
+         <i class="fas fa-clock"></i><b class="hidden-mobile"> HRM Attend</b>
         </a> 
       </li>
       <li class="nav-item" style="margin-right:2px;">
