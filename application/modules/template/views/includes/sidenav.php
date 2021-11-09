@@ -294,13 +294,13 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="http://ucmb.co.ug/ucmb_manage"  target="_blank" class="nav-link">
+                <a href="http://41.173.3.36/ucmb_manage/login"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Catholic Med. Bureau</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="http://upmb.co.ug:8080/upmb"  target="_blank" class="nav-link">
+                <a href="http://hris.upmb.co.ug:8080/upmb"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Protestant Med. Bureau</p>
                 </a>
