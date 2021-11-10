@@ -34,7 +34,7 @@ class Dataclient_model extends CI_Model {
 
 			if($staff):
 
-            $entryId = $row->facility_id.$date->year.$date->month;
+            $entryId = $row->facility_id.$date->year.intval($date->month);
 
 			$rates = array(
 				'facility_id'=>$row->facility_id,
@@ -131,7 +131,7 @@ class Dataclient_model extends CI_Model {
 
 
 				$staff   = $this->getStaffData($row->ihris_pid);
-                $entryId = $row->facility_id.$date->year.$date->month;
+                $entryId = $row->facility_id.$date->year.intval($date->month);
 				
 				$rates = array(
 					'facility_id'=>$row->facility_id,
@@ -185,7 +185,7 @@ class Dataclient_model extends CI_Model {
 							"off_duty"=>$off,
 							"on_leave"=>$annualleave,
 							"official_request"=>$request,
-							"entry_id"=>$row->facility_id.$date->year.$date->month
+							"entry_id"=>$row->facility_id.$date->year.intval($date->month)
 						);
 
 						array_push($rosterData,$attendRow);
