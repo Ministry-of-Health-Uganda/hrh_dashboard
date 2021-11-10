@@ -74,7 +74,7 @@ class Dataclient extends MX_Controller {
 	}
 	public function HRMAttendance($opt=2){
 
-		$endpoint ='person_attend/2021-02-01/2021-02-01';
+		$endpoint ='person_attend/2021-03-01/2021-03-01';
 		$url  = self::BASE_URL[$opt]."$endpoint";
 		$data = $this->sendRequest($url);
 		$result  = $this->mdl->saveAttendance($data);
