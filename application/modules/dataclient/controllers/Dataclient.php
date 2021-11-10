@@ -64,7 +64,7 @@ class Dataclient extends MX_Controller {
 	//Fetches attendance from District Duty Roster
 	public function RosterAttendance($opt=1){
 
-		$endpoint ='person_attend/2021-01-01/2021-05-31';
+		$endpoint ='person_attend/2021-06-01/2021-10-31';
 		$url  = self::BASE_URL[$opt]."$endpoint";
 		$data = $this->sendRequest($url);
 		$result  = $this->mdl->saveAttendance($data);
