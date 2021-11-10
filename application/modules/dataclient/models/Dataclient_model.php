@@ -98,6 +98,7 @@ class Dataclient_model extends CI_Model {
 			
 			array_push($attendanceData,$attendRow);
 			$this->db->replace('staff_attendance_dr',$attendRow);
+			
 		endif;
 
 		endforeach;
