@@ -91,7 +91,7 @@ class Dataclient extends MX_Controller {
     //Fetches attendance data from iHRIS Manage to update
 	public function iHRISAttendance(){
 
-		$endpoint ='person_attend/2021-01-01/2021-05-31';
+		$endpoint ='person_attend/2021-06-01/2021-10-30';
 		$url  = self::BASE_URL[3]."$endpoint";
 		$data = $this->sendRequest($url);
 		
