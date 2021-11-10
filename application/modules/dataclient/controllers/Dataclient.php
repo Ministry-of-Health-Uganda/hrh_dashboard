@@ -32,7 +32,7 @@ class Dataclient extends MX_Controller {
 	//Fetches roster data using the above baseurl, calls SendRequest
 	public function getRosterDistrict($opt=1){
 
-		$endpoint ='person_roster/2021-01-01/2021-05-31';
+		$endpoint ='person_roster/2021-06-01/2021-10-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
 
 		$data   = $this->sendRequest($url);
@@ -47,7 +47,7 @@ class Dataclient extends MX_Controller {
 	}
 	public function getRosterHRM($opt){
 
-		$endpoint ='person_roster/2021-01-01/2021-05-31';
+		$endpoint ='person_roster/2021-06-01/2021-10-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
 
 		$data   = $this->sendRequest($url);
