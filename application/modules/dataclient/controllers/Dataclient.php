@@ -70,7 +70,7 @@ class Dataclient extends MX_Controller {
 		$result  = $this->mdl->saveAttendance($data);
 		$res  = $this->prettyJSON($result);
 	   
-		print_r($result);
+		print_r(count($result));
 	}
 	public function HRMAttendance($opt=2){
 
@@ -84,7 +84,7 @@ class Dataclient extends MX_Controller {
 		// 	$this->getAttendanceData(2);
 	    // endif;
 	   
-		//print_r($result);
+		print_r(count($result));
 	}
 
 
