@@ -184,7 +184,7 @@ class Dataclient_model extends CI_Model {
 							"present"=>$present,
 							"off_duty"=>$off,
 							"on_leave"=>$annualleave,
-							"official_request"=>$request
+							"official_request"=>$request,
 							"entry_id"=>$row->facility_id.$date->year.$date->month
 						);
 
