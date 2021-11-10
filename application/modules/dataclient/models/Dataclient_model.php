@@ -201,8 +201,9 @@ class Dataclient_model extends CI_Model {
 	}
 
     public function trackRates($data){
-		$this->db->where("entry_id","$data['entry_id']");
-		$this->db->update("attendance_rate",$data);
+		$id=$data['entry_id'];
+		$this->db->where('entry_id',"$id");
+		$this->db->update('attendance_rate',$data);
 	}
 
 	private function dateData($date){
