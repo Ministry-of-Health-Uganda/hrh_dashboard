@@ -45,21 +45,7 @@ class Dataclient extends MX_Controller {
 
 		print_r($result);
 	}
-	public function getRosterHRM($opt=2){
-
-		$endpoint ='person_roster/2021-01-01/2021-09-31';
-		$url = self::BASE_URL[$opt]."$endpoint";
-
-		$data   = $this->sendRequest($url);
-		$result = $this->mdl->saveRoster($data);
-		$res    = $this->prettyJSON($result);
-
-		// if($opt ==1):
-		// 	 $this->getRosterData(2);
-		// endif;
-
-		print_r($result);
-	}
+	
 
 	//Fetches attendance from District Duty Roster
 	public function RosterAttendance($opt=1){
