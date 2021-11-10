@@ -43,7 +43,7 @@ class Dataclient extends MX_Controller {
 			 $this->getRosterData(2);
 		endif;
 
-		echo $result;
+		print_r($result);
 	}
 	public function getRosterHRM($opt=2){
 
@@ -58,7 +58,7 @@ class Dataclient extends MX_Controller {
 		// 	 $this->getRosterData(2);
 		// endif;
 
-		echo $result;
+		print_r($result);
 	}
 
 	//Fetches attendance from District Duty Roster
@@ -70,7 +70,7 @@ class Dataclient extends MX_Controller {
 		$result  = $this->mdl->saveAttendance($data);
 		$res  = $this->prettyJSON($result);
 	   
-		echo $result;
+		print_r($result);
 	}
 	public function HRMAttendance($opt=2){
 
@@ -84,7 +84,7 @@ class Dataclient extends MX_Controller {
 		// 	$this->getAttendanceData(2);
 	    // endif;
 	   
-		echo $result;
+		print_r($result);
 	}
 
 
