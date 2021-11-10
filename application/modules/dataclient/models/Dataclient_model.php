@@ -39,8 +39,6 @@ class Dataclient_model extends CI_Model {
 			$rates = array(
 				'facility_id'=>$row->facility_id,
 				'attendance_count'=>$totalStaffAttendance,
-				'district_id'=>$staff->district_id,
-				'district_name'=>$staff->district_name,
 				'month'=>$date->month,
 				'year'=>$date->year,
 				'staff_count'=>$totalAtFacility,
@@ -98,7 +96,7 @@ class Dataclient_model extends CI_Model {
 			
 			array_push($attendanceData,$attendRow);
 			$this->db->replace('staff_attendance_dr',$attendRow);
-			
+
 		endif;
 
 		endforeach;
@@ -139,8 +137,6 @@ class Dataclient_model extends CI_Model {
 					'facility_id'=>$row->facility_id,
 					'roster_count'=>$totalOnDutyRoster,
 					'month'=>$date->month,
-					'district_id'=>$staff->district_id,
-					'district_name'=>$staff->district_name,
 					'year'=>$date->year,
 					'staff_count'=>$totalAtFacility,
 					'entry_id'=> $entryId
@@ -189,7 +185,7 @@ class Dataclient_model extends CI_Model {
 							"off_duty"=>$off,
 							"on_leave"=>$annualleave,
 							"official_request"=>$request
-							//"entry_id"=>$row->facility_id.$date->year.$date->month
+							"entry_id"=>$row->facility_id.$date->year.$date->month
 						);
 
 						array_push($rosterData,$attendRow);
@@ -205,8 +201,8 @@ class Dataclient_model extends CI_Model {
 	}
 
     public function trackRates($data){
-		$this->db->where('entry_id',$data['entry_id']);
-		$this->db->update('attendance_rate',$data);
+		$this->db->where("entry_id","$data['entry_id']");
+		$this->db->update("attendance_rate",$data);
 	}
 
 	private function dateData($date){

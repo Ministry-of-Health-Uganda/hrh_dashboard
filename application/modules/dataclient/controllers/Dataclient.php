@@ -97,7 +97,7 @@ class Dataclient extends MX_Controller {
 		
         $result  = $this->mdl->saveAttendance($data);
 		$res     = $this->prettyJSON($result);
-        echo $result;
+        print_r($result);
 	}
 
 
