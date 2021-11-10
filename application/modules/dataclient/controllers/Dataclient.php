@@ -45,7 +45,7 @@ class Dataclient extends MX_Controller {
 
 		echo $result;
 	}
-	public function getRosterDRS($opt=2){
+	public function getRosterHRM($opt=2){
 
 		$endpoint ='person_roster/2021-01-01/2021-09-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
