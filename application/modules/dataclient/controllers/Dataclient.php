@@ -30,9 +30,9 @@ class Dataclient extends MX_Controller {
 	
 
 	//Fetches roster data using the above baseurl, calls SendRequest
-	public function getRosterDRS($opt=1){
+	public function getRosterDistrict($opt=1){
 
-		$endpoint ='person_roster/2021-01-01/2021-09-31';
+		$endpoint ='person_roster/2021-01-01/2021-05-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
 
 		$data   = $this->sendRequest($url);
