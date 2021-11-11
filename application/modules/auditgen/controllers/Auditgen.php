@@ -88,7 +88,7 @@ class Auditgen extends MX_Controller {
 	public function template_structure_approved(){
 		
         $data=$this->db->query("SELECT distinct facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM staff WHERE facility_type_name IN ('HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office' ,'Blood Bank Main Office'  ,'Blood Bank Regional Office'  ,'Medical Bureau Main Office'  ,'City Health Office' ) ORDER BY facility_type_name")->result_array();
-
+        print_r($data);
 		foreach($data as $row):
 
 		$facility_type_name = $row['facility_type_name'];
@@ -109,7 +109,7 @@ class Auditgen extends MX_Controller {
 
 		$mydata=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2'")->result_array();
         
-		print_r($mydata);
+		//print_r($mydata);
 		foreach($mydata as $row1):
 			$job = $row1['job']; 
 
