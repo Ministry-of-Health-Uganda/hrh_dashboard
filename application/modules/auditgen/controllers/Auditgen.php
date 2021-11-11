@@ -133,11 +133,11 @@ class Auditgen extends MX_Controller {
 
 			$salary_scale = $row1['salary_grade'];
 
-			$facility_namei=$this->db->espcape($facility_name);
-			$facility_type_namei=  $this->db->espcape($facility_type_name);
-			$region_namei =   $this->db->espcape($region_name);
-			$institution_typei = $this->db->espcape($institution_type);
-			$district_namei = $this->db->espcape($district_name);
+			$facility_namei=$this->db->escape($facility_name);
+			$facility_type_namei=  $this->db->escape($facility_type_name);
+			$region_namei =   $this->db->escape($region_name);
+			$institution_typei = $this->db->escape($institution_type);
+			$district_namei = $this->db->escape($district_name);
 		
 
 	 
@@ -171,11 +171,11 @@ class Auditgen extends MX_Controller {
          $data1=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level = '$facility_type_name' ")->result_array();
                  foreach($data1 as $row1):
 
-					      $facility_namei=$this->db->espcape($facility_name);
-						  $facility_type_namei=  $this->db->espcape($facility_type_name);
-						  $region_namei =   $this->db->espcape($region_name);
-						  $institution_typei = $this->db->espcape($institution_type);
-						  $district_namei = $this->db->espcape($district_name);
+					      $facility_namei=$this->db->escape($facility_name);
+						  $facility_type_namei=  $this->db->escape($facility_type_name);
+						  $region_namei =   $this->db->escape($region_name);
+						  $institution_typei = $this->db->escape($institution_type);
+						  $district_namei = $this->db->escape($district_name);
                       
                           $job = $row1['job']; 
 
