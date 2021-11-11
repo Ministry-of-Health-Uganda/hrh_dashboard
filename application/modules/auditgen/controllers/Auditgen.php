@@ -97,7 +97,7 @@ class Auditgen extends MX_Controller {
 
 		$facility_name = $row['facility_name'];
 	 
-		$facility_name2 = str_replace("'","",$facility_name);
+		// $facility_name2 = str_replace("'","",$facility_name);
 
 		$facility_id = $row['facility_id'];
 
@@ -106,12 +106,16 @@ class Auditgen extends MX_Controller {
 		$institution_type = $row['institution_type'];
 
 		$district_name = $row['district_name'];
-		$replaced='replace(facility_facility_level,"\'","")';
+	
 
-		$mydata=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE '$replaced' LIKE '$facility_name2'")->result_array();
-        
+		//$mydata=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE '$replaced' LIKE '$facility_name2'")->result_array();
+                $this->db->select("approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id")
+				$this->db->like("facility_facility_level","$facility_name","after");
+				$mydata=$this->get("structure")->result_array();
+			
+       
 		print_r($mydata);
-		endforeach;
+		endforeach
 		// foreach($mydata as $row1):
 		// 	$job = $row1['job']; 
 
