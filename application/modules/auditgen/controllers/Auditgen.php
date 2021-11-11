@@ -38,9 +38,9 @@ class Auditgen extends MX_Controller {
 		print_r($data);
 		exit();
 		//insert in to structure filled
-		//$this->db->replace('structure_filled',$data);
+		$this->db->replace('structure_filled',$data);
 
-	//echo $this->db->affected_rows();
+	echo $this->db->affected_rows();
 	
 	}
 
