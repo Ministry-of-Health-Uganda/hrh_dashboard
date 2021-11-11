@@ -133,11 +133,11 @@ class Auditgen extends MX_Controller {
 
 			$salary_scale = $row1['salary_grade'];
 
-			$facility_namei=str_replace(")","",str_replace("(","-",str_replace(,"'","",$facility_name)));
-			$facility_type_namei=  str_replace(")","",str_replace("(","-",str_replace(,"'","",$facility_type_name)));
-			$region_namei =   str_replace(")","",str_replace("(","-",str_replace(,"'","",$region_name)));
-			$institution_typei = str_replace(")","",str_replace("(","-",str_replace(,"'","",$institution_type)));
-			$district_namei = str_replace(")","",str_replace("(","-",str_replace(,"'","",$district_name)));
+			$facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
+			$facility_type_namei=  str_replace(")","",str_replace("(","-",str_replace("'","",$facility_type_name)));
+			$region_namei =   str_replace(")","",str_replace("(","-",str_replace("'","",$region_name)));
+			$institution_typei = str_replace(")","",str_replace("(","-",str_replace("'","",$institution_type)));
+			$district_namei = str_replace(")","",str_replace("(","-",str_replace("'","",$district_name)));
 		
 
 	 
@@ -171,11 +171,11 @@ class Auditgen extends MX_Controller {
          $data1=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level = '$facility_type_name' ")->result_array();
                  foreach($data1 as $row1):
 
-					      $facility_namei=str_replace(")","",str_replace("(","-",str_replace(,"'","",$facility_name)));
-						  $facility_type_namei= str_replace(")","",str_replace("(","-", str_replace(,"'","",$facility_type_name)));
-						  $region_namei =   str_replace(")","",str_replace("(","-",str_replace(,"'","",$region_name)));
-						  $institution_typei = str_replace(")","",str_replace("(","-",str_replace(,"'","",$institution_type)));
-						  $district_namei = str_replace(")","",str_replace("(","-",str_replace(,"'","",$district_name)));
+					      $facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
+						  $facility_type_namei= str_replace(")","",str_replace("(","-", str_replace("'","",$facility_type_name)));
+						  $region_namei =   str_replace(")","",str_replace("(","-",str_replace("'","",$region_name)));
+						  $institution_typei = str_replace(")","",str_replace("(","-",str_replace("'","",$institution_type)));
+						  $district_namei = str_replace(")","",str_replace("(","-",str_replace("'","",$district_name)));
                       
                           $job = $row1['job']; 
 
@@ -240,27 +240,27 @@ class Auditgen extends MX_Controller {
              
                     $dhis_facility_id = $row1['app_dhis_facility_id'];
 
-                    $facility_name =str_replace(")","",str_replace("(","-", str_replace(,"'","",$row1['app_facility_name'])));
+                    $facility_name =str_replace(")","",str_replace("(","-", str_replace("'","",$row1['app_facility_name'])));
               
-                    $facility_type_name =str_replace(")","",str_replace("(","-", str_replace(,"'","",$row1['app_facility_type_name'])));
+                    $facility_type_name =str_replace(")","",str_replace("(","-", str_replace("'","",$row1['app_facility_type_name'])));
 
-		            $region_name =str_replace(")","",str_replace("(","-", str_replace(,"'","",$row1['app_region_name'])));
+		            $region_name =str_replace(")","",str_replace("(","-", str_replace("'","",$row1['app_region_name'])));
              
-                    $institution_type = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['app_institution_type'])));
+                    $institution_type = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['app_institution_type'])));
               
-                    $district_name = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['app_district_name'])));
+                    $district_name = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['app_district_name'])));
 
                     $job_id = $row1['app_job_id'];
               
                     $dhis_job_id = $row1['app_dhis_job_id'];
 
-                    $job_name = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['app_job_name'])));
+                    $job_name = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['app_job_name'])));
               
-                    $job_category = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['app_job_category'])));
+                    $job_category = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['app_job_category'])));
 
-                    $job_classification = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['app_job_classification'])));
+                    $job_classification = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['app_job_classification'])));
 
-                    $cadre_name = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['app_cadre_name'])));
+                    $cadre_name = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['app_cadre_name'])));
 
                     $salary_scale = $row1['app_salary_scale'];
 
@@ -278,15 +278,15 @@ class Auditgen extends MX_Controller {
               
                     $dhis_facility_id = $row1['fill_dhis_facility_id'];
 
-                    $facility_name = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['fill_facility_name'])));
+                    $facility_name = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['fill_facility_name'])));
               
-                    $facility_type_name = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['fill_facility_type_name'])));
+                    $facility_type_name = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['fill_facility_type_name'])));
 
-		            $region_name = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['fill_region_name'])));
+		            $region_name = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['fill_region_name'])));
               
-                    $institution_type = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['fill_institution_type'])));
+                    $institution_type = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['fill_institution_type'])));
               
-                    $district_name = str_replace(")","",str_replace("(","-",str_replace(,"'","",$row1['fill_district_name'])));
+                    $district_name = str_replace(")","",str_replace("(","-",str_replace("'","",$row1['fill_district_name'])));
 
                     $job_id = $row1['fill_job_id'];
               
