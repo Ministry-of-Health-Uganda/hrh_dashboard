@@ -284,7 +284,7 @@ class Auditgen extends MX_Controller {
 
 		            $region_name = str_replace(")","",str_replace("(","",$this->db->escape($row1['fill_region_name'])));
               
-                    $institution_type = str_replace(")","",str_replace("(","",$this->db->escape($row1['fill_institution_type']));
+                    $institution_type = str_replace(")","",str_replace("(","",$this->db->escape($row1['fill_institution_type'])));
               
                     $district_name = str_replace(")","",str_replace("(","",$this->db->escape($row1['fill_district_name'])));
 
