@@ -63,10 +63,10 @@ class Auditgen extends MX_Controller {
 	////////////////////////////////////////////////////
 	////////////////////////////////////////////////////
 
-	//Cache 
+	//Cache structure
 	
 
-	public function cache_filled(){
+	public function cache_structure(){
 		$this->db->query("DELETE FROM structure WHERE approved='0'");
 		$this->db->query("TRUNCATE TABLE structure_approved");
 		$query=$this->db->query('SELECT replace(facility_name,"\'","") as facility_name ,facility_id FROM staff WHERE facility_type_id = "facility_type|DHO"')->result();
