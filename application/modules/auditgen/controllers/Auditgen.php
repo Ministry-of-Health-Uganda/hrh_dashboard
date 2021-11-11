@@ -107,43 +107,41 @@ class Auditgen extends MX_Controller {
 
 		$district_name = $row['district_name'];
 	
-
-		//$mydata=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE '$replaced' LIKE '$facility_name2'")->result_array();
-                $this->db->select("approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id");
+        $this->db->select("approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id");
 				$this->db->where("facility_facility_level","$facility_name%");
 				$mydata=$this->db->get("structure")->result_array();
 
 				print_r($this->db->last_query());
 			
        
-		print_r($mydata);
-		endforeach;
-		// foreach($mydata as $row1):
-		// 	$job = $row1['job']; 
+		//print_r($mydata);
+		//endforeach;
+		foreach($mydata as $row1):
+			$job = $row1['job']; 
 
-		// 	$approved = $row1['approved']; 
+			$approved = $row1['approved']; 
 
-		// 	$job_id = $row1['job_id'];
+			$job_id = $row1['job_id'];
 
-		// 	$dhis_job_id = $row1['dhis_job_id'];
+			$dhis_job_id = $row1['dhis_job_id'];
 
-		// 	$job_classification = $row1['job_classification'];
+			$job_classification = $row1['job_classification'];
 
-		// 	$job_category = $row1['job_category']; 
+			$job_category = $row1['job_category']; 
 
-		// 	$cadre_name = $row1['cadre']; 
+			$cadre_name = $row1['cadre']; 
 
-		// 	$salary_scale = $row1['salary_grade'];
+			$salary_scale = $row1['salary_grade'];
 		
 
 	 
-		// //$this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_name','$facility_type_name','$region_name','$institution_type','$district_name','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
+		//$this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_name','$facility_type_name','$region_name','$institution_type','$district_name','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
 		  
 
-		// endforeach;
+		endforeach;
 		
-		// endforeach;
-		// echo "<br><p style=color='green';>".$this->db->affected_rows()."</p> Template Structure";
+		endforeach;
+		echo "<br><p style=color='green';>".$this->db->affected_rows()."</p> Template Structure";
 
 	}
 	public function template_structure_approved2(){
@@ -182,6 +180,8 @@ class Auditgen extends MX_Controller {
                           $cadre_name = $row1['cadre']; 
 
                           $salary_scale = $row1['salary_grade'];
+
+						  print_r($row1);
 
 						  //$this->db->query('INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ("$facility_id","$dhis_facility_id","$facility_name","$facility_type_name","$region_name","$institution_type","$district_name","$job_id","$dhis_job_id","$job","$job_classification","$job_category","$cadre_name","$salary_scale","$approved","0","0","0","0","0","0")');   
 
