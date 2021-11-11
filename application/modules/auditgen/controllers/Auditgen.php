@@ -171,11 +171,11 @@ class Auditgen extends MX_Controller {
          $data1=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level = '$facility_type_name' ")->result_array();
                  foreach($data1 as $row1):
 
-					      $facility_namei=str_replace(")","",str_replace("(","",$this->db->escape($this->db->escape($facility_name)));
-						  $facility_type_namei= str_replace(")","",str_replace("(","",$this->db->escape( $this->db->escape($facility_type_name)));
-						  $region_namei =   str_replace(")","",str_replace("(","",$this->db->escape($this->db->escape($region_name)));
-						  $institution_typei = str_replace(")","",str_replace("(","",$this->db->escape($this->db->escape($institution_type)));
-						  $district_namei = str_replace(")","",str_replace("(","",$this->db->escape($this->db->escape($district_name)));
+					      $facility_namei=str_replace(")","",str_replace("(","",$this->db->escape($facility_name)));
+						  $facility_type_namei= str_replace(")","",str_replace("(","", $this->db->escape($facility_type_name)));
+						  $region_namei =   str_replace(")","",str_replace("(","",$this->db->escape($region_name)));
+						  $institution_typei = str_replace(")","",str_replace("(","",$this->db->escape($institution_type)));
+						  $district_namei = str_replace(")","",str_replace("(","",$this->db->escape($district_name)));
                       
                           $job = $row1['job']; 
 
