@@ -24,7 +24,7 @@ class Auditgen extends MX_Controller {
 			//print_r($no_calc);
 
 			//count jobs
-		$count_jobs=$this->db->query("SELECT * FROM staff WHERE job_id='$job_id' AND facility_id='$facility_id'")->result();
+		$count_jobs=$this->db->query("SELECT * FROM staff WHERE job_id='$job_id' AND facility_id='$facility_id'");
         $counted=$this->$count_jobs->num_rows();
 
 		print_r($counted);
