@@ -97,7 +97,7 @@ class Auditgen extends MX_Controller {
 
 		$facility_name = $row['facility_name'];
 	 
-		$facility_name2 = $facility_name.'%';
+		$facility_name2 = str_replace("'","",$facility_name).'%';
 
 		$facility_id = $row['facility_id'];
 
@@ -107,7 +107,7 @@ class Auditgen extends MX_Controller {
 
 		$district_name = $row['district_name'];
 
-		$mydata=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2'")->result_array();
+		$mydata=$this->db->query('SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE replace(facility_facility_level,"\'","") LIKE "'$facility_name2'" ')->result_array();
 
 		foreach($mydata as $row1):
 			$job = $row1['job']; 
@@ -125,9 +125,10 @@ class Auditgen extends MX_Controller {
 			$cadre_name = $row1['cadre']; 
 
 			$salary_scale = $row1['salary_grade'];
+			print_r($row1);
 
 	 
-		$this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_name','$facility_type_name','$region_name','$institution_type','$district_name','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
+		//$this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_name','$facility_type_name','$region_name','$institution_type','$district_name','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
 		  
 
 		endforeach;
