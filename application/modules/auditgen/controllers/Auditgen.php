@@ -107,8 +107,10 @@ class Auditgen extends MX_Controller {
 
 		$district_name = $row['district_name'];
 
-		$mydata=$this->db->query('SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE replace(facility_facility_level,"\'","") LIKE "$facility_name2" ')->result_array();
-
+		//$mydata=$this->db->query('SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE replace(facility_facility_level,"\'","") LIKE $facility_name2 ')->result_array();
+        $this->db->select("approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id");
+		$this->db->where('replace(facility_facility_level,"\'","")',"$facility_name2");
+		$mydata=$this->db->get("structure")->result_array();
 		foreach($mydata as $row1):
 			$job = $row1['job']; 
 
