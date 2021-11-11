@@ -10,7 +10,11 @@ class Auditgen extends MX_Controller {
 
 		
 	}
+	//Cache Filled
 
+		///////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
  //iupdate gender 
 	public function cache_filled(){
 		 $gender_up=$this->db->query("UPDATE staff SET gender='Male' WHERE gender=''");
@@ -45,7 +49,7 @@ class Auditgen extends MX_Controller {
 		(case when gender = "Male" then filled else 0 end) male,
 		(case when gender = "Female" then filled else 0 end) female
 		FROM   staff GROUP BY facility_id,dhis_facility_id,facility_name,facility_type_name,region_name,institution_type,district_name,job_id,dhis_job_id,job_classification,job_category,cadre_name,salary_scale,approved');
-	echo $this->db->affected_rows();
+	echo "<br><p style=color='green';>".$this->db->affected_rows()."</p>";
     }
 	
 	//truncate structure filled
@@ -54,6 +58,31 @@ class Auditgen extends MX_Controller {
 	//echo $this->db->affected_rows();
 
 	}
+
+	///////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+
+	//Cache 
+	
+
+	public function cache_filled(){
+		$this->db->query("DELETE FROM structure WHERE approved='0'");
+		$this->db->query("TRUNCATE TABLE structure_approved");
+		$query=$this->db->query('SELECT replace(facility_name,"\'","") as facility_name ,facility_id FROM staff WHERE facility_type_id = "facility_type|DHO"')->result();
+
+		foreach($query as $row):
+			       $facility_id = $row->facility_id;
+                    $facility_name = $row->facility_name;
+					print_r($row);
+                    //$this->db->query("UPDATE staff SET facility_name='$facility_name' WHERE facility_id='$facility_id'");
+		endforeach;
+
+
+	}
+	
+
+
 
 
 
