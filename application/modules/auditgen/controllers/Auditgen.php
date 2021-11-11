@@ -164,6 +164,12 @@ class Auditgen extends MX_Controller {
 
          $data1=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level = '$facility_type_name' ")->result_array();
                  foreach($data1 as $row1):
+
+					      $facility_namei=$this->db->espcape($facility_name);
+						  $facility_type_namei=  $this->db->espcape($facility_type_name);
+						  $region_namei =   $this->db->espcape($region_name);
+						  $institution_typei = $this->db->espcape($institution_type);
+						  $district_namei = $this->db->espcape($district_name);
                       
                           $job = $row1['job']; 
 
@@ -182,7 +188,7 @@ class Auditgen extends MX_Controller {
                           $salary_scale = $row1['salary_grade'];
 
 					
-						 $this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_name','$facility_type_name','$region_name','$institution_type','$district_name','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
+						 $this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_name','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
                         
 				 endforeach;
          
