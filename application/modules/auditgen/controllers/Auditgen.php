@@ -115,7 +115,7 @@ class Auditgen extends MX_Controller {
 			
        
 		print_r($mydata);
-		endforeach
+		endforeach;
 		// foreach($mydata as $row1):
 		// 	$job = $row1['job']; 
 
