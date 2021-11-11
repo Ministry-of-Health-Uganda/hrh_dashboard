@@ -16,18 +16,19 @@ class Auditgen extends MX_Controller {
 		 $gender_up=$this->db->query("UPDATE staff SET gender='Male' WHERE gender=''");
 		//truncate filled
 		 $this->truncate_filled();
-		 $no_calcs=$this->db->query("SELECT facility_id,job_id,approved,filled FROM staff WHERE approved='0' AND filled='0' ORDER BY facility_id,job_id")->result_array();
+		 $no_calcs=$this->db->query("SELECT facility_id,job_id,approved,filled FROM staff WHERE approved='0' AND filled='0' ORDER BY facility_id,job_id")->result();
          foreach($no_calcs as $no_calc){
 
-			$job_id = $no_calc['job_id'];
-            $facility_id = $no_calc['facility_id'];
+			$job_id = $no_calc->job_id;
+            $facility_id = $no_calc->facility_id;
+			print_r($no_calc);
 
 			//count jobs
-		$count_jobs=$this->db->query("SELECT * FROM staff WHERE job_id='$job_id' AND facility_id='$facility_id'")->result();
-        $counted=$this->$count_jobs->num_rows();
+		// $count_jobs=$this->db->query("SELECT * FROM staff WHERE job_id='$job_id' AND facility_id='$facility_id'")->result();
+        // $counted=$this->$count_jobs->num_rows();
 
-		//update 
-		$this->db->query("UPDATE  staff SET filled= '$counted' WHERE job_id='$job_id' AND facility_id='$facility_id'");
+		// //update 
+		// $this->db->query("UPDATE  staff SET filled= '$counted' WHERE job_id='$job_id' AND facility_id='$facility_id'");
 
 		 }
 		 //render filled
@@ -55,6 +56,13 @@ class Auditgen extends MX_Controller {
 	echo $this->db->affected_rows();
 
 	}
+
+
+
+
+
+
+
 
 
 
