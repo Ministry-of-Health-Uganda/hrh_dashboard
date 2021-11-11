@@ -112,6 +112,8 @@ class Auditgen extends MX_Controller {
                 $this->db->select("approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id");
 				$this->db->where("facility_facility_level","$facility_name%");
 				$mydata=$this->db->get("structure")->result_array();
+
+				print_r($this->db->last_query());
 			
        
 		print_r($mydata);
