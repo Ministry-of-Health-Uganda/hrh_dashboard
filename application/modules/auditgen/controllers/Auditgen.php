@@ -57,7 +57,7 @@ class Auditgen extends MX_Controller {
 	//truncate structure filled
 	public function truncate_filled(){
 		 $this->db->query("TRUNCATE TABLE structure_filled");
-	echo $this->db->affected_rows();
+	//echo $this->db->affected_rows();
 
 	}
 
