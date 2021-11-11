@@ -21,11 +21,13 @@ class Auditgen extends MX_Controller {
 
 			$job_id = $no_calc->job_id;
             $facility_id = $no_calc->facility_id;
-			print_r($no_calc);
+			//print_r($no_calc);
 
 			//count jobs
-		// $count_jobs=$this->db->query("SELECT * FROM staff WHERE job_id='$job_id' AND facility_id='$facility_id'")->result();
-        // $counted=$this->$count_jobs->num_rows();
+		$count_jobs=$this->db->query("SELECT * FROM staff WHERE job_id='$job_id' AND facility_id='$facility_id'")->result();
+        $counted=$this->$count_jobs->num_rows();
+
+		print_r($counted);
 
 		// //update 
 		// $this->db->query("UPDATE  staff SET filled= '$counted' WHERE job_id='$job_id' AND facility_id='$facility_id'");
