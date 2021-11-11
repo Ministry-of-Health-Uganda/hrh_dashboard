@@ -27,7 +27,7 @@ class Auditgen extends MX_Controller {
 		$count_jobs=$this->db->query("SELECT person_id FROM staff WHERE job_id='$job_id' AND facility_id='$facility_id'")->result();
         
 
-		print_r($count_jobs);
+		print_r($count_jobs->num_rows());
 
 		// //update 
 		// $this->db->query("UPDATE  staff SET filled= '$counted' WHERE job_id='$job_id' AND facility_id='$facility_id'");
