@@ -35,13 +35,14 @@ class Auditgen extends MX_Controller {
 		}
 		 //render filled
 		$data=$this->render_filled();
-		//print_r($data);
+		print_r($data);
 	
 		//insert in to structure filled
-		$this->db->replace('structure_filled',$data);
+		//$this->db->replace('structure_filled',$data);
+
 
 	echo $this->db->affected_rows();
-	exit();
+	//exit();
 	
 	}
 
