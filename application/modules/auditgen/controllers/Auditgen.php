@@ -111,7 +111,7 @@ class Auditgen extends MX_Controller {
 		//$mydata=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE '$replaced' LIKE '$facility_name2'")->result_array();
                 $this->db->select("approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id");
 				$this->db->like("facility_facility_level","$facility_name","after");
-				$mydata=$this->get("structure")->result_array();
+				$mydata=$this->db->get("structure")->result_array();
 			
        
 		print_r($mydata);
