@@ -35,9 +35,6 @@ class Auditgen extends MX_Controller {
 		}
 		 //render filled
 		$this->render_filled();
-
-
-	//exit();
 	
 	}
 
