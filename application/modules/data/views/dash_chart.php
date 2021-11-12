@@ -47,7 +47,7 @@ else{
 
                         <?php 
 
-                           echo $kstatus=Modules::run("data/kpiTrend",$gauge['data'][0]->current_target,$gauge['data'][0]->current_value,$gauge['data'][0]->previous_value,$gauge['data'][0]->cp,$gauge['data'][0]->pp);
+                        echo $kstatus=Modules::run("data/kpiTrend",$gauge['data'][0]->current_target,$gauge['data'][0]->current_value,$gauge['data'][0]->previous_value,$gauge['data'][0]->cp,$gauge['data'][0]->pp);
 
                         ?>                          
                    </div>
