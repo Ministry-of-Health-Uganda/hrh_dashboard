@@ -6,10 +6,26 @@ class Auditgen extends MX_Controller {
 	
 	public function __Construct(){
 
-		parent::__Construct();
-
-		
+		$this->backupdir = "/var/HRH_bkp";
+        $this->db_user = 'ihris_manage';
+        $this->db_pass = 'managi123';
+        $this->host='172.27.1.109';
+        $this->database ='hrh_dashboard';
+      
 	}
+    
+public function index(){
+    //echo "Test";
+}
+
+public function dbcon(){
+    $dbConn = new mysqli($this->host,$this->db_user,$this->db_pass,$this->database);
+    if($dbConn->connect_error)
+    {
+	die("Database Connection Error, Error No.: ".$dbConn->connect_errno." | ".$dbConn->connect_error);
+    }
+return $dbConn;
+}
 	//Cache Filled
 
 		///////////////////////////////////////////////
@@ -49,7 +65,7 @@ class Auditgen extends MX_Controller {
 		 //render filled
 		$this->render_filled();
 
-		print_r($this->db);
+		
 	
 	}
 
@@ -79,73 +95,68 @@ class Auditgen extends MX_Controller {
 	public function cache_structure(){
 		$this->db->query("DELETE FROM structure WHERE approved='0'");
 		$this->db->query("TRUNCATE TABLE structure_approved");
-		$this->template_structure_approved();
+		$this->template_structure_approve1();
 		$this->template_structure_approved2();
 		
 
 
 	}
 
-	public function template_structure_approved(){
+	public function template_structure_approved1(){
 		$sql = "SELECT facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM total_facilities_temp_districts WHERE facility_type_name IN ('Regional Referral Hospital','Ministry','National Referral Hospital','Specialised National Facility') ";
 
-		
-        $data=$this->db->query("SELECT distinct facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM staff WHERE facility_type_name IN ('HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office' ,'Blood Bank Main Office'  ,'Blood Bank Regional Office'  ,'Medical Bureau Main Office'  ,'City Health Office' ) ORDER BY facility_type_name")->result_array();
-      
+		$data=$this->dbcon->query("$sql")->result_array();
 		foreach($data as $row):
 
-		$facility_type_name = $row['facility_type_name'];
+			$facility_type_name = $row['facility_type_name'];
 
-		$region_name = $row['region_name'];
+			$region_name = $row['region_name'];
 
-		$facility_name = $row['facility_name'];
-	
-		$facility_id = $row['facility_id'];
+			$facility_name = $row['facility_name'];
+		 
+			$facility_name2 = $facility_name.'%';
 
-		$dhis_facility_id = $row['dhis_facility_id'];
+			$facility_id = $row['facility_id'];
 
-		$institution_type = $row['institution_type'];
+			$dhis_facility_id = $row['dhis_facility_id'];
 
-		$district_name = $row['district_name'];
-	
-        $this->db->select("approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id");
-				$this->db->where("facility_facility_level","$facility_name%");
-				$mydata=$this->db->get("structure")->result_array();
+			$institution_type = $row['institution_type'];
 
-				//print_r($this->db->last_query());
-			
-       
-		//print_r($mydata);
+			$district_name = $row['district_name'];
+
+	$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2' ";
+	$mydata=$this->dbcon->query("$sql1")->result_array();       
+	print_r($mydata);
 		//endforeach;
-		foreach($mydata as $row1):
-			$job = $row1['job']; 
+		// foreach($mydata as $row1):
+		// 	$job = $row1['job']; 
 
-			$approved = $row1['approved']; 
+		// 	$approved = $row1['approved']; 
 
-			$job_id = $row1['job_id'];
+		// 	$job_id = $row1['job_id'];
 
-			$dhis_job_id = $row1['dhis_job_id'];
+		// 	$dhis_job_id = $row1['dhis_job_id'];
 
-			$job_classification = $row1['job_classification'];
+		// 	$job_classification = $row1['job_classification'];
 
-			$job_category = $row1['job_category']; 
+		// 	$job_category = $row1['job_category']; 
 
-			$cadre_name = $row1['cadre']; 
+		// 	$cadre_name = $row1['cadre']; 
 
-			$salary_scale = $row1['salary_grade'];
+		// 	$salary_scale = $row1['salary_grade'];
 
-			$facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
-			$facility_type_namei=  str_replace(")","",str_replace("(","-",str_replace("'","",$facility_type_name)));
-			$region_namei =   str_replace(")","",str_replace("(","-",str_replace("'","",$region_name)));
-			$institution_typei = str_replace(")","",str_replace("(","-",str_replace("'","",$institution_type)));
-			$district_namei = str_replace(")","",str_replace("(","-",str_replace("'","",$district_name)));
+		// 	$facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
+		// 	$facility_type_namei=  str_replace(")","",str_replace("(","-",str_replace("'","",$facility_type_name)));
+		// 	$region_namei =   str_replace(")","",str_replace("(","-",str_replace("'","",$region_name)));
+		// 	$institution_typei = str_replace(")","",str_replace("(","-",str_replace("'","",$institution_type)));
+		// 	$district_namei = str_replace(")","",str_replace("(","-",str_replace("'","",$district_name)));
 		
 
 	 
-		 $this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
+		//  $this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
 		  
 
-		endforeach;
+		// endforeach;
 		
 		endforeach;
 		echo "<br><p style=color='green';>".$this->db->affected_rows()."</p> Template Structure";
