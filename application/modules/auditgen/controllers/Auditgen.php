@@ -74,7 +74,7 @@ class Auditgen extends MX_Controller {
 
 		foreach($query as $row):
 			       $facility_id = $row->facility_id;
-                    $facility_name = $row->facility_name;
+                    $facility_name = preg_replace('/[^\p{L}\p{N}\s]/u', ''$row->facility_name);
 					
                     $this->db->query("UPDATE staff SET facility_name='$facility_name' WHERE facility_id='$facility_id'");
 		endforeach;
