@@ -125,24 +125,25 @@ return $dbConn;
 
 	$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name%' ";
 	$mydata=$this->dbcon()->query("$sql")->fetch_assoc();      
-	print_r($mydata);
+	//print_r($mydata);
 		//endforeach;
-		// foreach($mydata as $row1):
-		// 	$job = $row1['job']; 
+		foreach($mydata as $row1):
+			$job = $row1['job']; 
 
-		// 	$approved = $row1['approved']; 
+			$approved = $row1['approved']; 
 
-		// 	$job_id = $row1['job_id'];
+			$job_id = $row1['job_id'];
 
-		// 	$dhis_job_id = $row1['dhis_job_id'];
+			$dhis_job_id = $row1['dhis_job_id'];
 
-		// 	$job_classification = $row1['job_classification'];
+			$job_classification = $row1['job_classification'];
 
-		// 	$job_category = $row1['job_category']; 
+			$job_category = $row1['job_category']; 
 
-		// 	$cadre_name = $row1['cadre']; 
+			$cadre_name = $row1['cadre']; 
 
-		// 	$salary_scale = $row1['salary_grade'];
+			$salary_scale = $row1['salary_grade'];
+
 
 		// 	$facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
 		// 	$facility_type_namei=  str_replace(")","",str_replace("(","-",str_replace("'","",$facility_type_name)));
@@ -152,10 +153,10 @@ return $dbConn;
 		
 
 	 
-		//  $this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
-		  
+		 $sql="INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')";   
+		 $this->dbcon()->query("$sql");
 
-		// endforeach;
+		endforeach;
 		
 		endforeach;
 		echo "<br><p style=color='green';>".$this->db->affected_rows()."</p> Template Structure";
