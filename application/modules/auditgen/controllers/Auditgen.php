@@ -17,11 +17,11 @@ class Auditgen extends MX_Controller {
 	////////////////////////////////////////////////////
  //iupdate gender 
 	public function cache_filled(){
-		$query=$this->db->query('SELECT replace(facility_name,"\'","") as facility_name ,facility_id FROM staff WHERE facility_type_id = "facility_type|DHO"')->result();
+		$query=$this->db->query('SELECT replace(facility_name,"\'","") as facility_name, facility_id FROM staff WHERE facility_type_id = "facility_type|DHO"')->result();
 
 		foreach($query as $row):
 			       $facility_id = $row->facility_id;
-                    $facility_name = preg_replace('/[^\p{L}\p{N}\s]/u', ''$row->facility_name);
+                    $facility_name = preg_replace('/[^A-Za-z0-9\-]/', '',$row->facility_name);
 					
                     $this->db->query("UPDATE staff SET facility_name='$facility_name' WHERE facility_id='$facility_id'");
 		endforeach;
@@ -48,6 +48,8 @@ class Auditgen extends MX_Controller {
 		}
 		 //render filled
 		$this->render_filled();
+
+		print_r($this->db);
 	
 	}
 
@@ -85,6 +87,8 @@ class Auditgen extends MX_Controller {
 	}
 
 	public function template_structure_approved(){
+		$sql = "SELECT facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM total_facilities_temp_districts WHERE facility_type_name IN ('Regional Referral Hospital','Ministry','National Referral Hospital','Specialised National Facility') ";
+
 		
         $data=$this->db->query("SELECT distinct facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM staff WHERE facility_type_name IN ('HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office' ,'Blood Bank Main Office'  ,'Blood Bank Regional Office'  ,'Medical Bureau Main Office'  ,'City Health Office' ) ORDER BY facility_type_name")->result_array();
       
