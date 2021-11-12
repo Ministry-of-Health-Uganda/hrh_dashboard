@@ -45,10 +45,11 @@ class Auditgen extends MX_Controller {
 
 	//helper functions
 	public function render_filled(){
-		$data=$this->db->query('INSERT into structure_filled SELECT facility_id,dhis_facility_id,replace(facility_name,"\'","") as facility_name ,facility_type_name,region_name,institution_type,district_name,job_id,dhis_job_id,job_name,job_classification,job_category,cadre_name,salary_scale,approved,              
-		(case when gender = "Male" then filled else 0 end) male,
-		(case when gender = "Female" then filled else 0 end) female
-		FROM   staff GROUP BY facility_id,dhis_facility_id,facility_name,facility_type_name,region_name,institution_type,district_name,job_id,dhis_job_id,job_classification,job_category,cadre_name,salary_scale,approved');
+		$data=$this->db->query("INSERT into structure_filled SELECT facility_id,dhis_facility_id,facility_name,facility_type_name,region_name,institution_type,district_name,job_id,dhis_job_id,job_name,job_classification,job_category,cadre_name,salary_scale,approved,              
+		(case when gender = 'Male' then filled else 0 end) male,
+		(case when gender = 'Female' then filled else 0 end) female, ((case when gender = 'Male' then filled else 0 end) male+
+		(case when gender = 'Female' then filled else 0 end) female) as total,'0','0','0'
+		FROM   staff  GROUP BY facility_id,dhis_facility_id,facility_name,facility_type_name,region_name,institution_type,district_name,job_id,dhis_job_id,job_classification,job_category,cadre_name,salary_scale,approved");
 	echo "<br><p style=color='green';>".$this->db->affected_rows()."</p>";
     }
 	
