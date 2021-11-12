@@ -105,7 +105,7 @@ return $dbConn;
 	public function template_structure_approved1(){
 		$sql = "SELECT facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM total_facilities_temp_districts WHERE facility_type_name IN ('Regional Referral Hospital','Ministry','National Referral Hospital','Specialised National Facility') ";
 
-		$data=$this->dbcon->query("$sql")->result_array();
+		$data=$this->dbcon()->query("$sql")->result_array();
 		foreach($data as $row):
 
 			$facility_type_name = $row['facility_type_name'];
