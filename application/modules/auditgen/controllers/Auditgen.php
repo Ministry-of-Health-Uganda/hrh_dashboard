@@ -217,7 +217,7 @@ class Auditgen extends MX_Controller {
          
 	     $data=$this->db->query($sql);
 		 if($data){
-			$this->query("TRUNCATE TABLE national_jobs");
+			$this->db->query("TRUNCATE TABLE national_jobs");
 		 }
           						
      
