@@ -125,7 +125,7 @@ return $dbConn;
 			$district_name = $row['district_name'];
 
 	$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2' ";
-	$mydata=$this->dbcon->query("$sql1")->result_array();       
+	$mydata=$this->dbcon()->query("$sql")->fetch_assoc();      
 	print_r($mydata);
 		//endforeach;
 		// foreach($mydata as $row1):
