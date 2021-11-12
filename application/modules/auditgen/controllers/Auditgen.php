@@ -114,7 +114,6 @@ return $dbConn;
 
 			$facility_name = $row['facility_name'];
 		 
-			$facility_name2 = $facility_name.'%';
 
 			$facility_id = $row['facility_id'];
 
@@ -124,7 +123,7 @@ return $dbConn;
 
 			$district_name = $row['district_name'];
 
-	$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2' ";
+	$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name%' ";
 	$mydata=$this->dbcon()->query("$sql")->fetch_assoc();      
 	print_r($mydata);
 		//endforeach;
