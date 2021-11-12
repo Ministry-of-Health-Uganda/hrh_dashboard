@@ -17,7 +17,7 @@ class Auditgen extends MX_Controller {
 	////////////////////////////////////////////////////
  //iupdate gender 
 	public function cache_filled(){
-		$query=$this->db->query('SELECT replace(facility_name,"\'","") as facility_name, facility_id FROM staff WHERE facility_type_id = "facility_type|DHO"')->result();
+		$query=$this->db->query('SELECT facility_name, facility_id FROM staff')->result();
 
 		foreach($query as $row):
 			       $facility_id = $row->facility_id;
