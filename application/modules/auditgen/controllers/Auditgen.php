@@ -17,6 +17,15 @@ class Auditgen extends MX_Controller {
 	////////////////////////////////////////////////////
  //iupdate gender 
 	public function cache_filled(){
+		$query=$this->db->query('SELECT replace(facility_name,"\'","") as facility_name ,facility_id FROM staff WHERE facility_type_id = "facility_type|DHO"')->result();
+
+		foreach($query as $row):
+			       $facility_id = $row->facility_id;
+                    $facility_name = preg_replace('/[^\p{L}\p{N}\s]/u', ''$row->facility_name);
+					
+                    $this->db->query("UPDATE staff SET facility_name='$facility_name' WHERE facility_id='$facility_id'");
+		endforeach;
+
 		 $gender_up=$this->db->query("UPDATE staff SET gender='Male' WHERE gender=''");
 		//truncate filled
 		 $this->truncate_filled();
@@ -56,8 +65,6 @@ class Auditgen extends MX_Controller {
 	//truncate structure filled
 	public function truncate_filled(){
 		 $this->db->query("TRUNCATE TABLE structure_filled");
-	//echo $this->db->affected_rows();
-
 	}
 
 	///////////////////////////////////////////////
@@ -70,15 +77,6 @@ class Auditgen extends MX_Controller {
 	public function cache_structure(){
 		$this->db->query("DELETE FROM structure WHERE approved='0'");
 		$this->db->query("TRUNCATE TABLE structure_approved");
-		$query=$this->db->query('SELECT replace(facility_name,"\'","") as facility_name ,facility_id FROM staff WHERE facility_type_id = "facility_type|DHO"')->result();
-
-		foreach($query as $row):
-			       $facility_id = $row->facility_id;
-                    $facility_name = preg_replace('/[^\p{L}\p{N}\s]/u', ''$row->facility_name);
-					
-                    $this->db->query("UPDATE staff SET facility_name='$facility_name' WHERE facility_id='$facility_id'");
-		endforeach;
-		
 		$this->template_structure_approved();
 		$this->template_structure_approved2();
 		
@@ -97,9 +95,7 @@ class Auditgen extends MX_Controller {
 		$region_name = $row['region_name'];
 
 		$facility_name = $row['facility_name'];
-	 
-		// $facility_name2 = str_replace("'","",$facility_name);
-
+	
 		$facility_id = $row['facility_id'];
 
 		$dhis_facility_id = $row['dhis_facility_id'];
