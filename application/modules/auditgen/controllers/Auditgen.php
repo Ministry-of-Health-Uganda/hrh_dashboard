@@ -124,7 +124,7 @@ return $dbConn;
 			
 		$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2%' ";
 		$mydata=$this->query("$sql1")->result_array();      
-	//print_r($mydata);
+	
 		//endforeach;
 		foreach($mydata as $row1):
 			$job = $row1['job']; 
@@ -154,7 +154,7 @@ return $dbConn;
 	 
 		//  $sql="INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')";   
 		//  $this->dbcon()->query("$sql");
-
+        print_r($mydata);
 		endforeach;
 		
 		endforeach;
