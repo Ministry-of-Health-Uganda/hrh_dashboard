@@ -104,8 +104,8 @@ return $dbConn;
 
 	public function template_structure_approved1(){
 		$sql = "SELECT facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM total_facilities_temp_districts WHERE facility_type_name IN ('Regional Referral Hospital','Ministry','National Referral Hospital','Specialised National Facility') ";
-
-		$data=$this->dbcon()->query("$sql")->fetch_assoc();
+  
+		$data=$this->db->query($sql)->result_array();
 		foreach($data as $row):
 
 			$facility_type_name = $row['facility_type_name'];
@@ -114,7 +114,6 @@ return $dbConn;
 
 			$facility_name = $row['facility_name'];
 		 
-
 			$facility_id = $row['facility_id'];
 
 			$dhis_facility_id = $row['dhis_facility_id'];
@@ -122,9 +121,9 @@ return $dbConn;
 			$institution_type = $row['institution_type'];
 
 			$district_name = $row['district_name'];
-
-	$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name%' ";
-	$mydata=$this->dbcon()->query("$sql1")->fetch_assoc();      
+			
+		$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2%' ";
+		$mydata=$this->query("$sql1")->result_array();      
 	//print_r($mydata);
 		//endforeach;
 		foreach($mydata as $row1):
@@ -153,8 +152,8 @@ return $dbConn;
 		
 
 	 
-		 $sql="INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')";   
-		 $this->dbcon()->query("$sql");
+		//  $sql="INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')";   
+		//  $this->dbcon()->query("$sql");
 
 		endforeach;
 		
