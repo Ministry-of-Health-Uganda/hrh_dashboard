@@ -104,7 +104,7 @@ return $dbConn;
 
 	public function template_structure_approved1(){
 		$sql = "SELECT facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM total_facilities_temp_districts WHERE facility_type_name IN ('Regional Referral Hospital','Ministry','National Referral Hospital','Specialised National Facility') ";
-  
+            
 		$data=$this->db->query($sql)->result_array();
 		foreach($data as $row):
 
@@ -122,8 +122,8 @@ return $dbConn;
 
 			$district_name = $row['district_name'];
 			
-		$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name%' ";
-		$mydata=$this->db->query("$sql1")->result_array();      
+			$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2' ";
+			$mydata=$this->db->query($sql1)->result_array();      
 	
 		//endforeach;
 		foreach($mydata as $row1):
