@@ -37,7 +37,7 @@ return $dbConn;
 
 		foreach($query as $row):
 			       $facility_id = $row->facility_id;
-                    $facility_name = preg_replace('/[^A-Za-z0-9\-]/', '',$row->facility_name);
+                    $facility_name = preg_replace('~[^0-9a-z\\s]~i', '',$row->facility_name);
 					
                     $this->db->query("UPDATE staff SET facility_name='$facility_name' WHERE facility_id='$facility_id'");
 		endforeach;
@@ -122,7 +122,7 @@ return $dbConn;
 
 			$district_name = $row['district_name'];
 			
-			$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name2' ";
+			$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name' ";
 			$mydata=$this->db->query($sql1)->result_array();      
 	
 		//endforeach;
