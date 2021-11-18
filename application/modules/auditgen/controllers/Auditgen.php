@@ -37,7 +37,7 @@ return $dbConn;
 
 		foreach($query as $row):
 			       $facility_id = $row->facility_id;
-                    $facility_name = str_replace(")","",str_replace("(","-",str_replace("'"," ",$row->facility_name)));
+                    $facility_name = str_replace(")","",str_replace("(","-",str_replace("'","",$row->facility_name)));
 					
                     $this->db->query("UPDATE staff SET facility_name='$facility_name' WHERE facility_id='$facility_id'");
 		endforeach;
