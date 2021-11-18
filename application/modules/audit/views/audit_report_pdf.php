@@ -144,7 +144,7 @@ table tr:nth-child(even){
             $totalFemales  += $row->female;
             $totalMales    += $row->male;
 
-      ?>      
+      ?>
         <tr>
             <td><?php echo  $row->$aggColumn; ?></td>
             <td><?php echo  $row->salary_scale; ?></td>
