@@ -37,9 +37,9 @@ class Audit extends MX_Controller {
 			$this->load->view("audit/audit_report_pdf",$data);
 			//$filename = "audit_report_".time().".pdf";
 			//Modules::run('template/makePdf',$html,$filename,"D");
+		else:
+			echo Modules::run('template/layout',$data);
 		endif;
-
-		echo Modules::run('template/layout',$data);
 	}
 
 
