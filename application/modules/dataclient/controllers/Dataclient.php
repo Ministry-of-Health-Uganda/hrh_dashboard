@@ -39,15 +39,15 @@ class Dataclient extends MX_Controller {
 		$result = $this->mdl->saveRoster($data);
 		$res    = $this->prettyJSON($result);
 
-		if($opt ==1):
-			 $this->getRosterHRM(2);
-		endif;
+		// if($opt ==1):
+		// 	 $this->getRosterHRM(2);
+		// endif;
 
 		print_r($result);
 	}
-	public function getRosterHRM($opt){
+	public function getRosterHRM($opt=2){
 
-		$endpoint ='person_roster/2021-06-01/2021-10-31';
+		$endpoint ='person_roster/2021-01-01/2021-04-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
 
 		$data   = $this->sendRequest($url);
@@ -62,7 +62,7 @@ class Dataclient extends MX_Controller {
 	//Fetches attendance from District Duty Roster
 	public function RosterAttendance($opt=1){
 
-		$endpoint ='person_attend/2021-06-01/2021-10-31';
+		$endpoint ='person_attend/2021-01-01/2021-04-31';
 		$url  = self::BASE_URL[$opt]."$endpoint";
 		$data = $this->sendRequest($url);
 		$result  = $this->mdl->saveAttendance($data);
@@ -72,7 +72,7 @@ class Dataclient extends MX_Controller {
 	}
 	public function HRMAttendance($opt=2){
 
-		$endpoint ='person_attend/2021-10-01/2021-10-01';
+		$endpoint ='person_attend/2021-01-01/2021-04-30';
 		$url  = self::BASE_URL[$opt]."$endpoint";
 		$data = $this->sendRequest($url);
 		$result  = $this->mdl->saveAttendance($data);
@@ -89,7 +89,7 @@ class Dataclient extends MX_Controller {
     //Fetches attendance data from iHRIS Manage to update
 	public function iHRISAttendance(){
 
-		$endpoint ='person_attend/2021-06-01/2021-10-30';
+		$endpoint ='person_attend/2021-01-01/2021-04-30';
 		$url  = self::BASE_URL[3]."$endpoint";
 		$data = $this->sendRequest($url);
 		

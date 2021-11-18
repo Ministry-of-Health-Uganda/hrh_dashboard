@@ -189,7 +189,7 @@ class Dataclient_model extends CI_Model {
 						);
 
 						array_push($rosterData,$attendRow);
-						$this->db->insert('monthly_static_figures',$attendRow);
+						$this->db->replace('monthly_static_figures',$attendRow);
 				endif;
 
 				$data = @array_diff_assoc($data, $inFacility);
