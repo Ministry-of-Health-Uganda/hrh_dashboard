@@ -1,20 +1,12 @@
 <html>
 <head>
     <style>
-<<<<<<< HEAD
-body {font-family: Arial
-	font-size: 10pt;
-	max-width:22cm;
-=======
+
 body {font-family: Arial;
-<<<<<<< HEAD
 	font-size: 12pt;
 	max-width:21cm;
-=======
 	font-size: 10pt;
 	max-width:22cm;
->>>>>>> origin/dev
->>>>>>> 50c2820cd558ab9e984b6cc721bc8a617db38fd3
 	max-height:29.7cm;
 }
 p {	margin: 0pt; }
