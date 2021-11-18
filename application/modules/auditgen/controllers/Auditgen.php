@@ -359,7 +359,7 @@ return $dbConn;
                     
 		endforeach;
 		echo "<br><p style=color='green';>".$this->db->affected_rows()."</p> National Jobs";
-	};
+	}
 
 	public function cache_ownership(){
 		$this->db->query("UPDATE national_jobs SET ownership='Public' WHERE institution_type IN ('National Referral Hospital, Central Government','Specialised Facility, Central Government','Ministry, Central Government','Regional Referral Hospital, Central Government','District, Local Government (LG)','UBTS, Central Government','City, Local Government (LG)','Municipality, Local Government (LG)')");
