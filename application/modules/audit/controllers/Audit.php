@@ -39,7 +39,7 @@ class Audit extends MX_Controller {
 			//Modules::run('template/makePdf',$html,$filename,"D");
 		endif;
 
-		echo Modules::run('template/layout',$data);
+		//echo Modules::run('template/layout',$data);
 	}
 
 
