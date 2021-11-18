@@ -33,7 +33,7 @@ class Audit extends MX_Controller {
 		$data['audit']  = $this->auditMdl->getAuditReport();
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
-			$html     = 
+			//$html     = 
 			$this->load->view("audit/audit_report_pdf",$data,true);
 			//$filename = "audit_report_".time().".pdf";
 			//Modules::run('template/makePdf',$html,$filename,"D");
