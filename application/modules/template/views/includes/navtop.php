@@ -53,7 +53,7 @@
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <div class="dropdown-divider"></div>
-          <a href="https://hris2.health.go.ug/demo_manage" target="_blank" class="dropdown-item">
+          <a href="https://hris.health.go.ug/demo" target="_blank" class="dropdown-item">
             <i class="fas fa-globe"></i>iHRIS Manage Demo
           </a>
           <div class="dropdown-divider"></div>
