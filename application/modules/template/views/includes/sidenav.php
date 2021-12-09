@@ -332,13 +332,14 @@ body::-webkit-scrollbar-thumb
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?php echo base_url()?>assets/IHris_Update_Tool.apk"  target="_blank" class="nav-link">
+            <a href="https://mobileihris.health.go.ug/"  target="_blank" class="nav-link">
               <i class="fa fa-clock dash-icon"></i>
               <p>
               iHRIS Update Tool
               </p>
             </a>
           </li>
+        
 
                 
           <?php if ($this->session->userdata('isAdmin')) { ?>
