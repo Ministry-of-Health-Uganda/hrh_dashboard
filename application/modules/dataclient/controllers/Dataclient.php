@@ -33,16 +33,9 @@ class Dataclient extends MX_Controller {
 		$data   = $this->sendRequest($url);
 		$mm = array();
 		foreach($data as $dt):
-	    $farray = array('ihris_pid'=>$data->ihris_pid,
-		                'facility_id'=>$data->facility_id
-					
-		 
-
-
-		);
-		array_push($mm,$farray);
-	   endforeach;
-		print_r($mm);
+			print_r($dt);
+	    endforeach;
+		
 
 
 
