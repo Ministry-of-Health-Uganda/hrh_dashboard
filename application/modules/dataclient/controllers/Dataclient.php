@@ -31,14 +31,18 @@ class Dataclient extends MX_Controller {
 		$endpoint ='person_attend/2021-06-01/2021-10-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
 		$data   = $this->sendRequest($url);
-	    $farray = array('ihris_pid'=>$data['ihris_pid'],
-		                'facility_id'=>$data['facility_id']
+		$mm = array();
+		foreach($data as $dt):
+	    $farray = array('ihris_pid'=>$data->ihris_pid,
+		                'facility_id'=>$data->facility_id
 					
 		 
 
 
 		);
-		print_r($data);
+		array_push($mm,$farray);
+	   endforeach;
+		print_r($mm);
 
 
 
