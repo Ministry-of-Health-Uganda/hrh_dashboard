@@ -38,7 +38,7 @@ class Dataclient extends MX_Controller {
 
 
 		);
-		print_r($farray);
+		print_r($data);
 
 
 
