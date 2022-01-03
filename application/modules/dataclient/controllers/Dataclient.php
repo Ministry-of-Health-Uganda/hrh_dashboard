@@ -30,7 +30,8 @@ class Dataclient extends MX_Controller {
 	public function saveAttendance($opt=3){
 		$endpoint ='person_attend/2021-06-01/2021-10-31';
 		$url = self::BASE_URL[$opt]."$endpoint";
-	    print_r(json_decode($url));
+		$data   = $this->sendRequest($url);
+	    print_r(json_decode($data));
 
 
 
