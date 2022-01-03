@@ -76,9 +76,9 @@ $active_record = TRUE;//ci version 2.x
 
 $db['default'] = array(
     'dsn'   => '',
-    'hostname' => 'localhost',
-    'username' => 'root',
-    'password' => '',
+    'hostname' => '172.27.1.109',
+    'username' => 'ihris_manage',
+    'password' => 'managi123',
     'database' => 'hrh_dashboard',
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
