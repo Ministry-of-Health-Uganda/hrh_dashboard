@@ -42,8 +42,14 @@ class Assessment extends MX_Controller {
 
 	);
 
-	
-	$count=$this->Assessment_mdl->addSupport($insert);
+	 if(json_encode($this->input->post('reports')!='null')){
+	 
+	  $count=$this->Assessment_mdl->addSupport($insert);
+	 }
+	 else
+	 {
+	 $this->session->set_flashdata('message',"Failed, Select a report");
+	 }
       
 
 	// print_r($insert);
