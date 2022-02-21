@@ -49,6 +49,12 @@
       console.log(district);
   </script>
 
+  <?php
+  if($GET['display']="hris"){
+    $hris_display = "display:none";
+  }
+  ?>
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->

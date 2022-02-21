@@ -1,6 +1,6 @@
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light" style="background: linear-gradient( 
-135deg , rgba(40,29,31,1) 0%, rgb(56 169 175) 100%); color:#FFFFFF;" >
+135deg , rgba(40,29,31,1) 0%, rgb(56 169 175) 100%); color:#FFFFFF; <?php echo $display; ?>" >
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
