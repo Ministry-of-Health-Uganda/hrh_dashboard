@@ -50,7 +50,7 @@
   </script>
 
   <?php
-  if($GET['display']=="hris"){
+  if($GET['district']=="hris"){
     $hris_display = "display:none";
     $body_sidebar = "sidebar-collapse";
   }
@@ -61,5 +61,15 @@
 <!-- Site wrapper -->
 <div class="wrapper">
 <div class="base_url" style="display:none;">
-<?php echo base_url()?>
+<?php echo base_url();
+
+
+
+?>
+
 </div> 
+<?php echo $GET['district'];
+
+
+
+?>
