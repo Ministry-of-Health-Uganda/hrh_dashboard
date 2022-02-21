@@ -50,7 +50,7 @@
   </script>
 
   <?php
-  if($GET['display']="hris"){
+  if($GET['display']=="hris"){
     $hris_display = "display:none";
     $body_sidebar = "sidebar-collapse";
   }
