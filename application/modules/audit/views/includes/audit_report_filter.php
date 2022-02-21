@@ -220,17 +220,17 @@
 
 	<div class="form-group col-md-1">
 		<br>
-		<input  type="submit" class="btn btn-success" value="Apply Filter" />
+		<input  type="submit" class="btn btn-sm btn-success" value="Apply Filter" />
 	</div>
 	<div class="form-group col-md-2">
 		<br>
-		<button  type="reset" class="btn btn-default" >Reset Filters</button>
+		<button  type="reset" class="btn btn-sm btn-default" >Reset Filters</button>
 	</div>
 
 	<div class="form-group col-md-1">
 		<br>
 		 <input type="hidden" name="getPdf" id="print">
-		 <button onclick="$('#print').val(1); $('.searchForm').submit();$('#print').val(0);"  type="button" class="btn btn-default" >Download</button>
+		 <button onclick="$('#print').val(1); $('.searchForm').submit();$('#print').val(0);"  type="button" class="btn btn-sm btn-default" >Download</button>
 	</div>
 	
 </form>
