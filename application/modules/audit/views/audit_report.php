@@ -17,9 +17,7 @@ div.dataTables_wrapper div.dataTables_filter {
     </div>
     <hr/>
 <?php endif; ?>
-<?php
-echo $_GET['districts'];
-?>
+
 
 <table class="table table-striped table-bordered mytable">
     <thead>
