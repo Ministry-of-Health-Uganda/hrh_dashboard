@@ -2,7 +2,7 @@
   <!-- /.content-wrapper -->
 
   <footer class="main-footer" style="background: linear-gradient( 
-135deg , rgba(40,29,31,1) 0%, rgb(56 169 175) 100%); color:#FFFFFF;">
+135deg , rgba(40,29,31,1) 0%, rgb(56 169 175) 100%); color:#FFFFFF; <?php echo $hris_display; ?>">
                 <div class="col-lg-12">
                     <div class="footer-copy-right">
                     <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/USAID-Identity.svg" style="width:180px; height:50px;">
