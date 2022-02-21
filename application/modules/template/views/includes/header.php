@@ -41,6 +41,14 @@
         }
   </style>
 
+<div class="facility_block">
+  <script>
+      var url_string = window.location.href;
+      var url = new URL(url_string);
+      var district = url.searchParams.get("district");
+      console.log(district);
+  </script>
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->

@@ -35,10 +35,6 @@ class Dataclient extends MX_Controller {
 		foreach($data as $dt):
 			print_r($dt);
 	    endforeach;
-		
-
-
-
 	}
 	
 
