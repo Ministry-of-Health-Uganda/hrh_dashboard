@@ -52,6 +52,7 @@
   <?php
   if($GET['display']="hris"){
     $hris_display = "display:none";
+    $body = "sidebar-collapse";
   }
   ?>
 
