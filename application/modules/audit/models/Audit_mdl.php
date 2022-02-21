@@ -37,7 +37,7 @@ class Audit_mdl extends CI_Model {
 	}
 	public function getdname($district){
 		$ddata=$this->db->query("SELECT  district from ihrisdata where district_id='$district'")->row();
-    return $dname=$ddata['district'];
+    return $dname=$ddata->district;
 
 	}
 	
