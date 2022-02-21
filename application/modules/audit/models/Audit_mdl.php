@@ -35,6 +35,11 @@ class Audit_mdl extends CI_Model {
 		return $this->db->get('national_jobs')->result();
 		
 	}
+	public function getdname($district){
+		$ddata=$this->db->query("SELECT  district from ihrisdata where district_id='$district'")->row();
+    return $dname=$ddata['district'];
+
+	}
 	
 	private function auditReportFilters($search)
 	{
@@ -42,6 +47,20 @@ class Audit_mdl extends CI_Model {
 		if(!empty($search->district)){
 
 			$this->db->where('district_name',$search->district);
+
+		}
+		if(!empty($_GET['districts'])&& empty($search->district)){
+			$district_id=$_GET['districts'];
+			$dname=$this->getdname($district_id);
+			$session->setFlashdata('district', $dname);
+			$this->db->where("district_name","$dname");
+
+		}
+		if(!empty($_GET['districts'])&&empty($search->institution)){
+			$session->setFlashdata('institution_type', 'District, Local Government (LG)');
+	
+			$this->db->where('institution_type','District, Local Government (LG)');
+			
 
 		}
 		
@@ -91,9 +110,18 @@ class Audit_mdl extends CI_Model {
 			$legend .= "<b class='text-success'>District: </b>".$search->district;
 
 		}
+		if(!empty($_SESSION['district'])){
+
+			$legend .= "<b class='text-success'>District: </b>".$_SESSION['district'];
+
+		}
 		
 		if(!empty($search->institution)){
 			$legend .= " <b class='text-success'>Institution Type: </b>".$search->institution;
+		}
+
+		if(!empty($_SESSION['institution_type'])){
+			$legend .= " <b class='text-success'>Institution Type: </b>".$_SESSION['institution_type'];
 		}
 
 		if(!empty($search->job_category)){
