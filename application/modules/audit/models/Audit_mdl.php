@@ -52,12 +52,13 @@ class Audit_mdl extends CI_Model {
 		if(!empty($_GET['districts'])&& empty($search->district)){
 			$district_id=$_GET['districts'];
 			$dname=$this->getdname($district_id);
-			$this->$session->setFlashdata('district', $dname);
+			$this->session->set_flashdata('district',$dname);
+
 			$this->db->where("district_name","$dname");
 
 		}
 		if(!empty($_GET['districts'])&&empty($search->institution)){
-			$this->$session->setFlashdata('institution_type', 'District, Local Government (LG)');
+			$this->session->set_flashdata('institution_type', 'District, Local Government (LG)');
 	
 			$this->db->where('institution_type','District, Local Government (LG)');
 			
