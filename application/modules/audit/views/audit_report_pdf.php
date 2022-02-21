@@ -84,7 +84,7 @@ table tr:nth-child(even){
         <td><img src="<?php echo base_url(); ?>assets/images/MOH.png" width="80px" /></td>
         <td>
             <br/>
-            <h2> Staffing Audit Report</h2>
+            <h2> Staff Audit Report</h2>
             <?php if(!empty($legend)): ?>
                 <br/>
                 <p style="text-transform: capitalize;"><?php echo $legend; ?></p>

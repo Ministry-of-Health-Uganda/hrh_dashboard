@@ -28,9 +28,10 @@ class Audit extends MX_Controller {
 		$data['aggTitle']   = $this->auditMdl->getAggregateLabel(@$search->aggregate);
 		$data['aggColumn']  = (!empty($search->aggregate))?$search->aggregate:"job_name";
 
-		$data['legend']	= $this->auditMdl->auditReportLegend($search);
+		
 		$data['filters']= $this->DataPrep_mdl->getFilters(true);
 		$data['audit']  = $this->auditMdl->getAuditReport();
+		$data['legend']	= $this->auditMdl->auditReportLegend($search);
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
 			$html     = $this->load->view("audit/audit_report_pdf",$data,true);
