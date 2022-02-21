@@ -224,7 +224,7 @@
 	</div>
 	<div class="form-group col-md-2">
 		<br>
-		<button  type="reset" class="btn btn-sm btn-default" >Reset Filters</button>
+		<!-- <button  type="reset" class="btn btn-sm btn-default" >Reset Filters</button> -->
 	</div>
 
 	<div class="form-group col-md-1">
