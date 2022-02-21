@@ -42,12 +42,6 @@
   </style>
 
 <div class="facility_block">
-  <script>
-      var url_string = window.location.href;
-      var url = new URL(url_string);
-      var district = url.searchParams.get("district");
-      console.log(district);
-  </script>
 
   <?php
   if($_GET['display']=="ihris"){
