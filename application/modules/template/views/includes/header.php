@@ -52,12 +52,12 @@
   <?php
   if($GET['display']="hris"){
     $hris_display = "display:none";
-    $body = "sidebar-collapse";
+    $body_sidebar = "sidebar-collapse";
   }
   ?>
 
 </head>
-<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed <?php echo $body_sidebar ?>">
 <!-- Site wrapper -->
 <div class="wrapper">
 <div class="base_url" style="display:none;">
