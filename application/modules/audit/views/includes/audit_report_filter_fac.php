@@ -132,7 +132,7 @@
 		</select>
 	</div>
 
-	<div class="form-group col-md-2">
+	<div class="form-group col-md-3">
 		<label>Aggregate By</label>
 		<select class="select form-control" name="aggregate">
 			<option value="job_name">
@@ -163,7 +163,7 @@
 
 	<div class="form-group col-md-1">
 		<br>
-		<input  type="submit" class="btn btn-sm btn-success" value="Apply Filter" />
+		<input  type="submit" class="btn  btn-success" value="Apply Filter" />
 	</div>
 	<div class="form-group col-md-2">
 		<br>
@@ -173,7 +173,7 @@
 	<div class="form-group col-md-1">
 		<br>
 		 <input type="hidden" name="getPdf" id="print">
-		 <button onclick="$('#print').val(1); $('.searchForm').submit();$('#print').val(0);"  type="button" class="btn btn-sm btn-default" >Download</button>
+		 <button onclick="$('#print').val(1); $('.searchForm').submit();$('#print').val(0);"  type="button" class="btn  btn-default" >Download</button>
 	</div>
 	
 </form>
