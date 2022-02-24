@@ -30,7 +30,7 @@ class Audit extends MX_Controller {
 
 		
 		$data['filters']= $this->DataPrep_mdl->getFilters(true);
-		$data['audit']  = $this->auditMdl->getAuditReport();
+		$data['audit']  = $this->auditMdl->getAuditReport($facilityId=FALSE);
 		$data['legend']	= $this->auditMdl->auditReportLegend($search);
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
