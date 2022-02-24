@@ -23,7 +23,7 @@ foreach ($facilities as $fac):
 ?>
 
     <div class="form-group">
-      <h5 style="text-transform: capitalize;"><?php echo  $fac->facility_name; ?></h5>
+      <h6 style="text-transform: capitalize;"><?php echo  $fac->facility_name; ?></h6>
     </div>
     <hr/>
 
@@ -55,6 +55,7 @@ foreach ($facilities as $fac):
           $overAllTotal  = 0;
           $totalMales    = 0;
           $totalFemales  = 0;
+          $col=Modules::run('audit/facAudit')['$aggColumn'];
           $audit = Modules::run('audit/facAudit',$fac->facility_id)['audit'];
          
           foreach($audit as $row):
@@ -79,7 +80,7 @@ foreach ($facilities as $fac):
 
     ?>      
        <tr>
-           <td><?php $col=Modules::run('audit/facAudit',$fac->facility_id)['$aggColumn']; echo  $row->$col; ?></td>
+           <td><?php echo  $row->$col; ?></td>
            <td><?php echo  $row->salary_scale; ?></td>
            <td><?php echo  $row->approved; ?></td>
            <td><?php echo  $row->filled; ?></td>
