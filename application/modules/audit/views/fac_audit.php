@@ -81,7 +81,7 @@ foreach ($facilities as $fac):
 
     ?>      
        <tr>
-           <td><?php echo  $row->job_name; ?></td>
+           <td><?php echo  $row->$col; ?></td>
            <td><?php echo  $row->salary_scale; ?></td>
            <td><?php echo  $row->approved; ?></td>
            <td><?php echo  $row->filled; ?></td>
