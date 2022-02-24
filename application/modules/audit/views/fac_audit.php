@@ -18,7 +18,8 @@ div.dataTables_wrapper div.dataTables_filter {
     <hr/>
 <?php endif; ?>
 <?php $facilities = Modules::run('audit/district_facility');
-foreach ($facilities as $fac):
+print_r($facilities);
+//foreach ($facilities as $fac):
 ?>
 
 <table class="table table-striped table-bordered mytable">
@@ -94,7 +95,7 @@ foreach ($facilities as $fac):
            </td>
        </tr>
 
-   <?php endforeach; ?>
+   <?php //endforeach; ?>
    
     </tbody>
     <tfoot>
