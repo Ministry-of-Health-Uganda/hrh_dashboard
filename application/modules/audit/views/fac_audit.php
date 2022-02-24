@@ -55,7 +55,7 @@ foreach ($facilities as $fac):
           $overAllTotal  = 0;
           $totalMales    = 0;
           $totalFemales  = 0;
-          $col=Modules::run('audit/facAudit');
+          $col=Modules::run('audit/facAudit')['aggColumn'];
           print_r($col);
           //$audit = Modules::run('audit/facAudit',$fac->facility_id)['audit'];
          
