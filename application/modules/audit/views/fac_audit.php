@@ -13,7 +13,7 @@ div.dataTables_wrapper div.dataTables_filter {
 
 <?php if(!empty($legend)): ?>
     <div class="form-group">
-      <h5 style="text-transform: capitalize;"><?php echo $legend; ?></h5>
+      <h5 style="text-transform: capitalize;"><?php echo  Modules::run('audit/facAudit')['legend']; ?></h5>
     </div>
     <hr/>
 <?php endif; ?>
@@ -26,7 +26,7 @@ div.dataTables_wrapper div.dataTables_filter {
     <thead>
        <tr>
            <th width="25%" style="text-transform: capitalize;">
-             <?php echo  $aggTitle; ?>
+             <?php echo  Modules::run('audit/facAudit')['aggTitle']; ?>
            </th>
            <th>Salary Scale</th>
            <th>Approved</th>
