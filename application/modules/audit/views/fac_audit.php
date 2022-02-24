@@ -11,7 +11,7 @@ div.dataTables_wrapper div.dataTables_filter {
 <hr/>
 <br />
 
-<?php if(!empty($legend)): ?>
+<?php if(!empty(Modules::run('audit/facAudit')['legend'])): ?>
     <div class="form-group">
       <h5 style="text-transform: capitalize;"><?php echo  Modules::run('audit/facAudit')['legend']; ?></h5>
     </div>
@@ -19,7 +19,7 @@ div.dataTables_wrapper div.dataTables_filter {
 <?php endif; ?>
 <?php $facilities = Modules::run('audit/district_facility');
 //print_r($facilities);
-//foreach ($facilities as $fac):
+foreach ($facilities as $fac):
 ?>
 
 <table class="table table-striped table-bordered mytable">
@@ -50,7 +50,7 @@ div.dataTables_wrapper div.dataTables_filter {
           $overAllTotal  = 0;
           $totalMales    = 0;
           $totalFemales  = 0;
-          $audit = Modules::run('audit/facAudit','facility|Ghospital-112-1')['audit'];
+          $audit = Modules::run('audit/facAudit',$fac->facility_id)['audit'];
          
           foreach($audit as $row):
 
@@ -95,7 +95,7 @@ div.dataTables_wrapper div.dataTables_filter {
              <?php echo  ($female>0)?number_format($female,1):0; ?>%
            </td>
        </tr>
-
+       <?php endforeach; ?>
    
     </tbody>
     <tfoot>
@@ -124,6 +124,7 @@ div.dataTables_wrapper div.dataTables_filter {
         
     </tfoot>
 </table>
+
 <?php endforeach; ?>
 
 

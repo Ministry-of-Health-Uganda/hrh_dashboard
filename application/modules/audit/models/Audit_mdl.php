@@ -171,9 +171,9 @@ class Audit_mdl extends CI_Model {
 	}
 
 	public function district_facility(){
-		$district_id='district|112';
+		$district_id=$_GET['districts'];
 		$dname=$this->getdname($district_id);
-		$data=$this->db->query("SELECT distinct facility_id,facility_name FROM `national_jobs` WHERE district_name='$dname'");
+		$data=$this->db->query("SELECT facility_id,facility_name FROM `national_jobs` WHERE district_name='$dname'");
     return $data->result();
 	}
 
