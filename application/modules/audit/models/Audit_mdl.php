@@ -36,7 +36,7 @@ class Audit_mdl extends CI_Model {
 		return $this->db->get('national_jobs')->result();
 		
 	}
-	public function getdname($district='district|112'){
+	public function getdname($district){
 		$ddata=$this->db->query("SELECT  district from ihrisdata where district_id='$district'")->row();
     return $dname=$ddata->district;
 
@@ -171,7 +171,7 @@ class Audit_mdl extends CI_Model {
 	}
 
 	public function district_facility(){
-		$district_id=$_GET['districts'];
+		$district_id='district|112';
 		$dname=$this->getdname($district_id);
 		$data=$this->db->query("SELECT facility_id,facility_name FROM `national_jobs` WHERE district='$dname'");
     return $data->result();
