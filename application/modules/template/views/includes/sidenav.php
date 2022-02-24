@@ -175,7 +175,7 @@ body::-webkit-scrollbar-thumb
                 </a>
               </li>
               <li class="nav-item">
-                <a href="<?php echo base_url() ?>audit/auditReport" class="nav-link">
+                <a href="<?php echo base_url() ?>audit/lfacAudit" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Facility Audit Report</p>
                 </a>
