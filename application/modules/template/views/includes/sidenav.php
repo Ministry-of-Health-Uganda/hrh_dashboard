@@ -174,7 +174,12 @@ body::-webkit-scrollbar-thumb
                   <p class="nav-drop">Audit Report</p>
                 </a>
               </li>
-             
+              <li class="nav-item">
+                <a href="<?php echo base_url() ?>audit/lfacAudit" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p class="nav-drop">Facility Audit Report</p>
+                </a>
+              </li>
         
             </ul>
           </li>
