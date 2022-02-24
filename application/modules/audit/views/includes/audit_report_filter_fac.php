@@ -138,22 +138,7 @@
 			<option value="job_name">
 			   Job
 		     </option>
-			<option value="institution_type"
-			<?php echo ($search->aggregate == 'institution_type')?'selected':''; ?>>
-			  Institution Type
-			 </option>
-			<option value="district_name" 
-			 <?php echo ($search->aggregate == 'district_name')?'selected':''; ?>>
-			  District
-			 </option>
-			 <option value="facility_name" 
-			 <?php echo ($search->aggregate == 'facility_name')?'selected':''; ?>>
-			  Facility
-			 </option>
-			 <option value="facility_type_name" 
-			 <?php echo ($search->aggregate == 'facility_type_name')?'selected':''; ?>>
-			  Facility Type
-			 </option>
+			
 			 <option value="cadre_name" 
 			 <?php echo ($search->aggregate == 'cadre_name')?'selected':''; ?>>
 			  Cadre
