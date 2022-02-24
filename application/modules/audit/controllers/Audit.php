@@ -74,7 +74,7 @@ class Audit extends MX_Controller {
 	public function lfacAudit(){
 
         $data['module']     = "audit";
-		$data['page']       = "fac_audit";
+		$data['page']       = "fac_audit_report_pdf";
 		$data['title']      = "Facility Audit Report";
 		$data['uptitle']    = "HRH Facility Audit Report";
 		
