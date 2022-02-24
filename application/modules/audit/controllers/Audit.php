@@ -62,9 +62,9 @@ class Audit extends MX_Controller {
 		$data['legend']	= $this->auditMdl->auditReportLegend($search);
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
-			$html     = $this->load->view("audit/audit_report_fac_pdf",$data,false);
-			$filename = "Facility_audit_report_".time().".pdf";
-			Modules::run('template/makePdf',$html,$filename,"D");
+			// $html     = $this->load->view("audit/audit_report_fac_pdf",$data,false);
+			// $filename = "Facility_audit_report_".time().".pdf";
+			// Modules::run('template/makePdf',$html,$filename,"D");
 		else:
 			//echo Modules::run('template/layout',$data);
 		return $data;
@@ -74,7 +74,7 @@ class Audit extends MX_Controller {
 	public function lfacAudit(){
 
         $data['module']     = "audit";
-		$data['page']       = "fac_audit";
+		$data['page']       = "audit_report_fac_pdf";
 		$data['title']      = "Facility Audit Report";
 		$data['uptitle']    = "HRH Facility Audit Report";
 		
