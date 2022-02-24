@@ -1,5 +1,5 @@
 <form class="form-horizontal row searchForm" method="post" action="">
-   <?php  $filters = Modules::run('audit/facAudit',$fac->facility_id)['audit']; ?>
+   <?php  $filters = Modules::run('audit/facAudit',$fac->facility_id)['filters']; ?>
 	<div class="form-group col-md-3">
 		<label>Institution Type</label>
 		<select class="select form-control select2" name="institution">
