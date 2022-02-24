@@ -7,12 +7,14 @@ class Audit_mdl extends CI_Model {
 		parent::__Construct();
 	}
    
-	public function getAuditReport(){
+	public function getAuditReport($facilityid=FALSE){
 
 		$search = (Object) $this->input->post();
 		
 		$this->auditReportFilters($search);
-
+        if(!empty($facilityid)){
+		$this->db->where("facility_id","$facilityid");
+		}
 		$this->db->select("
 			job_name,
 			salary_scale,
@@ -28,14 +30,13 @@ class Audit_mdl extends CI_Model {
 			sum(excess) as excess,
 			sum(vacant) as vacant
 			");
-
 		$aggregation = (!empty($search->aggregate))?$search->aggregate:"job_name";
 
 		$this->db->group_by($aggregation);
 		return $this->db->get('national_jobs')->result();
 		
 	}
-	public function getdname($district){
+	public function getdname($district='district|112'){
 		$ddata=$this->db->query("SELECT  district from ihrisdata where district_id='$district'")->row();
     return $dname=$ddata->district;
 
@@ -167,6 +168,13 @@ class Audit_mdl extends CI_Model {
 	public function getAggregateLabel($aggregateLabel){
 		$aggregate = str_replace('name',"",str_replace('_'," ",(!empty($aggregateLabel))?$aggregateLabel:"job_name"));
 		return $aggregate;
+	}
+
+	public function district_facility(){
+		$district_id=$_GET['districts'];
+		$dname=$this->getdname($district_id);
+		$data=$this->db->query("SELECT facility_id,facility_name FROM `national_jobs` WHERE district='$dname'");
+    return $data->result();
 	}
 
 
