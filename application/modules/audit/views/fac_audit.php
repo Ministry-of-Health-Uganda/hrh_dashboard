@@ -22,6 +22,11 @@ div.dataTables_wrapper div.dataTables_filter {
 foreach ($facilities as $fac):
 ?>
 
+    <div class="form-group">
+      <h5 style="text-transform: capitalize;"><?php echo  $fac->facility_name; ?></h5>
+    </div>
+    <hr/>
+
 <table class="table table-striped table-bordered mytable">
     <thead>
        <tr>
