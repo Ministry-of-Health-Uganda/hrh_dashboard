@@ -56,8 +56,8 @@ foreach ($facilities as $fac):
           $totalMales    = 0;
           $totalFemales  = 0;
           $col=Modules::run('audit/facAudit')['aggColumn'];
-          print_r($col);
-          //$audit = Modules::run('audit/facAudit',$fac->facility_id)['audit'];
+          //print_r($col);
+          $audit = Modules::run('audit/facAudit',$fac->facility_id)['audit'];
          
           foreach($audit as $row):
 
@@ -81,7 +81,7 @@ foreach ($facilities as $fac):
 
     ?>      
        <tr>
-           <td><?php echo  $row->$col; ?></td>
+           <td><?php echo  $row->job_name; ?></td>
            <td><?php echo  $row->salary_scale; ?></td>
            <td><?php echo  $row->approved; ?></td>
            <td><?php echo  $row->filled; ?></td>
