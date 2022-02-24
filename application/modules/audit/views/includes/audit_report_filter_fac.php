@@ -1,4 +1,4 @@
-<form class="form-horizontal row searchForm" method="post" action="">
+<form class="form-horizontal row searchForm" method="post" action="<?php echo base_url()?>audit/facAudit">
    <?php  $filters = Modules::run('audit/facAudit')['filters']; ?>
 	<div class="form-group col-md-3">
 		<label>Institution Type</label>
@@ -18,24 +18,6 @@
 	</div>
 	
 	
-	<div class="form-group col-md-3">
-		<label>Facility Level</label>
-		<select class="select form-control select2" name="facility_type">
-			<option value="">All</option>
-			<?php foreach($filters->facility_types as $facilityType):
-
-			$selected = ($search->facility_type == $facilityType->facility_type)?'selected':'';
-			 ?>
-				<option <?php echo $selected ?> 
-				   value="<?php echo $facilityType->facility_type; ?>">
-
-				       <?php echo $facilityType->facility_type; ?>
-				   	
-				   </option>
-			<?php endforeach; ?>
-			
-		</select>
-	</div>
 
 	<div class="form-group col-md-3">
 		<label>Job Name</label>
@@ -158,7 +140,7 @@
 	<div class="form-group col-md-1">
 		<br>
 		 <input type="hidden" name="getPdf" id="print">
-		 <button onclick="$('#print').val(4); $('.searchForm').submit();"  type="button" class="btn  btn-default" >Download</button>
+		 <button onclick="$('#print').val(1); $('.searchForm').submit();$('#print').val(0);"  type="button" class="btn btn-sm btn-default" >Download</button>
 	</div>
 	
 </form>
