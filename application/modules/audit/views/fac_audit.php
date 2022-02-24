@@ -79,7 +79,7 @@ foreach ($facilities as $fac):
 
     ?>      
        <tr>
-           <td><?php echo  $row->Modules::run('audit/facAudit',$fac->facility_id)['$aggColumn']; ?></td>
+           <td><?php $col=Modules::run('audit/facAudit')['$aggColumn']; echo  $row->$col; ?></td>
            <td><?php echo  $row->salary_scale; ?></td>
            <td><?php echo  $row->approved; ?></td>
            <td><?php echo  $row->filled; ?></td>
