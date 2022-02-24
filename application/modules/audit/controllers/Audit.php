@@ -48,7 +48,7 @@ class Audit extends MX_Controller {
 		$search = (Object) $this->input->post();
       
         $data['module']     = "audit";
-	    $data['page']       = "fac_audit_report_pdf";
+	    $data['page']       = "audit/audit_report_fac_pdf";
 		$data['title']      = "Facility Audit Report";
 		$data['uptitle']    = "HRH Audit Report";
 		$data['search']     = $search;
