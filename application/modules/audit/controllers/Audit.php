@@ -81,9 +81,9 @@ class Audit extends MX_Controller {
 	      echo Modules::run('template/layout',$data);
 		
 	}
-	public function district_facility(){
+	public function district_facility($district){
 		
-		$data = $this->auditMdl->district_facility();
+		$data = $this->auditMdl->district_facility($district);
 	return $data;
 	}
 

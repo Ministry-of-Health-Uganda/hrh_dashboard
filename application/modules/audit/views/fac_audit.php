@@ -17,7 +17,7 @@ div.dataTables_wrapper div.dataTables_filter {
     </div>
     <hr/>
 <?php endif; ?>
-<?php $facilities = Modules::run('audit/district_facility');
+<?php $facilities = Modules::run('audit/district_facility',$_GET['districts']);
 //print_r($facilities);
 foreach ($facilities as $fac):
 ?>

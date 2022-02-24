@@ -7,7 +7,7 @@ class Audit_mdl extends CI_Model {
 		parent::__Construct();
 	}
    
-	public function getAuditReport($facilityid=FALSE){
+	public function getAuditReport($facilityid){
 
 		$search = (Object) $this->input->post();
 		
@@ -170,8 +170,7 @@ class Audit_mdl extends CI_Model {
 		return $aggregate;
 	}
 
-	public function district_facility(){
-		$district_id=$_GET['districts'];
+	public function district_facility($district_id){
 		$dname=$this->getdname($district_id);
 		$data=$this->db->query("SELECT facility_id,facility_name FROM `national_jobs` WHERE district_name='$dname'");
     return $data->result();
