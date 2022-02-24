@@ -18,7 +18,7 @@ div.dataTables_wrapper div.dataTables_filter {
     <hr/>
 <?php endif; ?>
 <?php $facilities = Modules::run('audit/district_facility');
-print_r($facilities);
+//print_r($facilities);
 //foreach ($facilities as $fac):
 ?>
 
@@ -51,6 +51,7 @@ print_r($facilities);
           $totalMales    = 0;
           $totalFemales  = 0;
          $data = Modules::run('audit/district_facility');
+         print_r($data);
           foreach($audit as $row):
 
             $structure    = $row->approved;
