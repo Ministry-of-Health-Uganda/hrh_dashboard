@@ -62,7 +62,7 @@ class Audit extends MX_Controller {
 		$data['legend']	= $this->auditMdl->auditReportLegend($search);
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
-			$html     = $this->load->view("audit/audit_report_fac_pdf",$data,true);
+			$html     = $this->load->view("audit/audit_report_fac_pdf",$data,false);
 			$filename = "Facility_audit_report_".time().".pdf";
 			Modules::run('template/makePdf',$html,$filename,"D");
 		else:
