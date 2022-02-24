@@ -96,7 +96,6 @@ div.dataTables_wrapper div.dataTables_filter {
            </td>
        </tr>
 
-   <?php //endforeach; ?>
    
     </tbody>
     <tfoot>
