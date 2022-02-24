@@ -50,7 +50,7 @@ div.dataTables_wrapper div.dataTables_filter {
           $overAllTotal  = 0;
           $totalMales    = 0;
           $totalFemales  = 0;
-         $data = Modules::run('audit/district_facility');
+         $data = Modules::run('audit/facAudit','facility|Ghospital-112-1');
          print_r($data);
           foreach($audit as $row):
 
