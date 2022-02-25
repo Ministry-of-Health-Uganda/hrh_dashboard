@@ -98,6 +98,11 @@ table tr:nth-child(even){
 //print_r($facilities);
 foreach ($facilities as $fac):
 ?>
+ <div class="form-group">
+      <h6 style="text-transform: capitalize;"><?php echo  $fac->facility_name; ?></h6>
+    </div>
+    <hr/>
+
   <table class="items" style="font-size: 10pt; border-collapse: collapse; " cellpadding="8" width="100%">
     <thead>
         <tr>
