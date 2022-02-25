@@ -23,7 +23,7 @@ foreach ($facilities as $fac):
 ?>
 
     <div class="form-group">
-      <h6 style="text-transform: capitalize;"><?php echo  $fac->facility_name; ?></h6>
+      <h6 style=""><?php echo  $fac->facility_name; ?></h6>
     </div>
     <hr/>
 

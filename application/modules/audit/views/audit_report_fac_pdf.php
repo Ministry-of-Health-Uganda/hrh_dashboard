@@ -99,7 +99,7 @@ table tr:nth-child(even){
 foreach ($facilities as $fac):
 ?>
  <div class="form-group">
-      <h4 style="text-transform: capitalize;"><?php echo  $fac->facility_name; ?></h4>
+      <h4 ><?php echo  $fac->facility_name; ?></h4>
     </div>
     <hr/>
 
