@@ -64,10 +64,11 @@ class Audit extends MX_Controller {
 	
 	}
 	public function printfacAudit(){
-
-			$html     = $this->load->view("audit/audit_report_fac_pdf",$one="",false);
+            if($this->input->post('getPdf')):
+			$html     = $this->load->view("audit/audit_report_fac_pdf","",true);
 			$filename = "Facility_audit_report_".time().".pdf";
 			Modules::run('template/makePdf',$html,$filename,"D");
+			endif;
 	}
 
 	public function lfacAudit(){
