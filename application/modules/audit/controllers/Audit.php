@@ -60,15 +60,16 @@ class Audit extends MX_Controller {
 		$data['filters']= $this->DataPrep_mdl->getFilters(true);
 		$data['audit']  = $this->auditMdl->getAuditReport($facilityId);
 		$data['legend']	= $this->auditMdl->auditReportLegend($search);
+		echo "I am here";
 
-		if($this->input->post('getPdf')):
-			$html     = $this->load->view("audit/audit_report_fac_pdf",$one="",false);
-			$filename = "Facility_audit_report_".time().".pdf";
-			Modules::run('template/makePdf',$html,$filename,"D");
-		else:
+		// if($this->input->post('getPdf')):
+		// 	$html     = $this->load->view("audit/audit_report_fac_pdf",$one="",false);
+		// 	$filename = "Facility_audit_report_".time().".pdf";
+		// 	Modules::run('template/makePdf',$html,$filename,"D");
+		// else:
 			
-		return $data;
-		endif;
+		// return $data;
+		// endif;
 	}
 
 	public function lfacAudit(){
