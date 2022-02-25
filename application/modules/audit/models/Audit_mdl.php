@@ -53,6 +53,7 @@ class Audit_mdl extends CI_Model {
 		if(!empty($_GET['districts'])&& empty($search->district)){
 			$district_id=$_GET['districts'];
 			$dname=$this->getdname($district_id);
+			$this->session->set_flashdata('district_id',$district_id);
 			$this->session->set_flashdata('district',$dname);
 
 			$this->db->where("district_name","$dname");
