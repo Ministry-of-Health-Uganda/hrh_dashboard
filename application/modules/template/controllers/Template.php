@@ -9,6 +9,7 @@ class Template extends MX_Controller {
 		$this->load->model(array(
 			'template_model'
 		));
+		$this->watermark=FCPATH."assets/images/watermark.png";
 	}
  
 	public function layout($data)
@@ -34,6 +35,8 @@ public function makePdf($html,$filename,$action)
      ob_clean();
      
 	$PDFContent = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+	$this->ml_pdf->pdf->SetWatermarkImage($this->watermark);
+    $this->ml_pdf->pdf->showWatermarkImage = true;
 
 	$this->ml_pdf->pdf->WriteHTML($PDFContent); 
 	 
