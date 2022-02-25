@@ -139,8 +139,8 @@
 
 	<div class="form-group col-md-1">
 		<br>
-		 
-		 <button  type="submit" name="getPdf" class="btn btn-default" >Download</button>
+		 <input type="hidden" name="getPdf" id="print">
+		 <button onclick="$('#print').val(1); $('.searchForm').submit();$('#print').val(0);"  type="button" class="btn btn-sm btn-default" >Download</button>
 	</div>
 	
 </form>
