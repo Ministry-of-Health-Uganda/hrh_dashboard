@@ -87,7 +87,7 @@ table tr:nth-child(even){
             <h2> Staff Audit Report</h2>
             <?php if(!empty(Modules::run('audit/facAudit')['legend'])): ?>
                 <br/>
-                <p style="text-transform: capitalize;"><?php echo Modules::run('audit/facAudit')['legend']; ?></p>
+                <h3 style="text-transform: capitalize;"><?php echo Modules::run('audit/facAudit')['legend']; ?></h3>
             <?php endif; ?>
         </td>
       </tr>
@@ -99,7 +99,7 @@ table tr:nth-child(even){
 foreach ($facilities as $fac):
 ?>
  <div class="form-group">
-      <h6 style="text-transform: capitalize;"><?php echo  $fac->facility_name; ?></h6>
+      <h4 style="text-transform: capitalize;"><?php echo  $fac->facility_name; ?></h4>
     </div>
     <hr/>
 
