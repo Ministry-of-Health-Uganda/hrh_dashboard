@@ -83,7 +83,7 @@ body::-webkit-scrollbar-thumb
 }
 </style>
  <!-- Main Sidebar Container -->
- <aside class="main-sidebar sidebar-dark-primary elevation-4" >
+ <aside class="main-sidebar sidebar-dark-primary elevation-4" style="<?php echo $hris_display; ?>" >
     <!-- Brand Logo -->
     <a href="<?php echo base_url();?>" class="brand-link" style="background: linear-gradient( 
 135deg , rgba(40,29,31,1) 0%, rgb(56 169 175) 100%); color:#FFFFFF; text-align:center;">
