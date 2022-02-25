@@ -61,8 +61,8 @@ class Audit extends MX_Controller {
 		$data['audit']  = $this->auditMdl->getAuditReport($facilityId);
 		$data['legend']	= $this->auditMdl->auditReportLegend($search);
 
-		if($this->input->post($search->getPdf)):
-			print_r ("Iam here");
+		if($this->input->post('getPdf')):
+			echo ("Iam here");
 			// $html     = $this->load->view("audit/audit_report_fac_pdf",$one="",false);
 			// $filename = "Facility_audit_report_".time().".pdf";
 			// Modules::run('template/makePdf',$html,$filename,"D");
