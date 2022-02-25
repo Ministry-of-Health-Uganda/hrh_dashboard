@@ -1,4 +1,4 @@
-<form class="form-horizontal row searchForm" method="post" action="<?php echo base_url()?>audit/printfacAudit?districts=<?php echo $_SESSION['district_id']?>">
+<form class="form-horizontal row searchForm" method="post" action="<?php echo base_url()?>audit/printfacAudit?districts=<?php echo $_SESSION['district_id']?>&display=ihris">
    <?php  $filters = Modules::run('audit/facAudit')['filters']; ?>
 	<div class="form-group col-md-3">
 		<label>Institution Type</label>
