@@ -94,7 +94,7 @@ table tr:nth-child(even){
   </table>
   <hr />
   <br/>
-<?php $facilities = Modules::run('audit/district_facility',$_GET['district']);
+<?php $facilities = Modules::run('audit/district_facility',$_SESSION['district']);
 //print_r($facilities);
 foreach ($facilities as $fac):
 ?>
