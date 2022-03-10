@@ -228,7 +228,7 @@ body::-webkit-scrollbar-thumb
           </li>
 
           <li class="nav-item">
-            <a href="https://hris2.health.go.ug/iHRIS/dev/chwr"   class="nav-link">
+            <a href="https://hris2.health.go.ug/community_registry/"   class="nav-link">
               <i class="fa fa-h-square dash-icon"></i>
               <p>
                   CHW Registry
