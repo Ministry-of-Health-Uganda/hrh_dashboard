@@ -282,12 +282,12 @@ body::-webkit-scrollbar-thumb
                   <p class="nav-drop">In Service Training</p>
                 </a>
               </li>
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <a href="https://hris2.health.go.ug/iHRIS/releases/4.1/DES"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">DES</p>
                 </a>
-              </li>
+              </li> -->
             </ul>
           </li>
           <li class="nav-item has-treeview ">
