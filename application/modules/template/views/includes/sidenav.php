@@ -277,7 +277,7 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="https://hris2.health.go.ug/Train"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/national_train"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">In Service Training</p>
                 </a>
