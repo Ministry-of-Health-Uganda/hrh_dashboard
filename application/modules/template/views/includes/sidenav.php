@@ -246,7 +246,7 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="https://hris2.health.go.ug/ahpc-qualify"  target="_blank" class="nav-link">
+                <a href="https://hris2.health.go.ug/allied_council"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Allied Health Professionals Council</p>
                 </a>
@@ -300,7 +300,7 @@ body::-webkit-scrollbar-thumb
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="http://41.173.3.36/ucmb_manage/login"  target="_blank" class="nav-link">
+                <a href="http://41.173.3.36/ucmb/login"  target="_blank" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p class="nav-drop">Uganda Catholic Med. Bureau</p>
                 </a>
