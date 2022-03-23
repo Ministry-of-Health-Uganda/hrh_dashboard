@@ -25,7 +25,7 @@ div.dataTables_wrapper div.dataTables_filter {
            <th width="25%" style="text-transform: capitalize;">
              <?php echo  $aggTitle; ?>
            </th>
-           <th>Salary Scale</th>
+           <?php if ($search->aggregate  == 'job_name') { ?><th>Salary Scale</th> <?php } ?>
            <th>Approved</th>
            <th>Filled</th>
            <th>Vacant</th>
@@ -71,7 +71,7 @@ div.dataTables_wrapper div.dataTables_filter {
     ?>      
        <tr>
            <td><?php echo  $row->$aggColumn; ?></td>
-           <td><?php echo  $row->salary_scale; ?></td>
+           <?php if ($search->aggregate  == 'job_name') { ?><td><?php echo  $row->salary_scale; ?></td><?php }?>
            <td><?php echo  $row->approved; ?></td>
            <td><?php echo  $row->filled; ?></td>
            <td><?php echo  $vacantPosts; ?></td>

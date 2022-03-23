@@ -100,7 +100,7 @@ table tr:nth-child(even){
             <th width="25%" style="text-transform: capitalize;">
               <?php echo  $aggTitle; ?>
             </th>
-            <th>Salary Scale</th>
+            <?php if ($search->aggregate  == 'job_name') { ?><th>Salary Scale</th> <?php }?>
             <th>Approved</th>
             <th>Filled</th>
             <th>Vacant</th>
@@ -147,7 +147,7 @@ table tr:nth-child(even){
       ?>
         <tr>
             <td><?php echo  $row->$aggColumn; ?></td>
-            <td><?php echo  $row->salary_scale; ?></td>
+            <?php if ($search->aggregate  == 'job_name') { ?> <td><?php echo  $row->salary_scale; ?></td> <?php } ?>
             <td><?php echo  $row->approved; ?></td>
             <td><?php echo  $row->filled; ?></td>
             <td><?php echo  $vacantPosts; ?></td>
