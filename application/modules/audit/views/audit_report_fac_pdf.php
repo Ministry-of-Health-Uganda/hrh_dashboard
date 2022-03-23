@@ -188,7 +188,7 @@ foreach ($facilities as $fac):
       <tfoot>
           <tr>
             <th width="25%">TOTALS</th>
-            <th></th>
+            <?php if ($col == 'job_name') {?><th></th><?php } ?>
             <th><?php echo $totalApproved; ?></th>
             <th><?php echo $totalFilled; ?></th>
             <th><?php echo $totalVacant; ?></th>

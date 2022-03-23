@@ -31,9 +31,12 @@ foreach ($facilities as $fac):
     <thead>
        <tr>
            <th width="25%" style="text-transform: capitalize;">
-             <?php echo  Modules::run('audit/facAudit')['aggTitle']; ?>
+           
+             <?php echo  Modules::run('audit/facAudit')['aggTitle']; 
+              $col=Modules::run('audit/facAudit')['aggColumn'];
+             ?>
            </th>
-           <th>Salary Scale</th>
+           <?php if ($col == 'job_name') {?><th>Salary Scale</th><?php } ?>
            <th>Approved</th>
            <th>Filled</th>
            <th>Vacant</th>
@@ -55,7 +58,7 @@ foreach ($facilities as $fac):
           $overAllTotal  = 0;
           $totalMales    = 0;
           $totalFemales  = 0;
-          $col=Modules::run('audit/facAudit')['aggColumn'];
+         
           //print_r($col);
           $audit = Modules::run('audit/facAudit',$fac->facility_id)['audit'];
          
@@ -82,7 +85,7 @@ foreach ($facilities as $fac):
     ?>      
        <tr>
            <td><?php echo  $row->$col; ?></td>
-           <td><?php echo  $row->salary_scale; ?></td>
+           <?php if ($col == 'job_name') {?> <td><?php echo  $row->salary_scale; ?></td><?php } ?>
            <td><?php echo  $row->approved; ?></td>
            <td><?php echo  $row->filled; ?></td>
            <td><?php echo  $vacantPosts; ?></td>
@@ -108,7 +111,7 @@ foreach ($facilities as $fac):
     <tfoot>
         <tr>
            <th width="25%">TOTALS</th>
-           <th></th>
+           <?php if ($col == 'job_name') {?>  <th></th> <?php } ?>
            <th><?php echo $totalApproved; ?></th>
            <th><?php echo $totalFilled; ?></th>
            <th><?php echo $totalVacant; ?></th>
