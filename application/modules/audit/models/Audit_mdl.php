@@ -72,6 +72,11 @@ class Audit_mdl extends CI_Model {
 			$this->db->where('institution_type',$search->institution);
 		}
 
+		if(!empty($search->facility_type)){
+
+			$this->db->where('facility_type_name',$search->facility_type);
+		}
+
 		if(!empty($search->job_category)){
 
 			$this->db->where('job_category',$search->job_category);
