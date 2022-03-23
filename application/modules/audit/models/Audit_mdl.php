@@ -118,7 +118,7 @@ class Audit_mdl extends CI_Model {
 			$legend .= "<b class='text-success'>District: </b>".$search->district;
 
 		}
-		if(!empty($_SESSION['district']) && $GET['display']=='ihris'){
+		if(!empty($_SESSION['district']) && $_GET['display']=='ihris'){
 
 			$legend .= "<b class='text-success'>District: </b>".$_SESSION['district'];
 
@@ -128,7 +128,7 @@ class Audit_mdl extends CI_Model {
 			$legend .= " <b class='text-success'>Institution Type: </b>".$search->institution;
 		}
 
-		if(!empty($_SESSION['institution_type']) && $GET['display']=='ihris'){
+		if(!empty($_SESSION['institution_type']) && $_GET['display']=='ihris'){
 			$legend .= " <b class='text-success'>Institution Type: </b>".$_SESSION['institution_type'];
 		}
 
