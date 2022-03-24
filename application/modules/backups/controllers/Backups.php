@@ -12,7 +12,7 @@ class Backups extends MX_Controller {
         $this->db_pass = 'managi123';
         $this->host='172.27.1.109';
         $this->database ='information_schema';
-        $this->ignore_list= array('old_distance','municipal_manage','moh_manage','mohattendance','mohattdemo','manage','ihris_ims','covid','demo_chwr','dhishrisanalysis','dutyrosterdemo','DES_demo', 'information_schema','phpmyadmin','performance_schema', 'mysql','demo_manage','train_demo');
+        $this->ignore_list= array('old_distance','municipal_manage','hrhdashboard','mohattendance','mohattdemo','manage','ihris_ims','covid','demo_chwr','dhishrisanalysis','dutyrosterdemo','DES_demo', 'information_schema','phpmyadmin','performance_schema', 'mysql','demo_manage','train_demo','national_demo');
         $this->suffix = date('Y-m-d');
 	}
 public function index(){
