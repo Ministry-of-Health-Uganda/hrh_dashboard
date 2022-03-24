@@ -96,7 +96,7 @@
 
 	<div class="form-group col-md-3">
 		<label>Job Name</label>
-		<select class="select form-control" name="job">
+		<select class="select form-control select2" name="job">
 			<option value="">All</option>
 			<?php foreach($filters->jobs as $job):
 
