@@ -95,7 +95,7 @@ return $dbConn;
 	public function cache_structure(){
 		$this->db->query("DELETE FROM structure WHERE approved='0'");
 		$this->db->query("TRUNCATE TABLE structure_approved");
-		$this->template_structure_approve1();
+		$this->template_structure_approved1();
 		$this->template_structure_approved2();
 		
 
@@ -144,16 +144,16 @@ return $dbConn;
 			$salary_scale = $row1['salary_grade'];
 
 
-		// 	$facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
-		// 	$facility_type_namei=  str_replace(")","",str_replace("(","-",str_replace("'","",$facility_type_name)));
-		// 	$region_namei =   str_replace(")","",str_replace("(","-",str_replace("'","",$region_name)));
-		// 	$institution_typei = str_replace(")","",str_replace("(","-",str_replace("'","",$institution_type)));
-		// 	$district_namei = str_replace(")","",str_replace("(","-",str_replace("'","",$district_name)));
+			$facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
+			$facility_type_namei=  str_replace(")","",str_replace("(","-",str_replace("'","",$facility_type_name)));
+			$region_namei =   str_replace(")","",str_replace("(","-",str_replace("'","",$region_name)));
+			$institution_typei = str_replace(")","",str_replace("(","-",str_replace("'","",$institution_type)));
+			$district_namei = str_replace(")","",str_replace("(","-",str_replace("'","",$district_name)));
 		
 
 	 
-		//  $sql="INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')";   
-		//  $this->dbcon()->query("$sql");
+		 $sql="INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_namei','$institution_typei','$district_namei','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')";   
+		 $this->dbcon()->query("$sql");
         print_r($mydata);
 		endforeach;
 		
@@ -229,7 +229,7 @@ return $dbConn;
 		 $sql1 =	"(SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f RIGHT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id)  ) UNION (SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f LEFT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id)  )";
                                         
     
-	     $data=$this->db->query($sql)->result_array();
+	     $data=$this->db->query($sql1)->result_array();
 		
           						
      
@@ -362,19 +362,13 @@ return $dbConn;
 	}
 
 	public function cache_ownership(){
-		$this->db->query("UPDATE national_jobs SET ownership='Public' WHERE institution_type IN ('National Referral Hospital, Central Government','Specialised Facility, Central Government','Ministry, Central Government','Regional Referral Hospital, Central Government','District, Local Government (LG)','UBTS, Central Government','City, Local Government (LG)','Municipality, Local Government (LG)')");
-
-
-		$this->db->query("UPDATE national_jobs SET ownership='Private' WHERE institution_type LIKE 'UCBHCA, Private for Profit (PFPs)'");
-
-
-		$this->db->query("UPDATE national_jobs SET ownership='PNFP' WHERE institution_type IN ('UCMB, Private not for Profit (PNFPs)', 'UPMB, Private not for Profit (PNFPs)','UMMB, Private not for Profit (PNFPs)','UOMB, Private not for Profit (PNFPs)','Civil Society Organisations (CSO)')");
-
-
+		$this->db->query("UPDATE national_jobs SET ownership='Public' WHERE institution_type IN ('National Referral Hospital, Central Government','Specialised Facility, Central Government','Ministry, Central Government','Regional Referral Hospital, Central Government','District, Local Government (LG)','UBTS, Central Government','City, Local Government (LG)','Municipality, Local Government (LG)','Ministry' )");
+		$this->db->query("UPDATE national_jobs SET ownership='Private' WHERE institution_type IN ('UCBHCA, Private for Profit (PFPs)')");
+		$this->db->query("UPDATE national_jobs SET ownership='PNFP' WHERE institution_type IN ('UCMB, Private not for Profit (PNFPs)', 'UPMB, Private not for Profit (PNFPs)','UMMB, Private not for Profit (PNFPs)','UOMB, Private not for Profit (PNFPs)','Civil Society Organisations (CSO)','Civil Society Organisations (CSO), Private not for Profit (PNFPs)')");
 		$this->db->query("UPDATE national_jobs SET ownership='Prison' WHERE institution_type IN ('Uganda Prison Services, Security Forces')");
-
-
 		$this->db->query("UPDATE national_jobs SET ownership='Police' WHERE institution_type IN ('Uganda Police, Security Forces')");
+		$this->db->query("UPDATE national_jobs SET ownership='UPDF' WHERE institution_type IN ('Uganda Peoples Defence Force (UPDF), Security Forces')");
+	echo $this->db->affected_rows()." updated";
 	}
 
 
@@ -382,6 +376,7 @@ return $dbConn;
 		$this->cache_filled();
 		$this->cache_structure();
 		$this->cache_nationaljobs();
+		$this->cache_ownership();
 	}
 
 
