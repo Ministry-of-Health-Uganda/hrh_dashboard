@@ -161,6 +161,10 @@ class Audit_mdl extends CI_Model {
 			//facility type
 			$legend .= " <b class='text-success'>Region : </b>".$search->region;
 		}
+		if(!empty($search->ownership)){
+			//facility type
+			$legend .= " <b class='text-success'>Region : </b>".$search->ownership;
+		}
 
 		if(!empty($search->facility)){
 			//facility type
