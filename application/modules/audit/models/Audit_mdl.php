@@ -82,6 +82,11 @@ class Audit_mdl extends CI_Model {
 			$this->db->where('job_category',$search->job_category);
 		}
 
+		if(!empty($search->job_class)){
+
+			$this->db->where('job_classification',$search->job_class);
+		}
+
 		if(!empty($search->job)){
 			//job name
 			$this->db->where('job_name',$search->job);
