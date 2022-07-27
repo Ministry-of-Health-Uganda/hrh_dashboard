@@ -32,7 +32,7 @@ class Audit_mdl extends CI_Model
 			sum(excess) as excess,
 			sum(vacant) as vacant
 			");
-
+		$this->db->order_by('salary_scale', 'asc');
 		$aggregation = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
 
 		$this->db->group_by($aggregation);
