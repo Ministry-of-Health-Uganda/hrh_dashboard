@@ -13,7 +13,6 @@ class Audit_mdl extends CI_Model
 	{
 
 		$search = (object) $this->input->post();
-		$this->db->order_by('salary_scale', 'asc');
 		$this->auditReportFilters($search);
 		if (!empty($facilityid)) {
 			$this->db->where("facility_id", "$facilityid");
@@ -37,7 +36,7 @@ class Audit_mdl extends CI_Model
 		$aggregation = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
 
 		$this->db->group_by($aggregation);
-
+		$this->db->order_by('salary_scale', 'asc');
 		return $this->db->get('national_jobs')->result();
 	}
 	public function getdname($district)
