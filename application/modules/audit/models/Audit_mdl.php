@@ -31,7 +31,7 @@ class Audit_mdl extends CI_Model {
 			sum(vacant) as vacant
 			");
 		$aggregation = (!empty($search->aggregate))?$search->aggregate:"job_name";
-
+        $this->db->order_by('salary_scale', 'ASC');
 		$this->db->group_by($aggregation);
 		return $this->db->get('national_jobs')->result();
 		
