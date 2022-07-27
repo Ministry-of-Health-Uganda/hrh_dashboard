@@ -13,7 +13,7 @@ class Audit_mdl extends CI_Model
 	{
 
 		$search = (object) $this->input->post();
-		$this->db->order_by('salary_scale ASC');
+		$this->db->order_by('salary_scale', 'asc');
 		$this->auditReportFilters($search);
 		if (!empty($facilityid)) {
 			$this->db->where("facility_id", "$facilityid");
