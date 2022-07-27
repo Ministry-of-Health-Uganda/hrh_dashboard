@@ -13,7 +13,7 @@ class Audit_mdl extends CI_Model
 	{
 
 		$search = (object) $this->input->post();
-
+		$this->db->order_by('salary_scale ASC');
 		$this->auditReportFilters($search);
 		if (!empty($facilityid)) {
 			$this->db->where("facility_id", "$facilityid");
@@ -33,7 +33,7 @@ class Audit_mdl extends CI_Model
 			sum(excess) as excess,
 			sum(vacant) as vacant
 			");
-		$this->db->order_by('salary_scale ASC');
+
 		$aggregation = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
 
 		$this->db->group_by($aggregation);
