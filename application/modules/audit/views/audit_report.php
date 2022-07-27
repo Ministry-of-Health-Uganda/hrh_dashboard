@@ -25,7 +25,7 @@ require_once 'includes/audit_report_filter.php';
       <th width="25%" style="text-transform: capitalize;">
         <?php echo  $aggTitle; ?>
       </th>
-      <?php if (($search->aggregate  == 'job_name') || ($search->aggregate  == 'job_name')) { ?><th>Salary Scale</th> <?php } ?>
+      <?php if (($search->aggregate  == 'job_name') || ($search->aggregate  == '')) { ?><th>Salary Scale</th> <?php } ?>
       <th>Approved</th>
       <th>Filled</th>
       <th>Vacant</th>
@@ -71,7 +71,7 @@ require_once 'includes/audit_report_filter.php';
     ?>
       <tr>
         <td><?php echo  $row->$aggColumn; ?></td>
-        <?php if ($search->aggregate  == 'job_name') { ?><td><?php echo  $row->salary_scale; ?></td><?php } ?>
+        <?php if (($search->aggregate  == 'job_name') || ($search->aggregate  == '')) { ?><td><?php echo  $row->salary_scale; ?></td><?php } ?>
         <td><?php echo  $row->approved; ?></td>
         <td><?php echo  $row->filled; ?></td>
         <td><?php echo  $vacantPosts; ?></td>
