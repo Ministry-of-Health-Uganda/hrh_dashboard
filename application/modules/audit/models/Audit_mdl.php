@@ -20,6 +20,7 @@ class Audit_mdl extends CI_Model
 		$this->db->select("
 			job_name,
 			salary_scale,
+			job_classification,
 			institution_type,
 			district_name,
 			facility_name,
