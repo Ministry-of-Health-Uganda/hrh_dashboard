@@ -215,6 +215,10 @@
 			 <?php echo ($search->aggregate == 'cadre_name')?'selected':''; ?>>
 			  Cadre
 			 </option>
+			<option value="classification" 
+			 <?php echo ($search->aggregate == 'classification')?'selected':''; ?>>
+			  Classification
+			 </option>
 		</select>
 	</div>
 
