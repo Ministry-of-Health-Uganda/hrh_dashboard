@@ -216,7 +216,7 @@
 			  Cadre
 			 </option>
 			<option value="classification" 
-			 <?php echo ($search->aggregate == 'classification')?'selected':''; ?>>
+			 <?php echo ($search->aggregate == 'job_classification')?'selected':''; ?>>
 			  Classification
 			 </option>
 		</select>
