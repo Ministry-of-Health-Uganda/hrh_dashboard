@@ -375,8 +375,8 @@ return $dbConn;
 	public function render_audit(){
 		$this->cache_filled();
 		$this->cache_structure();
-		$this->cache_nationaljobs();
-		$this->cache_ownership();
+		//$this->cache_nationaljobs();
+		//$this->cache_ownership();
 	}
 
 
