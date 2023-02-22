@@ -203,7 +203,7 @@
 			<option value="job_classification" <?php echo ($search->aggregate == 'job_classification') ? 'selected' : ''; ?>>
 				Classification
 			</option>
-			<option value="job_classification" <?php echo ($search->aggregate == 'region_name') ? 'selected' : ''; ?>>
+			<option value="region_name" <?php echo ($search->aggregate == 'region_name') ? 'selected' : ''; ?>>
 				Region
 			</option>
 		</select>
