@@ -369,7 +369,7 @@ class DataPrep_mdl extends CI_Model {
 		$data['districts']    = $this->db->get("districts")->result();
 		$data['institutions'] = $this->db->get("institutions")->result();
 		$data['regions'] 	  = $this->db->get("regions")->result();
-		$data['period'] = $this->db->query("SELECT distinct CONCAT(month,'-',year) as month_year FROM `quarterly_national_jobs` order by year DESC")->result();
+		$data['period'] = $this->db->query("SELECT distinct CONCAT(month,'-',year) as month_year FROM `quarterly_national_jobs`")->result();
 
 
 		if($showAll):
