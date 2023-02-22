@@ -206,43 +206,26 @@
 		</select>
 	</div>
 	<div class="form-group col-md-1">
-		<label>Month</label>
-		<select class="select form-control" name="month">
+		<label>Month Year</label>
+		<select class="select form-control" name="month_year">
 			<option value="">Current</option>          
 			<?php 
 		
 			foreach ($filters->period as $period):
 
-				$selected = ($search->month == $owner->month) ? 'selected' : '';
+				$selected = ($search->month == $owner->month_year) ? 'selected' : '';
 				?>
 		
-				<option <?php echo $selected ?> value="<?php echo $period->month; ?>">
+				<option <?php echo $selected ?> value="<?php echo $period->month_year; ?>">
 
-					<?php echo $period->month; ?>
-
-				</option>
-			<?php endforeach; ?>
-
-		</select>
-	</div>
-	<div class="form-group col-md-1">
-		<label>Year</label>
-		<select class="select form-control" name="year">
-			<option value="">Current</option> 
-			<?php foreach ($filters->period as $period):
-
-				$selected = ($search->year == $owner->year) ? 'selected' : '';
-				?>
-				
-				<option <?php echo $selected ?> value="<?php echo $period->year; ?>">
-
-					<?php echo $period->year; ?>
+					<?php echo $period->month_year; ?>
 
 				</option>
 			<?php endforeach; ?>
 
 		</select>
 	</div>
+	
 
 	<div class="form-group col-md-1">
 		<br>
