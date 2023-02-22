@@ -34,6 +34,7 @@ class Audit_mdl extends CI_Model
 			district_name,
 			facility_name,
 			facility_type_name,
+			region_name,
 			cadre_name,
 			sum(approved) as approved,
 			sum(total)  as filled,
