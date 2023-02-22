@@ -17,7 +17,7 @@ class Audit_mdl extends CI_Model
 		if (!empty($facilityid)) {
 			$this->db->where("facility_id", "$facilityid");
 		}
-		if (empty($search->year)) {
+		if (empty($search->month_year)) {
 			$table = "national_jobs";
 		} else {
 			$table = "quarterly_national_jobs";
