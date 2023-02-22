@@ -216,9 +216,9 @@
 				$selected = ($search->month == $owner->month_year) ? 'selected' : '';
 				?>
 		
-				<option <?php echo $selected ?> value="<?php echo explode($period->month_year,'-')[0]; ?>">
+				<option <?php echo $selected ?> value="<?php echo $period->month_year; ?>">
 
-					<?php echo explode($period->month_year, '-')[0]; ?>
+					<?php echo explode('-',$period->month_year)[0]; ?>
 
 				</option>
 			<?php endforeach; ?>
