@@ -206,7 +206,7 @@
 		</select>
 	</div>
 	<div class="form-group col-md-1">
-		<label>Period Month</label>
+		<label>Month</label>
 		<select class="select form-control" name="month">
 			<option value="">CURRENT</option>
 			<?php foreach ($filters->period as $period):
@@ -223,7 +223,7 @@
 		</select>
 	</div>
 	<div class="form-group col-md-1">
-		<label>Period Year</label>
+		<label>Year</label>
 		<select class="select form-control" name="year">
 			<option value="">CURRENT</option>
 			<?php foreach ($filters->period as $period):
