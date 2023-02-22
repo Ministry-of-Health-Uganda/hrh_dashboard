@@ -45,7 +45,7 @@ class Audit_mdl extends CI_Model
 
 		$this->db->group_by($aggregation);
 		$this->db->order_by('salary_scale', 'asc');
-		return $this->db->get('national_jobs')->result();
+		return $this->db->get($table)->result();
 	}
 	public function getdname($district)
 	{
