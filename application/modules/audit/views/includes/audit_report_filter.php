@@ -213,7 +213,7 @@
 		
 			foreach ($filters->period as $period):
 
-				$selected = ($search->month_year == $owner->month_year) ? 'selected' : '';
+				$selected = ($search->month_year == $period->month_year) ? 'selected' : '';
 				?>
 		
 				<option <?php echo $selected ?> value="<?php echo $period->month_year; ?>">
