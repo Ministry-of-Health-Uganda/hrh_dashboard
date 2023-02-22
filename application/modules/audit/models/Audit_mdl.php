@@ -21,8 +21,10 @@ class Audit_mdl extends CI_Model
 			$table = "national_jobs";
 		} else {
 			$table = "quarterly_national_jobs";
-			$this->db->where("month", $search->month);
-			$this->db->where("year", $search->year);
+			$month = explode('-',$search->month_year)[0];
+			$year = explode('-', $search->month_year)[1];
+			$this->db->where("month", $month);
+			$this->db->where("year", $year);
 		}
 		$this->db->select("
 			job_name,
@@ -181,14 +183,11 @@ class Audit_mdl extends CI_Model
 
 			$legend .= " <b class='text-success'>Aggregated By : </b>" . $this->getAggregateLabel($search->aggregate);
 		}
-		if (!empty($search->month)) {
+		if (!empty($search->month_year)) {
 			//facility type
-			$legend .= " <b class='text-success'>Month : </b>" . $search->year;
+			$legend .= " <b class='text-success'>Month_year : </b>" . $search->month_year;
 		}
-		if (!empty($search->year)) {
-			//facility type
-			$legend .= " <b class='text-success'>Period : </b>" . $search->year;
-		}
+		
 
 
 
