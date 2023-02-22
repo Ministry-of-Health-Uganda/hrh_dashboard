@@ -170,6 +170,7 @@ class Audit_mdl extends CI_Model
 			//facility type
 			$legend .= " <b class='text-success'>Ownership : </b>" . $search->ownership;
 		}
+	
 
 		if (!empty($search->facility)) {
 			//facility type
@@ -180,6 +181,15 @@ class Audit_mdl extends CI_Model
 
 			$legend .= " <b class='text-success'>Aggregated By : </b>" . $this->getAggregateLabel($search->aggregate);
 		}
+		if (!empty($search->month)) {
+			//facility type
+			$legend .= " <b class='text-success'>Month : </b>" . $search->year;
+		}
+		if (!empty($search->year)) {
+			//facility type
+			$legend .= " <b class='text-success'>Period : </b>" . $search->year;
+		}
+
 
 
 		return $legend;
