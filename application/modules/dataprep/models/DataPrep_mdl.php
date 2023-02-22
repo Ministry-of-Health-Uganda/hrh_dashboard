@@ -369,6 +369,8 @@ class DataPrep_mdl extends CI_Model {
 		$data['districts']    = $this->db->get("districts")->result();
 		$data['institutions'] = $this->db->get("institutions")->result();
 		$data['regions'] 	  = $this->db->get("regions")->result();
+		$data['period'] = $this->db->query("SELECT distinct month,year FROM `quarterly_national_jobs` order by year DESC")->result();
+
 
 		if($showAll):
 			$data['jobs']         = $this->db->get("jobs")->result();
