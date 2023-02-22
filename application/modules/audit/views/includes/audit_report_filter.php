@@ -161,7 +161,7 @@
 		</select>
 	</div>
 
-	<div class="form-group col-md-3">
+	<div class="form-group col-md-2">
 		<label>OwnerShip</label>
 		<select class="select form-control" name="ownership">
 			<option value="">All</option>
@@ -244,10 +244,7 @@
 		<br>
 		<input type="submit" class="btn btn-sm btn-success" value="Apply Filter" />
 	</div>
-	<div class="form-group col-md-2">
-		<br>
-		<!-- <button  type="reset" class="btn btn-sm btn-default" >Reset Filters</button> -->
-	</div>
+
 
 	<div class="form-group col-md-1">
 		<br>
