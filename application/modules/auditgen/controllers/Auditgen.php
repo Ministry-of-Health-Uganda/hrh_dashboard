@@ -33,7 +33,7 @@ return $dbConn;
 	////////////////////////////////////////////////////
  //iupdate gender 
 	public function cache_filled(){
-		$query=$this->db->query('SELECT Distinct facility_name, facility_id FROM staff')->result();
+		$query=$this->db->query('SELECT Distinct facility_name, facility_id FROM staff WHERE facility_name like"%Ministry%"')->result();
 
 		foreach($query as $row):
 			       $facility_id = $row->facility_id;

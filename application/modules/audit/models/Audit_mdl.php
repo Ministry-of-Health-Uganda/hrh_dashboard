@@ -79,7 +79,7 @@ class Audit_mdl extends CI_Model
 
 		if (!empty($search->institution)) {
 
-			$this->db->where('institution_type', $search->institution);
+			$this->db->like('institution_type', $search->institution,'after');
 		}
 
 		if (!empty($search->facility_type)) {
