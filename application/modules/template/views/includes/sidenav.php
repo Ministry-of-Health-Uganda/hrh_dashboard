@@ -263,7 +263,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="http://196.0.11.102/unmc" target="_blank" class="nav-link">
+              <a href="https://hris2.health.go.ug/nurses_council" target="_blank" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p class="nav-drop">Uganda Nurses and Midwives Council</p>
               </a>
