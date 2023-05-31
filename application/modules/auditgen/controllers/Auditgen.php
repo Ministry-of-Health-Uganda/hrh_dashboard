@@ -380,6 +380,11 @@ return $dbConn;
 		$this->cache_ownership();
 	}
 
+	public function quarterly_jobs()
+	{
+		$this->db->query("INSERT into quarterly_national_jobs SELECT * from national_jobs");
+	}
+
 
 
 	
