@@ -1,0 +1,17 @@
+
+user_guide_src/build/*
+user_guide_src/cilexer/build/*
+user_guide_src/cilexer/dist/*
+user_guide_src/cilexer/pycilexer.egg-info/*
+
+#codeigniter 3
+application/logs/*
+!application/logs/index.html
+!application/logs/.htaccess
+/vendor/
+database.php
+node_modules
+/Afcdc theme/
+
+# Exclud Uploads From pushing to Git
+/uploads/
