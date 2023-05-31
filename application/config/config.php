@@ -14,8 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 // $dirname = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
 // $root = $protocol . $_SERVER['HTTP_HOST'] . $dirname;
-
-$config["base_url"] = 'https://hris.health.go.ug/hrhdashboard/';
+$config["base_url"] = 'http://localhost/hrh_dashboard-1/';
 
 
 
