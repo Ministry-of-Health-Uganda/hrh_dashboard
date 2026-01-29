@@ -22,6 +22,13 @@ Class Home extends 	MX_Controller {
 		$data['focal_persons'] = $this->home_model->focalpersons();
 		$data['requests'] = $this->home_model->requestsCount();
 		$data['last_update'] = $this->home_model->getLastUpdate();
+		
+		// Chart data for new graphs
+		$data['region_data'] = $this->home_model->getStaffByRegion();
+		$data['institution_type_data'] = $this->home_model->getStaffByInstitutionType();
+		$data['facility_level_data'] = $this->home_model->getStaffByFacilityLevel();
+		$data['ownership_data'] = $this->home_model->getStaffByOwnership();
+		
 		if (empty($dashboard)){
 		$data['page']        = "home/main_dashboard";
 		$data['title']        = "Dashboard";

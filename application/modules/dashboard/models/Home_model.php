@@ -66,6 +66,86 @@ class Home_model extends CI_Model {
 		}
 		return null;
 	}
+	
+	public function getStaffByRegion(){
+		$query = $this->db->select('region_name, SUM(total) as total_staff')
+			->from('national_jobs')
+			->where('region_name IS NOT NULL')
+			->where('region_name !=', '')
+			->group_by('region_name')
+			->order_by('total_staff', 'DESC')
+			->get();
+		
+		$labels = array();
+		$values = array();
+		
+		foreach ($query->result() as $row) {
+			$labels[] = $row->region_name;
+			$values[] = (int)$row->total_staff;
+		}
+		
+		return array("labels" => $labels, "values" => $values);
+	}
+	
+	public function getStaffByInstitutionType(){
+		$query = $this->db->select('institution_type, SUM(total) as total_staff')
+			->from('national_jobs')
+			->where('institution_type IS NOT NULL')
+			->where('institution_type !=', '')
+			->group_by('institution_type')
+			->order_by('total_staff', 'DESC')
+			->get();
+		
+		$data = array();
+		
+		foreach ($query->result() as $row) {
+			if (!empty($row->institution_type) && $row->total_staff > 0) {
+				$data[] = array($row->institution_type, (int)$row->total_staff);
+			}
+		}
+		
+		return $data;
+	}
+	
+	public function getStaffByFacilityLevel(){
+		$query = $this->db->select('facility_type_name, SUM(total) as total_staff')
+			->from('national_jobs')
+			->where('facility_type_name IS NOT NULL')
+			->where('facility_type_name !=', '')
+			->group_by('facility_type_name')
+			->order_by('total_staff', 'DESC')
+			->get();
+		
+		$data = array();
+		
+		foreach ($query->result() as $row) {
+			if (!empty($row->facility_type_name) && $row->total_staff > 0) {
+				$data[] = array($row->facility_type_name, (int)$row->total_staff);
+			}
+		}
+		
+		return $data;
+	}
+	
+	public function getStaffByOwnership(){
+		$query = $this->db->select('ownership, SUM(total) as total_staff')
+			->from('national_jobs')
+			->where('ownership IS NOT NULL')
+			->where('ownership !=', '')
+			->group_by('ownership')
+			->order_by('total_staff', 'DESC')
+			->get();
+		
+		$data = array();
+		
+		foreach ($query->result() as $row) {
+			if (!empty($row->ownership) && $row->total_staff > 0) {
+				$data[] = array($row->ownership, (int)$row->total_staff);
+			}
+		}
+		
+		return $data;
+	}
 	public function ageDistribution(){
 		$count=$this->db->get('support')->num_rows();
 		return $count;

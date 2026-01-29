@@ -109,37 +109,37 @@
 
 	<div class="form-group col-md-3">
 		<label>Job Category</label>
-		<select class="select form-control select2" name="job_category">
-			<option value="">All</option>
-			<?php foreach ($filters->job_categories as $jobCat):
-
-				$selected = ($search->job_category == $jobCat->job_category) ? 'selected' : '';
-				?>
+		<select class="select form-control select2" name="job_category[]" multiple="multiple" data-placeholder="Select Job Categories">
+			<?php 
+			$selectedCategories = array();
+			if (!empty($search->job_category)) {
+				$selectedCategories = is_array($search->job_category) ? $search->job_category : array($search->job_category);
+			}
+			foreach ($filters->job_categories as $jobCat):
+				$selected = in_array($jobCat->job_category, $selectedCategories) ? 'selected' : '';
+			?>
 				<option <?php echo $selected ?> value="<?php echo $jobCat->job_category; ?>">
-
 					<?php echo $jobCat->job_category; ?>
-
 				</option>
 			<?php endforeach; ?>
-
 		</select>
 	</div>
 
 	<div class="form-group col-md-3">
 		<label>Job Classification</label>
-		<select class="select form-control select2" name="job_class">
-			<option value="">All</option>
-			<?php foreach ($filters->job_classifications as $jobClass):
-
-				$selected = ($search->job_class == $jobClass->job_class) ? 'selected' : '';
-				?>
+		<select class="select form-control select2" name="job_class[]" multiple="multiple" data-placeholder="Select Job Classifications">
+			<?php 
+			$selectedClasses = array();
+			if (!empty($search->job_class)) {
+				$selectedClasses = is_array($search->job_class) ? $search->job_class : array($search->job_class);
+			}
+			foreach ($filters->job_classifications as $jobClass):
+				$selected = in_array($jobClass->job_class, $selectedClasses) ? 'selected' : '';
+			?>
 				<option <?php echo $selected ?> value="<?php echo $jobClass->job_class; ?>">
-
 					<?php echo $jobClass->job_class; ?>
-
 				</option>
 			<?php endforeach; ?>
-
 		</select>
 	</div>
 
@@ -236,6 +236,8 @@
 		<input type="submit" class="btn btn-sm btn-success" value="Apply Filter" />
 	</div>
 	<div class="form-group col-md-1">
+		<br>
+		<button type="button" class="btn btn-sm btn-warning" onclick="resetFilters()">Reset Filters</button>
 	</div>
 	<div class="form-group col-md-1">
 		<br>
@@ -245,3 +247,25 @@
 	</div>
 
 </form>
+
+<script>
+function resetFilters() {
+	// Reset all form fields
+	$('.searchForm')[0].reset();
+	
+	// Clear Select2 multiple selections
+	$('select[name="job_category[]"]').val(null).trigger('change');
+	$('select[name="job_class[]"]').val(null).trigger('change');
+	
+	// Reset other select2 fields
+	$('.select2').val(null).trigger('change');
+	
+	// Reload DataTable if it exists
+	if ($.fn.DataTable.isDataTable('.audit-table')) {
+		$('.audit-table').DataTable().ajax.reload();
+	} else {
+		// Submit form to reload page with empty filters
+		$('.searchForm').submit();
+	}
+}
+</script>

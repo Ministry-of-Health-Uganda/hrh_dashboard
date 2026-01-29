@@ -4,7 +4,12 @@ require_once 'includes/audit_report_filter.php';
 <style>
   div.dataTables_wrapper div.dataTables_filter {
     text-align: right;
-    display: none;
+  }
+  .dataTables_wrapper .dataTables_processing {
+    top: 50%;
+    left: 50%;
+    margin-left: -100px;
+    margin-top: -26px;
   }
 </style>
 
@@ -18,8 +23,7 @@ require_once 'includes/audit_report_filter.php';
   <hr />
 <?php endif; ?>
 
-
-<table class="table table-striped table-bordered mytable">
+<table id="auditReportTable" class="table table-striped table-bordered audit-table" style="width:100%">
   <thead>
     <tr>
       <th width="25%" style="text-transform: capitalize;">
@@ -38,86 +42,103 @@ require_once 'includes/audit_report_filter.php';
       <th>Female %</th>
     </tr>
   </thead>
-  <tbody>
-    <?php
-    $totalApproved = 0;
-    $totalFilled   = 0;
-    $totalVacant   = 0;
-    $totalExcess   = 0;
-    $overAllTotal  = 0;
-    $totalMales    = 0;
-    $totalFemales  = 0;
-
-    foreach ($audit as $row) :
-
-      $structure    = $row->approved;
-      $difference   = $row->approved - $row->filled;
-
-      $vacantPosts  = ($difference > 0) ? $difference : 0; //vacant +
-      $excessPosts  = ($difference < 0) ? $difference * -1 : 0; //excess -
-
-      $male    = ($structure > 0) ? ($row->male / $row->filled) * 100 : 0;
-      $female  = ($structure > 0) ? ($row->female / $row->filled) * 100 : 0;
-      $vacant  = ($structure > 0) ? ($vacantPosts / $structure) * 100 : 0;
-      $filled  = ($structure > 0) ? ($row->filled / $structure) * 100 : 0;
-
-      $totalApproved += $structure;
-      $totalFilled   += $row->filled;
-      $totalVacant   += $vacantPosts;
-      $totalExcess   += $excessPosts;
-      $totalFemales  += $row->female;
-      $totalMales    += $row->male;
-
-    ?>
-      <tr>
-        <td><?php echo  $row->$aggColumn; ?></td>
-        <?php if (($search->aggregate  == 'job_name') || ($search->aggregate  == '')) { ?><td><?php echo  $row->salary_scale; ?></td><?php } ?>
-        <td><?php echo  $row->approved; ?></td>
-        <td><?php echo  $row->filled; ?></td>
-        <td><?php echo  $vacantPosts; ?></td>
-        <td><?php echo  $excessPosts; ?></td>
-        <td><?php echo  $row->male;   ?></td>
-        <td><?php echo  $row->female; ?></td>
-        <td class="text-bold">
-          <?php echo ($filled > 0) ? number_format($filled, 1) : 0; ?>%
-        </td>
-        <td class="text-bold">
-          <?php echo ($vacant > 0) ? number_format($vacant, 1) : 0; ?>%
-        </td>
-        <td class="text-bold">
-          <?php echo ($male > 0) ? number_format($male, 1) : 0;   ?>%
-        </td>
-        <td class="text-bold">
-          <?php echo ($female > 0) ? number_format($female, 1) : 0; ?>%
-        </td>
-      </tr>
-
-    <?php endforeach; ?>
-
-  </tbody>
   <tfoot>
     <tr>
       <th width="25%">TOTALS</th>
-      <?php if ($search->aggregate  == 'job_name') { ?><th></th> <?php } ?>
-      <th><?php echo $totalApproved; ?></th>
-      <th><?php echo $totalFilled; ?></th>
-      <th><?php echo $totalVacant; ?></th>
-      <th><?php echo $totalExcess; ?></th>
-      <th><?php echo $totalMales; ?></th>
-      <th><?php echo $totalFemales; ?></th>
-      <th>
-        <?php echo number_format(($totalFilled / $totalApproved) * 100, 1); ?>%
-      </th>
-      <th>
-        <?php echo number_format(($totalVacant / $totalApproved) * 100, 1); ?>%
-      </th>
-      <th>
-        <?php echo number_format(($totalMales / $totalFilled) * 100, 1); ?>%
-      </th>
-      <th>
-        <?php echo number_format(($totalFemales / $totalFilled) * 100, 1); ?>%
-      </th>
+      <?php if (($search->aggregate  == 'job_name') || ($search->aggregate  == '')) { ?><th></th> <?php } ?>
+      <th id="totalApproved">0</th>
+      <th id="totalFilled">0</th>
+      <th id="totalVacant">0</th>
+      <th id="totalExcess">0</th>
+      <th id="totalMales">0</th>
+      <th id="totalFemales">0</th>
+      <th id="totalFilledPct">0%</th>
+      <th id="totalVacantPct">0%</th>
+      <th id="totalMalePct">0%</th>
+      <th id="totalFemalePct">0%</th>
     </tr>
-
   </tfoot>
 </table>
+
+<script>
+$(document).ready(function() {
+    var table = $('#auditReportTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "<?php echo base_url('audit/auditReportData'); ?>",
+            "type": "POST",
+            "data": function(d) {
+                // Add form filter data to the request
+                var formData = $('.searchForm').serializeArray();
+                $.each(formData, function(i, field) {
+                    if (field.name.indexOf('[]') !== -1) {
+                        // Handle array fields
+                        var name = field.name.replace('[]', '');
+                        if (!d[name]) {
+                            d[name] = [];
+                        }
+                        if (field.value) {
+                            d[name].push(field.value);
+                        }
+                    } else {
+                        d[field.name] = field.value;
+                    }
+                });
+            },
+            "dataSrc": function(json) {
+                // Calculate totals from all data (you may need to fetch totals separately)
+                return json.data;
+            }
+        },
+        "columns": [
+            { "data": 0 }<?php 
+            $colOffset = 1;
+            if (($search->aggregate  == 'job_name') || ($search->aggregate  == '')) { 
+                echo ', { "data": 1 }';
+                $colOffset = 2;
+            } 
+            ?>,
+            { "data": <?php echo $colOffset; ?> },
+            { "data": <?php echo $colOffset + 1; ?> },
+            { "data": <?php echo $colOffset + 2; ?> },
+            { "data": <?php echo $colOffset + 3; ?> },
+            { "data": <?php echo $colOffset + 4; ?> },
+            { "data": <?php echo $colOffset + 5; ?> },
+            { "data": <?php echo $colOffset + 6; ?> },
+            { "data": <?php echo $colOffset + 7; ?> },
+            { "data": <?php echo $colOffset + 8; ?> },
+            { "data": <?php echo $colOffset + 9; ?> }
+        ],
+        "pageLength": 25,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "order": [[<?php echo $colOffset; ?>, "asc"]],
+        "dom": 'Bfrtip',
+        "buttons": [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        "footerCallback": function (row, data, start, end, display) {
+            // This function can be used to calculate footer totals if needed
+            // For now, totals will be calculated server-side if needed
+        }
+    });
+    
+    // Reload table when form is submitted (but not for PDF download)
+    $('.searchForm').on('submit', function(e) {
+        var isPdf = $('#print').val() == '1';
+        if (!isPdf) {
+            e.preventDefault();
+            table.ajax.reload();
+            return false;
+        }
+    });
+    
+    // Initialize Select2 for multiple selects
+    $('select[name="job_category[]"], select[name="job_class[]"]').select2({
+        placeholder: function() {
+            return $(this).data('placeholder');
+        },
+        allowClear: true
+    });
+});
+</script>

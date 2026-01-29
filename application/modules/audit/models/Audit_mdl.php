@@ -9,46 +9,138 @@ class Audit_mdl extends CI_Model
 		parent::__Construct();
 	}
 
-	public function getAuditReport($facilityid)
+	public function getAuditReport($facilityid, $serverSide = false, $start = 0, $length = 10, $searchValue = '', $orderColumn = 0, $orderDir = 'asc')
 	{
-
 		$search = (object) $this->input->post();
-		$this->auditReportFilters($search);
-		if (!empty($facilityid)) {
-			$this->db->where("facility_id", "$facilityid");
-		}
+		
 		if (empty($search->month_year)) {
 			$table = "national_jobs";
 		} else {
 			$table = "quarterly_national_jobs";
-			$month = explode('-',$search->month_year)[0];
-			$year = explode('-', $search->month_year)[1];
-			$this->db->where("month", $month);
-			$this->db->where("year", $year);
 		}
-		$this->db->select("
-			job_name,
-			salary_scale,
-			job_classification,
-			institution_type,
-			district_name,
-			facility_name,
-			facility_type_name,
-			region_name,
-			cadre_name,
-			sum(approved) as approved,
-			sum(total)  as filled,
-			sum(male)   as male,
-			sum(female) as female,
-			sum(excess) as excess,
-			sum(vacant) as vacant
-			");
-		$this->db->order_by('salary_scale', 'asc');
+		
 		$aggregation = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
-
-		$this->db->group_by($aggregation);
-		$this->db->order_by('salary_scale', 'asc');
-		return $this->db->get($table)->result();
+		
+		if ($serverSide) {
+			// Build base query for total count
+			$this->db->select($aggregation);
+			$this->db->from($table);
+			$this->auditReportFilters($search);
+			if (!empty($facilityid)) {
+				$this->db->where("facility_id", "$facilityid");
+			}
+			if (!empty($search->month_year)) {
+				$month = explode('-',$search->month_year)[0];
+				$year = explode('-', $search->month_year)[1];
+				$this->db->where("month", $month);
+				$this->db->where("year", $year);
+			}
+			$this->db->group_by($aggregation);
+			$totalQuery = $this->db->get_compiled_select();
+			$totalRecords = $this->db->query("SELECT COUNT(*) as cnt FROM ($totalQuery) as total_count")->row()->cnt;
+			
+			// Build filtered query with data
+			$this->db->select("
+				job_name,
+				salary_scale,
+				job_classification,
+				institution_type,
+				district_name,
+				facility_name,
+				facility_type_name,
+				region_name,
+				cadre_name,
+				sum(approved) as approved,
+				sum(total)  as filled,
+				sum(male)   as male,
+				sum(female) as female,
+				sum(excess) as excess,
+				sum(vacant) as vacant
+				");
+			$this->db->from($table);
+			$this->auditReportFilters($search);
+			if (!empty($facilityid)) {
+				$this->db->where("facility_id", "$facilityid");
+			}
+			if (!empty($search->month_year)) {
+				$month = explode('-',$search->month_year)[0];
+				$year = explode('-', $search->month_year)[1];
+				$this->db->where("month", $month);
+				$this->db->where("year", $year);
+			}
+			
+			// Apply search filter if provided
+			if (!empty($searchValue)) {
+				$this->db->group_start();
+				$this->db->like($aggregation, $searchValue);
+				$this->db->or_like('salary_scale', $searchValue);
+				$this->db->or_like('job_classification', $searchValue);
+				$this->db->group_end();
+			}
+			
+			$this->db->group_by($aggregation);
+			
+			// Get filtered count
+			$filteredQuery = $this->db->get_compiled_select();
+			$filteredRecords = $this->db->query("SELECT COUNT(*) as cnt FROM ($filteredQuery) as filtered_count")->row()->cnt;
+			
+			// Apply ordering
+			$columns = array($aggregation, 'salary_scale', 'approved', 'filled', 'vacant', 'excess', 'male', 'female');
+			if (isset($columns[$orderColumn])) {
+				$orderColumnName = $columns[$orderColumn];
+				$this->db->order_by($orderColumnName, $orderDir);
+			} else {
+				$this->db->order_by('salary_scale', 'asc');
+			}
+			
+			// Apply pagination
+			if ($length > 0) {
+				$this->db->limit($length, $start);
+			}
+			
+			$data = $this->db->get()->result();
+			
+			return array(
+				'data' => $data,
+				'recordsTotal' => $totalRecords,
+				'recordsFiltered' => $filteredRecords
+			);
+		} else {
+			// Original non-server-side logic
+			$this->auditReportFilters($search);
+			if (!empty($facilityid)) {
+				$this->db->where("facility_id", "$facilityid");
+			}
+			if (empty($search->month_year)) {
+				$table = "national_jobs";
+			} else {
+				$table = "quarterly_national_jobs";
+				$month = explode('-',$search->month_year)[0];
+				$year = explode('-', $search->month_year)[1];
+				$this->db->where("month", $month);
+				$this->db->where("year", $year);
+			}
+			$this->db->select("
+				job_name,
+				salary_scale,
+				job_classification,
+				institution_type,
+				district_name,
+				facility_name,
+				facility_type_name,
+				region_name,
+				cadre_name,
+				sum(approved) as approved,
+				sum(total)  as filled,
+				sum(male)   as male,
+				sum(female) as female,
+				sum(excess) as excess,
+				sum(vacant) as vacant
+				");
+			$this->db->order_by('salary_scale', 'asc');
+			$this->db->group_by($aggregation);
+			return $this->db->get($table)->result();
+		}
 	}
 	public function getdname($district)
 	{
@@ -88,13 +180,19 @@ class Audit_mdl extends CI_Model
 		}
 
 		if (!empty($search->job_category)) {
-
-			$this->db->where('job_category', $search->job_category);
+			if (is_array($search->job_category)) {
+				$this->db->where_in('job_category', $search->job_category);
+			} else {
+				$this->db->where('job_category', $search->job_category);
+			}
 		}
 
 		if (!empty($search->job_class)) {
-
-			$this->db->where('job_classification', $search->job_class);
+			if (is_array($search->job_class)) {
+				$this->db->where_in('job_classification', $search->job_class);
+			} else {
+				$this->db->where('job_classification', $search->job_class);
+			}
 		}
 
 		if (!empty($search->job)) {
@@ -146,8 +244,8 @@ class Audit_mdl extends CI_Model
 		}
 
 		if (!empty($search->job_category)) {
-
-			$legend .= " <b class='text-success'>Job Category: </b>" . $search->job_category;
+			$categories = is_array($search->job_category) ? $search->job_category : array($search->job_category);
+			$legend .= " <b class='text-success'>Job Category: </b>" . implode(', ', $categories);
 		}
 
 		if (!empty($search->job)) {
@@ -156,8 +254,8 @@ class Audit_mdl extends CI_Model
 		}
 
 		if (!empty($search->job_class)) {
-			//job class
-			$legend .= " <b class='text-success'>Job Classification : </b>" . $search->job_class;
+			$classes = is_array($search->job_class) ? $search->job_class : array($search->job_class);
+			$legend .= " <b class='text-success'>Job Classification : </b>" . implode(', ', $classes);
 		}
 
 		if (!empty($search->facility_type)) {

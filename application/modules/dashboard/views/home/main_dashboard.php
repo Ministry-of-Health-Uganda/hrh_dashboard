@@ -256,7 +256,265 @@
           </section>
         </div>
         <!-- /.row (main row) -->
+        
+        <!-- New Charts Row -->
+        <div class="row">
+          <section class="col-lg-6 connectedSortable">
+            <!-- Staff by Region -->
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-map mr-2"></i>
+                  Staff by Region
+                </h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart" style="position: relative; height: 320px;">
+                  <div id="regionChart" style="height: 320px;"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="col-lg-6 connectedSortable">
+            <!-- Staff by Institution Type -->
+            <div class="card card-secondary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-building mr-2"></i>
+                  Staff by Institution Type
+                </h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart" style="position: relative; height: 320px;">
+                  <div id="institutionTypeChart" style="height: 320px;"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <div class="row">
+          <section class="col-lg-6 connectedSortable">
+            <!-- Staff by Facility Level -->
+            <div class="card card-danger card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-hospital mr-2"></i>
+                  Staff by Facility Level
+                </h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart" style="position: relative; height: 320px;">
+                  <div id="facilityLevelChart" style="height: 320px;"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="col-lg-6 connectedSortable">
+            <!-- Staff by Ownership -->
+            <div class="card card-dark card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-handshake mr-2"></i>
+                  Staff by Ownership
+                </h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart" style="position: relative; height: 320px;">
+                  <div id="ownershipChart" style="height: 320px;"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
       </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
+    
+    <!-- Chart Data and Scripts -->
+    <script>
+    // Pass PHP data to JavaScript
+    var regionData = <?php echo json_encode($region_data); ?>;
+    var institutionTypeData = <?php echo json_encode($institution_type_data); ?>;
+    var facilityLevelData = <?php echo json_encode($facility_level_data); ?>;
+    var ownershipData = <?php echo json_encode($ownership_data); ?>;
+    
+    // Render charts when document is ready
+    $(document).ready(function() {
+      // Staff by Region Chart (Column Chart)
+      if (regionData && regionData.labels && regionData.values) {
+        Highcharts.chart('regionChart', {
+          chart: {
+            type: 'column'
+          },
+          title: {
+            text: 'Staff Distribution by Region'
+          },
+          xAxis: {
+            categories: regionData.labels,
+            crosshair: true,
+            labels: {
+              rotation: -45,
+              style: {
+                fontSize: '11px'
+              }
+            }
+          },
+          yAxis: {
+            min: 0,
+            title: {
+              text: 'Number of Staff'
+            }
+          },
+          tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+              '<td style="padding:0"><b>{point.y:,.0f}</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+          },
+          plotOptions: {
+            column: {
+              pointPadding: 0.2,
+              borderWidth: 0,
+              dataLabels: {
+                enabled: true,
+                format: '{point.y:,.0f}'
+              }
+            }
+          },
+          series: [{
+            name: 'Staff',
+            data: regionData.values,
+            color: '#17a2b8'
+          }],
+          credits: {
+            enabled: false
+          }
+        });
+      }
+      
+      // Staff by Institution Type Chart (Pie Chart)
+      if (institutionTypeData && institutionTypeData.length > 0) {
+        Highcharts.chart('institutionTypeChart', {
+          chart: {
+            type: 'pie'
+          },
+          title: {
+            text: 'Staff Distribution by Institution Type'
+          },
+          tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b><br/>Total: <b>{point.y:,.0f}</b>'
+          },
+          plotOptions: {
+            pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              depth: 35,
+              dataLabels: {
+                enabled: true,
+                format: '{point.name}: {point.percentage:.1f}%'
+              }
+            }
+          },
+          series: [{
+            name: 'Staff',
+            data: institutionTypeData
+          }],
+          credits: {
+            enabled: false
+          }
+        });
+      }
+      
+      // Staff by Facility Level Chart (Pie Chart)
+      if (facilityLevelData && facilityLevelData.length > 0) {
+        Highcharts.chart('facilityLevelChart', {
+          chart: {
+            type: 'pie'
+          },
+          title: {
+            text: 'Staff Distribution by Facility Level'
+          },
+          tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b><br/>Total: <b>{point.y:,.0f}</b>'
+          },
+          plotOptions: {
+            pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              depth: 35,
+              dataLabels: {
+                enabled: true,
+                format: '{point.name}: {point.percentage:.1f}%'
+              }
+            }
+          },
+          series: [{
+            name: 'Staff',
+            data: facilityLevelData
+          }],
+          credits: {
+            enabled: false
+          }
+        });
+      }
+      
+      // Staff by Ownership Chart (Pie Chart)
+      if (ownershipData && ownershipData.length > 0) {
+        Highcharts.chart('ownershipChart', {
+          chart: {
+            type: 'pie'
+          },
+          title: {
+            text: 'Staff Distribution by Ownership'
+          },
+          tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b><br/>Total: <b>{point.y:,.0f}</b>'
+          },
+          plotOptions: {
+            pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              depth: 35,
+              dataLabels: {
+                enabled: true,
+                format: '{point.name}: {point.percentage:.1f}%'
+              }
+            }
+          },
+          series: [{
+            name: 'Staff',
+            data: ownershipData
+          }],
+          credits: {
+            enabled: false
+          }
+        });
+      }
+    });
+    </script>
        
