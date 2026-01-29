@@ -301,32 +301,48 @@ return $dbConn;
 			}
 			$out("Truncate done. Building and running INSERT...SELECT (this may take a while)...");
 
-			// Single INSERT...SELECT: all logic in SQL, no PHP loop, no data dropped
-			$union_sql = "(SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f RIGHT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id)) UNION (SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f LEFT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id))";
-
-			$insert_sql = "INSERT INTO national_jobs (month, year, facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name, job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale, approved, male, female, total)
+			// One row per (facility_id, job_id): use distinct pairs then LEFT JOIN both tables.
+			// Previously: (f RIGHT JOIN a) UNION (f LEFT JOIN a) produced TWO rows for every pair
+			// that existed in both tables, so male+female was double-counted vs staff.
+			$insert_sql = "INSERT INTO national_jobs (month, year, date_time, facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name, job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale, approved, male, female, total)
 SELECT
   DATE_FORMAT(CURDATE(), '%M'),
   YEAR(CURDATE()),
-  COALESCE(u.fill_facility_id, u.app_facility_id),
-  COALESCE(u.fill_dhis_facility_id, u.app_dhis_facility_id),
-  IF(u.fill_facility_id IS NOT NULL AND u.app_facility_id IS NOT NULL, u.app_facility_name, COALESCE(u.fill_facility_name, u.app_facility_name)),
-  COALESCE(u.fill_facility_type_name, u.app_facility_type_name),
-  COALESCE(u.fill_region_name, u.app_region_name),
-  COALESCE(u.fill_institution_type, u.app_institution_type),
-  COALESCE(u.fill_district_name, u.app_district_name),
-  COALESCE(u.fill_job_id, u.app_job_id),
-  COALESCE(u.fill_dhis_job_id, u.app_dhis_job_id),
-  COALESCE(u.fill_job_name, u.app_job_name),
-  COALESCE(u.fill_job_classification, u.app_job_classification),
-  COALESCE(u.fill_job_category, u.app_job_category),
-  COALESCE(u.fill_cadre_name, u.app_cadre_name),
-  COALESCE(u.fill_salary_scale, u.app_salary_scale),
-  CAST(IF(u.fill_facility_id IS NOT NULL AND u.app_facility_id IS NOT NULL, u.app_approved, COALESCE(u.fill_approved, u.app_approved)) AS UNSIGNED),
-  CAST(COALESCE(u.fill_male, u.app_male) AS UNSIGNED),
-  CAST(COALESCE(u.fill_female, u.app_female) AS UNSIGNED),
-  CAST(COALESCE(u.fill_total, u.app_total) AS UNSIGNED)
-FROM (" . $union_sql . ") u";
+  NOW(),
+  COALESCE(f.facility_id, a.facility_id),
+  COALESCE(f.dhis_facility_id, a.dhis_facility_id),
+  IF(f.facility_id IS NOT NULL AND a.facility_id IS NOT NULL, a.facility_name, COALESCE(f.facility_name, a.facility_name)),
+  COALESCE(f.facility_type_name, a.facility_type_name),
+  COALESCE(f.region_name, a.region_name),
+  COALESCE(f.institution_type, a.institution_type),
+  COALESCE(f.district_name, a.district_name),
+  COALESCE(f.job_id, a.job_id),
+  COALESCE(f.dhis_job_id, a.dhis_job_id),
+  COALESCE(f.job_name, a.job_name),
+  COALESCE(f.job_classification, a.job_classification),
+  COALESCE(f.job_category, a.job_category),
+  COALESCE(f.cadre_name, a.cadre_name),
+  COALESCE(f.salary_scale, a.salary_scale),
+  CAST(IF(f.facility_id IS NOT NULL AND a.facility_id IS NOT NULL, a.approved, COALESCE(f.approved, a.approved)) AS UNSIGNED),
+  CAST(COALESCE(f.male, a.male) AS UNSIGNED),
+  CAST(COALESCE(f.female, a.female) AS UNSIGNED),
+  CAST(COALESCE(f.total, a.total) AS UNSIGNED)
+FROM (
+  SELECT facility_id, job_id FROM structure_approved
+  UNION
+  SELECT facility_id, job_id FROM structure_filled
+) AS pairs
+LEFT JOIN (
+  SELECT facility_id, job_id,
+    MAX(dhis_facility_id) AS dhis_facility_id, MAX(facility_name) AS facility_name, MAX(facility_type_name) AS facility_type_name,
+    MAX(region_name) AS region_name, MAX(institution_type) AS institution_type, MAX(district_name) AS district_name,
+    MAX(dhis_job_id) AS dhis_job_id, MAX(job_name) AS job_name, MAX(job_classification) AS job_classification,
+    MAX(job_category) AS job_category, MAX(cadre_name) AS cadre_name, MAX(salary_scale) AS salary_scale,
+    MAX(approved) AS approved, MAX(male) AS male, MAX(female) AS female, MAX(total) AS total
+  FROM structure_approved
+  GROUP BY facility_id, job_id
+) a ON pairs.facility_id = a.facility_id AND pairs.job_id = a.job_id
+LEFT JOIN structure_filled f ON pairs.facility_id = f.facility_id AND pairs.job_id = f.job_id";
 
 			$insert_result = $this->db->query($insert_sql);
 			if ($insert_result === false) {
