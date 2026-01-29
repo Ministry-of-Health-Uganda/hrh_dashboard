@@ -31,42 +31,72 @@ return $dbConn;
 		////////////////////////////////////////////////
 	////////////////////////////////////////////////////
 	////////////////////////////////////////////////////
- //iupdate gender 
+	// Cache filled: normalize facility names, set gender, compute filled counts, render structure_filled.
 	public function cache_filled(){
-		$query=$this->db->query('SELECT Distinct facility_name, facility_id FROM staff')->result();
+		$start_time = microtime(true);
+		$total_steps = 5;
+		$is_cli = (php_sapi_name() === 'cli');
 
-		foreach($query as $row):
-			       $facility_id = $row->facility_id;
-                    $facility_name = str_replace(".","",str_replace(")","",str_replace("(","-",str_replace("'","",$row->facility_name))));
-					
-                    $this->db->query("UPDATE staff SET facility_name='$facility_name' WHERE facility_id='$facility_id'");
-		endforeach;
+		if (!$is_cli) echo "<pre>";
+		echo $is_cli ? "\n" : "";
+		echo "Cache Filled: starting...\n";
+		flush();
 
-		 $gender_up=$this->db->query("UPDATE staff SET gender='Male' WHERE gender=''");
-		//truncate filled
-		 $this->truncate_filled();
-		 $no_calcs=$this->db->query("SELECT facility_id,job_id,approved,filled FROM staff WHERE approved='0' AND filled='0' ORDER BY facility_id,job_id")->result();
-         foreach($no_calcs as $no_calc){
+		// Step 1/5: Normalize facility_name for all staff in one UPDATE (no per-facility loop)
+		$this->db->query("UPDATE staff SET facility_name = REPLACE(REPLACE(REPLACE(REPLACE(facility_name, '.', ''), ')', ''), '(', '-'), \"'\", '')");
+		$step1_rows = $this->db->affected_rows();
+		$this->_cache_filled_progress(1, $total_steps, "Facility names normalized", $step1_rows, $start_time, $is_cli);
 
-			$job_id = $no_calc->job_id;
-            $facility_id = $no_calc->facility_id;
-			//print_r($no_calc);
+		// Step 2/5: Set empty gender to 'Male'
+		$this->db->query("UPDATE staff SET gender = 'Male' WHERE gender = ''");
+		$step2_rows = $this->db->affected_rows();
+		$this->_cache_filled_progress(2, $total_steps, "Gender default set", $step2_rows, $start_time, $is_cli);
 
-			//count jobs
-		$count_jobs=$this->db->query("SELECT count(person_id) as count FROM staff WHERE job_id='$job_id' AND facility_id='$facility_id'")->result();
-        
+		// Step 3/5: Truncate structure_filled
+		$this->truncate_filled();
+		$this->_cache_filled_progress(3, $total_steps, "structure_filled truncated", 0, $start_time, $is_cli);
 
-		$counted=$count_jobs[0]->count;
+		// Step 4/5: Set filled = count per (facility_id, job_id) in one UPDATE with JOIN (no per-group loop)
+		$this->db->query("
+			UPDATE staff s
+			INNER JOIN (
+				SELECT facility_id, job_id, COUNT(person_id) AS cnt
+				FROM staff
+				GROUP BY facility_id, job_id
+			) c ON s.facility_id = c.facility_id AND s.job_id = c.job_id
+			SET s.filled = c.cnt
+			WHERE s.approved = '0'
+		");
+		$step4_rows = $this->db->affected_rows();
+		$this->_cache_filled_progress(4, $total_steps, "Filled counts updated", $step4_rows, $start_time, $is_cli);
 
-		// //update 
-		$this->db->query("UPDATE  staff SET filled= '$counted' WHERE job_id='$job_id' AND facility_id='$facility_id'");
-
-		}
-		 //render filled
+		// Step 5/5: Render into structure_filled
 		$this->render_filled();
+		$step5_rows = $this->db->affected_rows();
+		$this->_cache_filled_progress(5, $total_steps, "structure_filled rendered", $step5_rows, $start_time, $is_cli);
 
-		
-	
+		$elapsed = round(microtime(true) - $start_time, 2);
+		if ($is_cli) {
+			echo "\n═══════════════════════════════════════════════════════════\n";
+			echo "  Cache Filled: COMPLETED in {$elapsed}s\n";
+			echo "═══════════════════════════════════════════════════════════\n";
+		} else {
+			echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
+			echo "<strong>Cache Filled:</strong> COMPLETED in {$elapsed}s";
+			echo "</div></pre>";
+		}
+	}
+
+	private function _cache_filled_progress($current, $total, $label, $rows, $start_time, $is_cli) {
+		$bar = $this->_draw_progress_bar($current, $total);
+		$elapsed = round(microtime(true) - $start_time, 2);
+		$rows_msg = $rows > 0 ? " (" . number_format($rows) . " rows)" : "";
+		if ($is_cli) {
+			echo "\r" . $bar . " Step {$current}/{$total}: {$label}{$rows_msg} | {$elapsed}s   ";
+		} else {
+			echo "<div style='font-family: monospace;'>" . $bar . " Step {$current}/{$total}: {$label}{$rows_msg} | {$elapsed}s</div>";
+			flush();
+		}
 	}
 
 
@@ -90,127 +120,114 @@ return $dbConn;
 	////////////////////////////////////////////////////
 
 	//Cache Structure
-	
-
 	public function cache_structure(){
-		$this->db->query("DELETE FROM structure WHERE approved='0'");
+		$start_time = microtime(true);
+		$total_steps = 4;
+		$is_cli = (php_sapi_name() === 'cli');
+
+		if (!$is_cli) echo "<pre>";
+		echo $is_cli ? "\n" : "";
+		echo "Cache Structure: starting...\n";
+		flush();
+
+		// Step 1/4: Delete unapproved structure rows
+		$this->db->query("DELETE FROM structure WHERE approved = '0'");
+		$this->_cache_filled_progress(1, $total_steps, "Structure cleaned (unapproved deleted)", $this->db->affected_rows(), $start_time, $is_cli);
+
+		// Step 2/4: Truncate structure_approved
 		$this->db->query("TRUNCATE TABLE structure_approved");
-		$this->template_structure_approved1();
-		$this->template_structure_approved2();
-		
+		$this->_cache_filled_progress(2, $total_steps, "structure_approved truncated", 0, $start_time, $is_cli);
 
+		// Step 3/4: Template 1 – National/Regional facilities
+		$rows1 = $this->template_structure_approved1();
+		$this->_cache_filled_progress(3, $total_steps, "Template Structure 1 (National/Regional)", $rows1, $start_time, $is_cli);
 
+		// Step 4/4: Template 2 – District-level facility types
+		$rows2 = $this->template_structure_approved2();
+		$this->_cache_filled_progress(4, $total_steps, "Template Structure 2 (District-level)", $rows2, $start_time, $is_cli);
+
+		$elapsed = round(microtime(true) - $start_time, 2);
+		if ($is_cli) {
+			echo "\n═══════════════════════════════════════════════════════════\n";
+			echo "  Cache Structure: COMPLETED in {$elapsed}s\n";
+			echo "  Total rows: " . number_format($rows1 + $rows2) . "\n";
+			echo "═══════════════════════════════════════════════════════════\n";
+		} else {
+			echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
+			echo "<strong>Cache Structure:</strong> COMPLETED in {$elapsed}s | Total rows: " . number_format($rows1 + $rows2);
+			echo "</div></pre>";
+		}
 	}
 
+	/**
+	 * Template 1: National/Regional facilities – single INSERT...SELECT (no per-row queries).
+	 * @return int Rows inserted
+	 */
 	public function template_structure_approved1(){
-		$sql = "SELECT facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM total_facilities_temp_districts WHERE facility_type_name IN ('Regional Referral Hospital','Ministry','National Referral Hospital','Specialised National Facility') ";
-            
-		$data=$this->db->query($sql)->result_array();
-		foreach($data as $row):
-
-			$facility_type_name = $row['facility_type_name'];
-
-			$region_name = $row['region_name'];
-
-			$facility_name = $row['facility_name'];
-		 
-			$facility_id = $row['facility_id'];
-
-			$dhis_facility_id = $row['dhis_facility_id'];
-
-			$institution_type = $row['institution_type'];
-
-			$district_name = $row['district_name'];
-			
-			$sql1 = "SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level LIKE '$facility_name' ";
-			$mydata=$this->db->query($sql1)->result_array();      
-	
-		//endforeach;
-		foreach($mydata as $row1):
-			$job = $row1['job']; 
-
-			$approved = $row1['approved']; 
-
-			$job_id = $row1['job_id'];
-
-			$dhis_job_id = $row1['dhis_job_id'];
-
-			$job_classification = $row1['job_classification'];
-
-			$job_category = $row1['job_category']; 
-
-			$cadre_name = $row1['cadre']; 
-
-			$salary_scale = $row1['salary_grade'];
-
-
-			$facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
-			$facility_type_namei=  str_replace(")","",str_replace("(","-",str_replace("'","",$facility_type_name)));
-			
-		
-
-	 
-		 $sql="INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_name','$institution_type','$district_name','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')";   
-		 $this->dbcon()->query("$sql");
-        //print_r($mydata);
-		endforeach;
-		
-		endforeach;
-		echo "<br><p style=color='green';>".$this->db->affected_rows()."</p> Template Structure";
-
+		$sql = "INSERT INTO structure_approved (
+			facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name,
+			job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale, approved,
+			male, female, total, excess, vacant, pec_filled
+		)
+		SELECT
+			t.facility_id,
+			t.dhis_facility_id,
+			REPLACE(REPLACE(REPLACE(t.facility_name, ')', ''), '(', '-'), \"'\", ''),
+			REPLACE(REPLACE(REPLACE(t.facility_type_name, ')', ''), '(', '-'), \"'\", ''),
+			t.region_name,
+			t.institution_type,
+			t.district_name,
+			s.job_id,
+			s.dhis_job_id,
+			s.job,
+			s.job_classification,
+			s.job_category,
+			s.cadre,
+			s.salary_grade,
+			s.approved,
+			'0', '0', '0', '0', '0', '0'
+		FROM total_facilities_temp_districts t
+		INNER JOIN structure s ON s.facility_facility_level = t.facility_name
+		WHERE t.facility_type_name IN ('Regional Referral Hospital','Ministry','National Referral Hospital','Specialised National Facility')";
+		$this->db->query($sql);
+		return (int) $this->db->affected_rows();
 	}
+
+	/**
+	 * Template 2: District-level facility types – single INSERT...SELECT (no per-row queries).
+	 * @return int Rows inserted
+	 */
 	public function template_structure_approved2(){
-		$data=$this->db->query("SELECT distinct facility_name,facility_type_name,region_name,facility_id,dhis_facility_id,institution_type,district_name FROM staff WHERE facility_type_name IN ('HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office' ,'Blood Bank Main Office'  ,'Blood Bank Regional Office'  ,'Medical Bureau Main Office'  ,'City Health Office' ) ORDER BY facility_type_name")->result_array();
-             foreach($data as $row):
-
-                    $facility_type_name = $row['facility_type_name'];
-
-		            $region_name = $row['region_name'];
-
-                    $facility_name = $row['facility_name'];
-
-                    $facility_id = $row['facility_id'];
-
-                    $dhis_facility_id = $row['dhis_facility_id'];
-
-                    $institution_type = $row['institution_type'];
-
-                    $district_name = $row['district_name'];
-
-         $data1=$this->db->query("SELECT approved,job,job_classification,job_id,job_category,cadre,salary_grade,dhis_job_id FROM structure WHERE facility_facility_level = '$facility_type_name' ")->result_array();
-                 foreach($data1 as $row1):
-
-					      $facility_namei=str_replace(")","",str_replace("(","-",str_replace("'","",$facility_name)));
-						  $facility_type_namei= str_replace(")","",str_replace("(","-", str_replace("'","",$facility_type_name)));
-						
-                      
-                          $job = $row1['job']; 
-
-                          $approved = $row1['approved']; 
-
-                          $job_id = $row1['job_id'];
-
-                          $dhis_job_id = $row1['dhis_job_id'];
-
-                          $job_classification = $row1['job_classification'];
-
-                          $job_category = $row1['job_category']; 
-
-                          $cadre_name = $row1['cadre']; 
-
-                          $salary_scale = $row1['salary_grade'];
-
-					
-						 $this->db->query("INSERT INTO structure_approved (`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`,`excess`,`vacant`,`pec_filled`) VALUES ('$facility_id','$dhis_facility_id','$facility_namei','$facility_type_namei','$region_name','$institution_type','$district_name','$job_id','$dhis_job_id','$job','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','0','0','0','0','0','0')");   
-                        
-				 endforeach;
-         
-                       
-                endforeach;
-				echo "<br><p style=color='green';>".$this->db->affected_rows()."</p> Template structure 2";
-
-
-
+		$sql = "INSERT INTO structure_approved (
+			facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name,
+			job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale, approved,
+			male, female, total, excess, vacant, pec_filled
+		)
+		SELECT
+			t.facility_id,
+			t.dhis_facility_id,
+			REPLACE(REPLACE(REPLACE(t.facility_name, ')', ''), '(', '-'), \"'\", ''),
+			REPLACE(REPLACE(REPLACE(t.facility_type_name, ')', ''), '(', '-'), \"'\", ''),
+			t.region_name,
+			t.institution_type,
+			t.district_name,
+			s.job_id,
+			s.dhis_job_id,
+			s.job,
+			s.job_classification,
+			s.job_category,
+			s.cadre,
+			s.salary_grade,
+			s.approved,
+			'0', '0', '0', '0', '0', '0'
+		FROM (
+			SELECT DISTINCT facility_name, facility_type_name, region_name, facility_id, dhis_facility_id, institution_type, district_name
+			FROM staff
+			WHERE facility_type_name IN ('HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office','Blood Bank Main Office','Blood Bank Regional Office','Medical Bureau Main Office','City Health Office')
+		) t
+		INNER JOIN structure s ON s.facility_facility_level = t.facility_type_name";
+		$this->db->query($sql);
+		return (int) $this->db->affected_rows();
 	}
 
 	///////////////////////////////////////////////
@@ -220,243 +237,91 @@ return $dbConn;
 	//Cache National Jobs
 
     public function cache_nationaljobs($batch_size = 500){
-		
-		$this->db->query("TRUNCATE TABLE national_jobs");
-
-		$sql1 = "(SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f RIGHT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id)  ) UNION (SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f LEFT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id))";
-
-		$result1 = $this->db->query($sql1)->result_array();
-
-		$total_records = count($result1);
-		$total_inserted = 0;
-		$batch_data = array();
 		$start_time = microtime(true);
-		$month = date('F');
-		$year = date('Y');
-		
-		// Check if running from CLI
 		$is_cli = (php_sapi_name() === 'cli');
-		
+
 		echo $is_cli ? "\n" : "";
 		echo "Processing National Jobs Cache...\n";
 		if (!$is_cli) echo "<pre>";
-		echo "Total records to process: " . number_format($total_records) . "\n";
-		if (!$is_cli) echo "<br>";
 		flush();
 
-		foreach($result1 as $index => $row1) {
-
-			if (!isset($row1['fill_facility_id'])) {
-
-				$facility_id = $row1['app_facility_id'];
-
-				$dhis_facility_id = $row1['app_dhis_facility_id'];
-
-				$facility_name = $row1['app_facility_name'];
-
-				$facility_type_name = $row1['app_facility_type_name'];
-
-				$region_name = $row1['app_region_name'];
-
-				$institution_type = $row1['app_institution_type'];
-
-				$district_name = $row1['app_district_name'];
-
-				$job_id = $row1['app_job_id'];
-
-				$dhis_job_id = $row1['app_dhis_job_id'];
-
-				$job_name = $row1['app_job_name'];
-
-				$job_category = $row1['app_job_category'];
-
-				$job_classification = $row1['app_job_classification'];
-
-				$cadre_name = $row1['app_cadre_name'];
-
-				$salary_scale = $row1['app_salary_scale'];
-
-				$approved = $row1['app_approved'];
-
-				$male = $row1['app_male'];
-
-				$female = $row1['app_female'];
-
-				$total = $row1['app_total'];
-
-			} elseif (!isset($row1['app_facility_id'])) {
-
-				$facility_id = $row1['fill_facility_id'];
-
-				$dhis_facility_id = $row1['fill_dhis_facility_id'];
-
-				$facility_name = $row1['fill_facility_name'];
-
-				$facility_type_name = $row1['fill_facility_type_name'];
-
-				$region_name = $row1['fill_region_name'];
-
-				$institution_type = $row1['fill_institution_type'];
-
-				$district_name = $row1['fill_district_name'];
-
-				$job_id = $row1['fill_job_id'];
-
-				$dhis_job_id = $row1['fill_dhis_job_id'];
-
-				$job_name = $row1['fill_job_name'];
-
-				$job_category = $row1['fill_job_category'];
-
-				$job_classification = $row1['fill_job_classification'];
-
-				$cadre_name = $row1['fill_cadre_name'];
-
-				$salary_scale = $row1['fill_salary_scale'];
-
-				$approved = $row1['fill_approved'];
-
-				$male = $row1['fill_male'];
-
-				$female = $row1['fill_female'];
-
-				$total = $row1['fill_total'];
-			} else {
-
-				$facility_id = $row1['fill_facility_id'];
-
-				$dhis_facility_id = $row1['fill_dhis_facility_id'];
-
-				$facility_name = $row1['app_facility_name'];
-
-				$facility_type_name = $row1['fill_facility_type_name'];
-
-				$region_name = $row1['fill_region_name'];
-
-				$institution_type = $row1['fill_institution_type'];
-
-				$district_name = $row1['fill_district_name'];
-
-				$job_id = $row1['fill_job_id'];
-
-				$dhis_job_id = $row1['fill_dhis_job_id'];
-
-				$job_name = $row1['fill_job_name'];
-
-				$job_category = $row1['fill_job_category'];
-
-				$job_classification = $row1['fill_job_classification'];
-
-				$cadre_name = $row1['fill_cadre_name'];
-
-				$salary_scale = $row1['fill_salary_scale'];
-
-				$approved = $row1['app_approved'];
-
-				$male = $row1['fill_male'];
-
-				$female = $row1['fill_female'];
-
-				$total = $row1['fill_total'];
-			}
-
-
-
-
-
-			// Prepare batch data
-			$batch_data[] = array(
-				'month' => $month,
-				'year' => $year,
-				'facility_id' => $facility_id,
-				'dhis_facility_id' => $dhis_facility_id,
-				'facility_name' => $facility_name,
-				'facility_type_name' => $facility_type_name,
-				'region_name' => $region_name,
-				'institution_type' => $institution_type,
-				'district_name' => $district_name,
-				'job_id' => $job_id,
-				'dhis_job_id' => $dhis_job_id,
-				'job_name' => $job_name,
-				'job_classification' => $job_classification,
-				'job_category' => $job_category,
-				'cadre_name' => $cadre_name,
-				'salary_scale' => $salary_scale,
-				'approved' => (int)$approved,
-				'male' => (int)$male,
-				'female' => (int)$female,
-				'total' => (int)$total
-			);
-			
-			// Insert in batches
-			if (count($batch_data) >= $batch_size) {
-				$this->db->insert_batch('national_jobs', $batch_data);
-				$total_inserted += count($batch_data);
-				$batch_data = array();
-				
-				// Update progress
-				$processed = $index + 1;
-				$progress_bar = $this->_draw_progress_bar($processed, $total_records);
-				
-				// Calculate ETA
-				$elapsed = microtime(true) - $start_time;
-				$rate = $processed > 0 ? $processed / $elapsed : 0;
-				$remaining = $total_records - $processed;
-				$eta_seconds = $rate > 0 ? round($remaining / $rate) : 0;
-				$eta_formatted = $eta_seconds > 0 ? sprintf("%dm %ds", floor($eta_seconds / 60), $eta_seconds % 60) : "calculating...";
-				
-				if ($is_cli) {
-					printf("\rProgress: %s | Inserted: %s | ETA: %s   ", 
-						$progress_bar, 
-						number_format($total_inserted),
-						$eta_formatted
-					);
-				} else {
-					echo "<div style='font-family: monospace;'>Progress: $progress_bar | Inserted: " . number_format($total_inserted) . " | ETA: $eta_formatted</div>";
-					flush();
-				}
-			}
-
-
-
-		}
-		
-		// Insert remaining batch data
-		if (!empty($batch_data)) {
-			$this->db->insert_batch('national_jobs', $batch_data);
-			$total_inserted += count($batch_data);
-		}
-		
-		// Final summary
+		$this->db->query("TRUNCATE TABLE national_jobs");
+
+		// Single INSERT...SELECT: all logic in SQL, no PHP loop, no data dropped
+		$union_sql = "(SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f RIGHT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id)) UNION (SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f LEFT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id))";
+
+		$insert_sql = "INSERT INTO national_jobs (month, year, facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name, job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale, approved, male, female, total)
+SELECT
+  DATE_FORMAT(CURDATE(), '%M'),
+  YEAR(CURDATE()),
+  COALESCE(u.fill_facility_id, u.app_facility_id),
+  COALESCE(u.fill_dhis_facility_id, u.app_dhis_facility_id),
+  IF(u.fill_facility_id IS NOT NULL AND u.app_facility_id IS NOT NULL, u.app_facility_name, COALESCE(u.fill_facility_name, u.app_facility_name)),
+  COALESCE(u.fill_facility_type_name, u.app_facility_type_name),
+  COALESCE(u.fill_region_name, u.app_region_name),
+  COALESCE(u.fill_institution_type, u.app_institution_type),
+  COALESCE(u.fill_district_name, u.app_district_name),
+  COALESCE(u.fill_job_id, u.app_job_id),
+  COALESCE(u.fill_dhis_job_id, u.app_dhis_job_id),
+  COALESCE(u.fill_job_name, u.app_job_name),
+  COALESCE(u.fill_job_classification, u.app_job_classification),
+  COALESCE(u.fill_job_category, u.app_job_category),
+  COALESCE(u.fill_cadre_name, u.app_cadre_name),
+  COALESCE(u.fill_salary_scale, u.app_salary_scale),
+  CAST(IF(u.fill_facility_id IS NOT NULL AND u.app_facility_id IS NOT NULL, u.app_approved, COALESCE(u.fill_approved, u.app_approved)) AS UNSIGNED),
+  CAST(COALESCE(u.fill_male, u.app_male) AS UNSIGNED),
+  CAST(COALESCE(u.fill_female, u.app_female) AS UNSIGNED),
+  CAST(COALESCE(u.fill_total, u.app_total) AS UNSIGNED)
+FROM (" . $union_sql . ") u";
+
+		$this->db->query($insert_sql);
+		$total_inserted = (int) $this->db->affected_rows();
 		$elapsed_total = round(microtime(true) - $start_time, 2);
-		$final_progress = $this->_draw_progress_bar($total_inserted, $total_records);
-		
+
 		if ($is_cli) {
-			echo "\n\n";
+			echo "\n";
 			echo "═══════════════════════════════════════════════════════════\n";
 			echo "  Status: COMPLETED\n";
 			echo "  Records Inserted: " . number_format($total_inserted) . "\n";
-			echo "  Progress: $final_progress\n";
-			echo "  Time Elapsed: " . round($elapsed_total, 2) . "s\n";
+			echo "  Time Elapsed: " . $elapsed_total . "s\n";
 			echo "═══════════════════════════════════════════════════════════\n";
 		} else {
 			echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
 			echo "<strong>Status:</strong> COMPLETED<br>";
 			echo "<strong>Records Inserted:</strong> " . number_format($total_inserted) . "<br>";
-			echo "<strong>Progress:</strong> $final_progress<br>";
-			echo "<strong>Time Elapsed:</strong> " . round($elapsed_total, 2) . "s";
+			echo "<strong>Time Elapsed:</strong> " . $elapsed_total . "s";
 			echo "</div></pre>";
 		}
 	}
 
 	public function cache_ownership(){
-		$this->db->query("UPDATE national_jobs SET ownership='Public' WHERE institution_type IN ('National Referral Hospital, Central Government','Specialised Facility, Central Government','Ministry, Central Government','Regional Referral Hospital, Central Government','District, Local Government (LG)','UBTS, Central Government','City, Local Government (LG)','Municipality, Local Government (LG)','Ministry','City, Local Government -LG','Municipality, Local Government -LG','District, Local Government -LG' )");
-		$this->db->query("UPDATE national_jobs SET ownership='Private' WHERE institution_type IN ('UCBHCA, Private for Profit (PFPs)','UCBHCA', 'Private for Profit -PFPs','UCBHCA', 'Private for Profit -PFPs')");
-		$this->db->query("UPDATE national_jobs SET ownership='PNFP' WHERE institution_type IN ('UCMB, Private not for Profit (PNFPs)', 'UPMB, Private not for Profit (PNFPs)','UMMB, Private not for Profit (PNFPs)','UOMB, Private not for Profit (PNFPs)','UMMB, Private not for Profit -PNFPs','UOMB, Private not for Profit -PNFPs','UCMB, Private not for Profit -PNFPs','UPMB, Private not for Profit -PNFPs','Civil Society Organisations -CSO, Private not for Profit -PNFPs','Civil Society Organisations -CSO, Private not for Profit -PNFPs','Civil Society Organisations (CSO)','Civil Society Organisations (CSO), Private not for Profit (PNFPs)')");
-		$this->db->query("UPDATE national_jobs SET ownership='Prison' WHERE institution_type IN ('Uganda Prison Services, Security Forces')");
-		$this->db->query("UPDATE national_jobs SET ownership='Police' WHERE institution_type IN ('Uganda Police, Security Forces')");
-		$this->db->query("UPDATE national_jobs SET ownership='UPDF' WHERE institution_type IN ('Uganda Peoples Defence Force (UPDF), Security Forces','Uganda Peoples Defence Force -UPDF, Security Forces','Uganda Peoples Defence Force -UPDF, Security Forces')");
-	echo $this->db->affected_rows()." updated";
+		$sql = "UPDATE national_jobs SET ownership = CASE
+			WHEN institution_type IN (
+				'National Referral Hospital, Central Government','Specialised Facility, Central Government','Ministry, Central Government','Regional Referral Hospital, Central Government','District, Local Government (LG)','UBTS, Central Government','City, Local Government (LG)','Municipality, Local Government (LG)','Ministry','City, Local Government -LG','Municipality, Local Government -LG','District, Local Government -LG'
+			) THEN 'Public'
+			WHEN institution_type IN (
+				'UCBHCA, Private for Profit (PFPs)','UCBHCA', 'Private for Profit -PFPs'
+			) THEN 'Private'
+			WHEN institution_type IN (
+				'UCMB, Private not for Profit (PNFPs)','UPMB, Private not for Profit (PNFPs)','UMMB, Private not for Profit (PNFPs)','UOMB, Private not for Profit (PNFPs)','UMMB, Private not for Profit -PNFPs','UOMB, Private not for Profit -PNFPs','UCMB, Private not for Profit -PNFPs','UPMB, Private not for Profit -PNFPs','Civil Society Organisations -CSO, Private not for Profit -PNFPs','Civil Society Organisations (CSO)','Civil Society Organisations (CSO), Private not for Profit (PNFPs)'
+			) THEN 'PNFP'
+			WHEN institution_type IN ('Uganda Prison Services, Security Forces') THEN 'Prison'
+			WHEN institution_type IN ('Uganda Police, Security Forces') THEN 'Police'
+			WHEN institution_type IN (
+				'Uganda Peoples Defence Force (UPDF), Security Forces','Uganda Peoples Defence Force -UPDF, Security Forces'
+			) THEN 'UPDF'
+			ELSE ownership
+		END
+		WHERE institution_type IN (
+			'National Referral Hospital, Central Government','Specialised Facility, Central Government','Ministry, Central Government','Regional Referral Hospital, Central Government','District, Local Government (LG)','UBTS, Central Government','City, Local Government (LG)','Municipality, Local Government (LG)','Ministry','City, Local Government -LG','Municipality, Local Government -LG','District, Local Government -LG',
+			'UCBHCA, Private for Profit (PFPs)','UCBHCA', 'Private for Profit -PFPs',
+			'UCMB, Private not for Profit (PNFPs)','UPMB, Private not for Profit (PNFPs)','UMMB, Private not for Profit (PNFPs)','UOMB, Private not for Profit (PNFPs)','UMMB, Private not for Profit -PNFPs','UOMB, Private not for Profit -PNFPs','UCMB, Private not for Profit -PNFPs','UPMB, Private not for Profit -PNFPs','Civil Society Organisations -CSO, Private not for Profit -PNFPs','Civil Society Organisations (CSO)','Civil Society Organisations (CSO), Private not for Profit (PNFPs)',
+			'Uganda Prison Services, Security Forces',
+			'Uganda Police, Security Forces',
+			'Uganda Peoples Defence Force (UPDF), Security Forces','Uganda Peoples Defence Force -UPDF, Security Forces'
+		)";
+		$this->db->query($sql);
+		echo $this->db->affected_rows() . " updated";
 	}
 
 
