@@ -342,7 +342,16 @@ LEFT JOIN (
   FROM structure_approved
   GROUP BY facility_id, job_id
 ) a ON pairs.facility_id = a.facility_id AND pairs.job_id = a.job_id
-LEFT JOIN structure_filled f ON pairs.facility_id = f.facility_id AND pairs.job_id = f.job_id";
+LEFT JOIN (
+  SELECT facility_id, job_id,
+    MAX(dhis_facility_id) AS dhis_facility_id, MAX(facility_name) AS facility_name, MAX(facility_type_name) AS facility_type_name,
+    MAX(region_name) AS region_name, MAX(institution_type) AS institution_type, MAX(district_name) AS district_name,
+    MAX(dhis_job_id) AS dhis_job_id, MAX(job_name) AS job_name, MAX(job_classification) AS job_classification,
+    MAX(job_category) AS job_category, MAX(cadre_name) AS cadre_name, MAX(salary_scale) AS salary_scale,
+    MAX(approved) AS approved, SUM(male) AS male, SUM(female) AS female, SUM(total) AS total
+  FROM structure_filled
+  GROUP BY facility_id, job_id
+) f ON pairs.facility_id = f.facility_id AND pairs.job_id = f.job_id";
 
 			$insert_result = $this->db->query($insert_sql);
 			if ($insert_result === false) {
