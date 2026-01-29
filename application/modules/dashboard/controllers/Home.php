@@ -21,6 +21,7 @@ Class Home extends 	MX_Controller {
 		$data['staff'] = $this->home_model->staffcount();
 		$data['focal_persons'] = $this->home_model->focalpersons();
 		$data['requests'] = $this->home_model->requestsCount();
+		$data['last_update'] = $this->home_model->getLastUpdate();
 		if (empty($dashboard)){
 		$data['page']        = "home/main_dashboard";
 		$data['title']        = "Dashboard";

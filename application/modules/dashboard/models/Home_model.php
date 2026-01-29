@@ -55,6 +55,17 @@ class Home_model extends CI_Model {
 		return $count;
 		
 	}
+	public function getLastUpdate(){
+		$query = $this->db->select_max('last_gen')
+			->from('ihrisdata')
+			->get();
+		
+		if ($query->num_rows() > 0) {
+			$result = $query->row();
+			return $result->last_gen;
+		}
+		return null;
+	}
 	public function ageDistribution(){
 		$count=$this->db->get('support')->num_rows();
 		return $count;
