@@ -6,18 +6,14 @@ class Auditgen extends MX_Controller {
 	
 	public function __Construct(){
 
-		// $this->backupdir = "/var/HRH_bkp";
-        // $this->db_user = 'ihris_manage';
-        // $this->db_pass = 'managi123';
-        // $this->host='172.27.1.109';
-        // $this->database ='hrh_dashboard';
-
-
 		$this->backupdir = "/var/HRH_bkp";
-        $this->db_user = 'root';
-        $this->db_pass = 'password';
-        $this->host='localhost';
+        $this->db_user = 'ihris_manage';
+        $this->db_pass = 'managi123';
+        $this->host='172.27.1.109';
         $this->database ='hrh_dashboard';
+
+
+
       
 	}
     
