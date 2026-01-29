@@ -6,10 +6,17 @@ class Auditgen extends MX_Controller {
 	
 	public function __Construct(){
 
+		// $this->backupdir = "/var/HRH_bkp";
+        // $this->db_user = 'ihris_manage';
+        // $this->db_pass = 'managi123';
+        // $this->host='172.27.1.109';
+        // $this->database ='hrh_dashboard';
+
+
 		$this->backupdir = "/var/HRH_bkp";
-        $this->db_user = 'ihris_manage';
-        $this->db_pass = 'managi123';
-        $this->host='172.27.1.109';
+        $this->db_user = 'root';
+        $this->db_pass = 'password';
+        $this->host='localhost';
         $this->database ='hrh_dashboard';
       
 	}
@@ -41,7 +48,7 @@ return $dbConn;
 		echo $is_cli ? "\n" : "";
 		echo "Cache Filled: starting...\n";
 		flush();
-
+		
 		// Step 1/5: Normalize facility_name for all staff in one UPDATE (no per-facility loop)
 		$this->db->query("UPDATE staff SET facility_name = REPLACE(REPLACE(REPLACE(REPLACE(facility_name, '.', ''), ')', ''), '(', '-'), \"'\", '')");
 		$step1_rows = $this->db->affected_rows();
@@ -102,13 +109,16 @@ return $dbConn;
 
 	//helper functions
 	public function render_filled(){
-		$data=$this->db->query("INSERT into structure_filled SELECT facility_id,dhis_facility_id,facility_name,facility_type_name,region_name,institution_type,district_name,job_id,dhis_job_id,job_name,job_classification,job_category,cadre_name,salary_scale,approved,              
+		$data = $this->db->query("INSERT into structure_filled SELECT facility_id,dhis_facility_id,facility_name,facility_type_name,region_name,institution_type,district_name,job_id,dhis_job_id,job_name,job_classification,job_category,cadre_name,salary_scale,approved,              
 		(case when gender = 'Male' then filled else 0 end) male,
 		(case when gender = 'Female' then filled else 0 end) female, ((case when gender = 'Male' then filled else 0 end)+
 		(case when gender = 'Female' then filled else 0 end)) as total,'0','0','0'
 		FROM   staff  GROUP BY facility_id,dhis_facility_id,facility_name,facility_type_name,region_name,institution_type,district_name,job_id,dhis_job_id,job_classification,job_category,cadre_name,salary_scale,approved");
-	echo "<br><p style=color='green';>".$this->db->affected_rows()."</p>";
-    }
+		$is_cli = (php_sapi_name() === 'cli');
+		if (!$is_cli) {
+			echo "<br><p style=\"color:green;\">" . $this->db->affected_rows() . "</p>";
+		}
+	}
 	
 	//truncate structure filled
 	public function truncate_filled(){
@@ -121,6 +131,8 @@ return $dbConn;
 
 	//Cache Structure
 	public function cache_structure(){
+		ini_set('memory_limit', '4G');
+		ini_set('max_execution_time', 0);
 		$start_time = microtime(true);
 		$total_steps = 4;
 		$is_cli = (php_sapi_name() === 'cli');
@@ -130,32 +142,53 @@ return $dbConn;
 		echo "Cache Structure: starting...\n";
 		flush();
 
-		// Step 1/4: Delete unapproved structure rows
-		$this->db->query("DELETE FROM structure WHERE approved = '0'");
-		$this->_cache_filled_progress(1, $total_steps, "Structure cleaned (unapproved deleted)", $this->db->affected_rows(), $start_time, $is_cli);
+		try {
+			// Step 1/4: Delete unapproved structure rows
+			$this->db->query("DELETE FROM structure WHERE approved = '0'");
+			$this->_cache_filled_progress(1, $total_steps, "Structure cleaned (unapproved deleted)", $this->db->affected_rows(), $start_time, $is_cli);
 
-		// Step 2/4: Truncate structure_approved
-		$this->db->query("TRUNCATE TABLE structure_approved");
-		$this->_cache_filled_progress(2, $total_steps, "structure_approved truncated", 0, $start_time, $is_cli);
+			// Step 2/4: Truncate structure_approved
+			$trunc = $this->db->query("TRUNCATE TABLE structure_approved");
+			if ($trunc === false) {
+				$err = $this->db->error();
+				throw new RuntimeException("TRUNCATE structure_approved failed: " . (isset($err['message']) ? $err['message'] : 'Unknown DB error'));
+			}
+			$this->_cache_filled_progress(2, $total_steps, "structure_approved truncated", 0, $start_time, $is_cli);
 
-		// Step 3/4: Template 1 – National/Regional facilities
-		$rows1 = $this->template_structure_approved1();
-		$this->_cache_filled_progress(3, $total_steps, "Template Structure 1 (National/Regional)", $rows1, $start_time, $is_cli);
+			// Step 3/4: Template 1 – National/Regional facilities (uses view total_facilities_temp_districts)
+			$rows1 = $this->template_structure_approved1();
+			$this->_cache_filled_progress(3, $total_steps, "Template Structure 1 (National/Regional)", $rows1, $start_time, $is_cli);
 
-		// Step 4/4: Template 2 – District-level facility types
-		$rows2 = $this->template_structure_approved2();
-		$this->_cache_filled_progress(4, $total_steps, "Template Structure 2 (District-level)", $rows2, $start_time, $is_cli);
+			// Step 4/4: Template 2 – District-level facility types
+			$rows2 = $this->template_structure_approved2();
+			$this->_cache_filled_progress(4, $total_steps, "Template Structure 2 (District-level)", $rows2, $start_time, $is_cli);
 
-		$elapsed = round(microtime(true) - $start_time, 2);
-		if ($is_cli) {
-			echo "\n═══════════════════════════════════════════════════════════\n";
-			echo "  Cache Structure: COMPLETED in {$elapsed}s\n";
-			echo "  Total rows: " . number_format($rows1 + $rows2) . "\n";
-			echo "═══════════════════════════════════════════════════════════\n";
-		} else {
-			echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
-			echo "<strong>Cache Structure:</strong> COMPLETED in {$elapsed}s | Total rows: " . number_format($rows1 + $rows2);
-			echo "</div></pre>";
+			$elapsed = round(microtime(true) - $start_time, 2);
+			if ($is_cli) {
+				echo "\n═══════════════════════════════════════════════════════════\n";
+				echo "  Cache Structure: COMPLETED in {$elapsed}s\n";
+				echo "  Total rows: " . number_format($rows1 + $rows2) . "\n";
+				echo "═══════════════════════════════════════════════════════════\n";
+			} else {
+				echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
+				echo "<strong>Cache Structure:</strong> COMPLETED in {$elapsed}s | Total rows: " . number_format($rows1 + $rows2);
+				echo "</div></pre>";
+			}
+		} catch (Exception $e) {
+			$msg = "Cache Structure ERROR: " . $e->getMessage();
+			$detail = $e->getFile() . ":" . $e->getLine();
+			if ($is_cli) {
+				echo "\n\n!!! " . $msg . "\n";
+				echo "    " . $detail . "\n";
+				if (method_exists($e, 'getTraceAsString')) {
+					echo $e->getTraceAsString() . "\n";
+				}
+			} else {
+				echo "<br><div style='font-family: monospace; padding: 10px; background: #ffebee; border: 1px solid #c62828; color: #b71c1c;'>";
+				echo "<strong>ERROR</strong><br>" . htmlspecialchars($msg) . "<br><small>" . htmlspecialchars($detail) . "</small>";
+				echo "</div></pre>";
+			}
+			throw $e;
 		}
 	}
 
@@ -189,7 +222,11 @@ return $dbConn;
 		FROM total_facilities_temp_districts t
 		INNER JOIN structure s ON s.facility_facility_level = t.facility_name
 		WHERE t.facility_type_name IN ('Regional Referral Hospital','Ministry','National Referral Hospital','Specialised National Facility')";
-		$this->db->query($sql);
+		$result = $this->db->query($sql);
+		if ($result === false) {
+			$err = $this->db->error();
+			throw new RuntimeException("Template 1 (total_facilities_temp_districts) failed: " . (isset($err['message']) ? $err['message'] : 'Unknown DB error'));
+		}
 		return (int) $this->db->affected_rows();
 	}
 
@@ -226,7 +263,11 @@ return $dbConn;
 			WHERE facility_type_name IN ('HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office','Blood Bank Main Office','Blood Bank Regional Office','Medical Bureau Main Office','City Health Office')
 		) t
 		INNER JOIN structure s ON s.facility_facility_level = t.facility_type_name";
-		$this->db->query($sql);
+		$result = $this->db->query($sql);
+		if ($result === false) {
+			$err = $this->db->error();
+			throw new RuntimeException("Template 2 (District-level) failed: " . (isset($err['message']) ? $err['message'] : 'Unknown DB error'));
+		}
 		return (int) $this->db->affected_rows();
 	}
 
@@ -244,17 +285,30 @@ return $dbConn;
 		$start_time = microtime(true);
 		$is_cli = (php_sapi_name() === 'cli');
 
+		$out = function ($msg, $br = "\n") use ($is_cli) {
+			echo $is_cli ? $msg . $br : $msg . ($br === "\n" ? "<br>\n" : "");
+			if (!$is_cli) ob_flush();
+			flush();
+		};
+
 		echo $is_cli ? "\n" : "";
-		echo "Processing National Jobs Cache...\n";
 		if (!$is_cli) echo "<pre>";
+		$out("National Jobs Cache: starting...");
 		flush();
 
-		$this->db->query("TRUNCATE TABLE national_jobs");
+		try {
+			$out("Truncating national_jobs table...");
+			$truncate = $this->db->query("TRUNCATE TABLE national_jobs");
+			if ($truncate === false) {
+				$err = $this->db->error();
+				throw new RuntimeException("TRUNCATE failed: " . (isset($err['message']) ? $err['message'] : 'Unknown DB error'));
+			}
+			$out("Truncate done. Building and running INSERT...SELECT (this may take a while)...");
 
-		// Single INSERT...SELECT: all logic in SQL, no PHP loop, no data dropped
-		$union_sql = "(SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f RIGHT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id)) UNION (SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f LEFT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id))";
+			// Single INSERT...SELECT: all logic in SQL, no PHP loop, no data dropped
+			$union_sql = "(SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f RIGHT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id)) UNION (SELECT a.facility_id AS app_facility_id,a.dhis_facility_id AS app_dhis_facility_id,a.facility_name AS app_facility_name,a.facility_type_name AS app_facility_type_name,a.region_name AS app_region_name,a.institution_type AS app_institution_type,a.district_name AS app_district_name,a.job_id AS app_job_id,a.dhis_job_id AS app_dhis_job_id,a.job_name AS app_job_name,a.job_category AS app_job_category,a.job_classification AS app_job_classification,a.cadre_name AS app_cadre_name,a.salary_scale AS app_salary_scale,a.approved AS app_approved,a.male AS app_male,a.female AS app_female,a.total AS app_total,f.facility_id AS fill_facility_id,f.dhis_facility_id AS fill_dhis_facility_id,f.facility_name AS fill_facility_name,f.facility_type_name AS fill_facility_type_name,f.region_name AS fill_region_name,f.institution_type AS fill_institution_type,f.district_name AS fill_district_name,f.job_id AS fill_job_id,f.dhis_job_id AS fill_dhis_job_id,f.job_name AS fill_job_name,f.job_category AS fill_job_category,f.job_classification AS fill_job_classification,f.cadre_name AS fill_cadre_name,f.salary_scale AS fill_salary_scale,f.approved AS fill_approved,f.male AS fill_male,f.female AS fill_female,f.total AS fill_total FROM structure_filled f LEFT JOIN structure_approved a ON( a.job_id= f.job_id AND a.facility_id=f.facility_id))";
 
-		$insert_sql = "INSERT INTO national_jobs (month, year, facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name, job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale, approved, male, female, total)
+			$insert_sql = "INSERT INTO national_jobs (month, year, facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name, job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale, approved, male, female, total)
 SELECT
   DATE_FORMAT(CURDATE(), '%M'),
   YEAR(CURDATE()),
@@ -278,27 +332,50 @@ SELECT
   CAST(COALESCE(u.fill_total, u.app_total) AS UNSIGNED)
 FROM (" . $union_sql . ") u";
 
-		$this->db->query($insert_sql);
-		$total_inserted = (int) $this->db->affected_rows();
-		$elapsed_total = round(microtime(true) - $start_time, 2);
+			$insert_result = $this->db->query($insert_sql);
+			if ($insert_result === false) {
+				$err = $this->db->error();
+				throw new RuntimeException("INSERT...SELECT failed: " . (isset($err['message']) ? $err['message'] : 'Unknown DB error'));
+			}
+			$total_inserted = (int) $this->db->affected_rows();
+			$elapsed_total = round(microtime(true) - $start_time, 2);
 
-		if ($is_cli) {
-			echo "\n";
-			echo "═══════════════════════════════════════════════════════════\n";
-			echo "  Status: COMPLETED\n";
-			echo "  Records Inserted: " . number_format($total_inserted) . "\n";
-			echo "  Time Elapsed: " . $elapsed_total . "s\n";
-			echo "═══════════════════════════════════════════════════════════\n";
-		} else {
-			echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
-			echo "<strong>Status:</strong> COMPLETED<br>";
-			echo "<strong>Records Inserted:</strong> " . number_format($total_inserted) . "<br>";
-			echo "<strong>Time Elapsed:</strong> " . $elapsed_total . "s";
-			echo "</div></pre>";
+			if ($is_cli) {
+				echo "\n";
+				echo "═══════════════════════════════════════════════════════════\n";
+				echo "  Status: COMPLETED\n";
+				echo "  Records Inserted: " . number_format($total_inserted) . "\n";
+				echo "  Time Elapsed: " . $elapsed_total . "s\n";
+				echo "═══════════════════════════════════════════════════════════\n";
+			} else {
+				echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
+				echo "<strong>Status:</strong> COMPLETED<br>";
+				echo "<strong>Records Inserted:</strong> " . number_format($total_inserted) . "<br>";
+				echo "<strong>Time Elapsed:</strong> " . $elapsed_total . "s";
+				echo "</div></pre>";
+			}
+		} catch (Exception $e) {
+			$msg = "National Jobs Cache ERROR: " . $e->getMessage();
+			$detail = $e->getFile() . ":" . $e->getLine();
+			if ($is_cli) {
+				echo "\n\n!!! " . $msg . "\n";
+				echo "    " . $detail . "\n";
+				if (method_exists($e, 'getTraceAsString')) {
+					echo $e->getTraceAsString() . "\n";
+				}
+			} else {
+				echo "<br><div style='font-family: monospace; padding: 10px; background: #ffebee; border: 1px solid #c62828; color: #b71c1c;'>";
+				echo "<strong>ERROR</strong><br>" . htmlspecialchars($msg) . "<br><small>" . htmlspecialchars($detail) . "</small>";
+				echo "</div></pre>";
+			}
+			throw $e;
 		}
 	}
 
 	public function cache_ownership(){
+
+		ini_set('memory_limit', '4G');
+		ini_set('max_execution_time', 0);
 		$sql = "UPDATE national_jobs SET ownership = CASE
 			WHEN institution_type IN (
 				'National Referral Hospital, Central Government','Specialised Facility, Central Government','Ministry, Central Government','Regional Referral Hospital, Central Government','District, Local Government (LG)','UBTS, Central Government','City, Local Government (LG)','Municipality, Local Government (LG)','Ministry','City, Local Government -LG','Municipality, Local Government -LG','District, Local Government -LG'
