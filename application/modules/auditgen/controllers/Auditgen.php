@@ -374,6 +374,8 @@ return $dbConn;
 
 
 	public function render_audit(){
+		//$this->db->query("CALL populate_ihrisdata()");
+		$this->fetch_ihrisdata();
 		$this->cache_filled();
 		$this->cache_structure();
 		$this->cache_nationaljobs();
@@ -385,6 +387,116 @@ return $dbConn;
 		$this->db->query("INSERT into quarterly_national_jobs SELECT * from national_jobs");
 	}
 
+	public function fetch_ihrisdata($page = 1, $batch_size = 100){
+		// Clear existing data or use truncate if needed
+		// $this->db->query("TRUNCATE TABLE ihrisdata");
+		
+		$base_url = "https://hris.health.go.ug/apiv1/index.php/api/ihrisdatapaginated/92cfdef7-8f2c-433e-ba62-49fa7a243974";
+		$total_pages = 0;
+		$total_inserted = 0;
+		$current_page = $page;
+		$batch_data = array();
+		
+		// Initialize cURL handle once
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		
+		do {
+			// Fetch page data
+			$url = $base_url . "?page=" . $current_page;
+			curl_setopt($ch, CURLOPT_URL, $url);
+			
+			$result = curl_exec($ch);
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			
+			if ($http_code !== 200 || $result === false) {
+				$error = curl_error($ch);
+				log_message('error', "Failed to fetch page $current_page: HTTP $http_code - $error");
+				// Wait before retrying
+				sleep(2);
+				continue;
+			}
+			
+			$response = json_decode($result, true);
+			
+			if (!isset($response['status']) || $response['status'] !== 'SUCCESS') {
+				log_message('error', "API returned error for page $current_page: " . json_encode($response));
+				break;
+			}
+			
+			// Get pagination info on first page
+			if ($total_pages == 0 && isset($response['pagination'])) {
+				$total_pages = $response['pagination']['total_pages'];
+				echo "Total pages to fetch: $total_pages<br>";
+				flush();
+			}
+			
+			// Process data from current page
+			if (isset($response['data']) && is_array($response['data'])) {
+				foreach ($response['data'] as $record) {
+					// Map API fields to database columns
+					$batch_data[] = array(
+						'ihris_pid' => isset($record['ihris_pid']) ? $record['ihris_pid'] : null,
+						'district_id' => isset($record['district_id']) ? $record['district_id'] : null,
+						'district' => isset($record['district']) ? $record['district'] : null,
+						'nin' => isset($record['nin']) ? $record['nin'] : null,
+						'ipps' => isset($record['ipps']) ? $record['ipps'] : null,
+						'facility_type_id' => isset($record['facility_type_id']) ? $record['facility_type_id'] : null,
+						'facility_id' => isset($record['facility_id']) ? $record['facility_id'] : null,
+						'facility' => isset($record['facility']) ? $record['facility'] : null,
+						'department' => isset($record['department']) ? $record['department'] : null,
+						'job_id' => isset($record['job_id']) ? $record['job_id'] : null,
+						'job' => isset($record['job']) ? $record['job'] : null,
+						'surname' => isset($record['surname']) ? $record['surname'] : null,
+						'firstname' => isset($record['firstname']) ? $record['firstname'] : null,
+						'othername' => isset($record['othername']) ? $record['othername'] : null,
+						'mobile' => isset($record['mobile']) ? $record['mobile'] : null,
+						'telephone' => isset($record['telephone']) ? $record['telephone'] : null,
+						'institution_type' => isset($record['institutiontype_name']) ? $record['institutiontype_name'] : null,
+						'last_gen' => isset($record['last_update']) ? $record['last_update'] : null
+					);
+					
+					// Insert in batches to avoid memory issues
+					if (count($batch_data) >= $batch_size) {
+						$this->db->insert_batch('ihrisdata', $batch_data);
+						$total_inserted += count($batch_data);
+						$batch_data = array();
+						echo "Inserted $total_inserted records so far...<br>";
+						flush();
+					}
+				}
+			}
+			
+			// Check if there's a next page
+			$has_next = isset($response['pagination']['has_next_page']) ? $response['pagination']['has_next_page'] : false;
+			$current_page++;
+			
+			// Progress update
+			if ($total_pages > 0) {
+				$progress = round(($current_page - 1) / $total_pages * 100, 2);
+				echo "Page " . ($current_page - 1) . " of $total_pages ($progress%) - Total records inserted: $total_inserted<br>";
+				flush();
+			}
+			
+			// Small delay to avoid overwhelming the API server
+			usleep(100000); // 0.1 second delay between requests
+			
+		} while ($has_next && ($total_pages == 0 || $current_page <= $total_pages));
+		
+		// Insert remaining batch data
+		if (!empty($batch_data)) {
+			$this->db->insert_batch('ihrisdata', $batch_data);
+			$total_inserted += count($batch_data);
+		}
+		
+		curl_close($ch);
+		
+		echo "<br><strong>Completed! Total records inserted: $total_inserted</strong><br>";
+		return $total_inserted;
+	}
 
 
 	
