@@ -237,6 +237,10 @@ return $dbConn;
 	//Cache National Jobs
 
     public function cache_nationaljobs($batch_size = 500){
+		// Allow plenty of memory and time for large national jobs cache (server has 32GB RAM)
+		ini_set('memory_limit', '4G');
+		ini_set('max_execution_time', 0);
+
 		$start_time = microtime(true);
 		$is_cli = (php_sapi_name() === 'cli');
 
