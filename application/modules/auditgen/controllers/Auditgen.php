@@ -219,7 +219,7 @@ return $dbConn;
 
 	//Cache National Jobs
 
-    public function cache_nationaljobs(){
+    public function cache_nationaljobs($batch_size = 500){
 		
 		$this->db->query("TRUNCATE TABLE national_jobs");
 
@@ -227,7 +227,24 @@ return $dbConn;
 
 		$result1 = $this->db->query($sql1)->result_array();
 
-		foreach($result1 as $row1) {
+		$total_records = count($result1);
+		$total_inserted = 0;
+		$batch_data = array();
+		$start_time = microtime(true);
+		$month = date('F');
+		$year = date('Y');
+		
+		// Check if running from CLI
+		$is_cli = (php_sapi_name() === 'cli');
+		
+		echo $is_cli ? "\n" : "";
+		echo "Processing National Jobs Cache...\n";
+		if (!$is_cli) echo "<pre>";
+		echo "Total records to process: " . number_format($total_records) . "\n";
+		if (!$is_cli) echo "<br>";
+		flush();
+
+		foreach($result1 as $index => $row1) {
 
 			if (!isset($row1['fill_facility_id'])) {
 
@@ -341,25 +358,95 @@ return $dbConn;
 				$female = $row1['fill_female'];
 
 				$total = $row1['fill_total'];
-
-				$month = date('F');
-				$year = date('Y');
-
-
 			}
 
 
 
 
 
-			$SQL3 = $this->db->query("INSERT INTO national_jobs (`month`,`year`,`facility_id`,`dhis_facility_id`,`facility_name`,`facility_type_name`,`region_name`,`institution_type`,`district_name`,`job_id`,`dhis_job_id`,`job_name`,`job_classification`,`job_category`,`cadre_name`,`salary_scale`,`approved`,`male`,`female`,`total`) VALUES ('$month','$year','$facility_id','$dhis_facility_id','$facility_name','$facility_type_name','$region_name','$institution_type','$district_name','$job_id','$dhis_job_id','$job_name','$job_classification','$job_category','$cadre_name','$salary_scale','$approved','$male','$female','$total')");
+			// Prepare batch data
+			$batch_data[] = array(
+				'month' => $month,
+				'year' => $year,
+				'facility_id' => $facility_id,
+				'dhis_facility_id' => $dhis_facility_id,
+				'facility_name' => $facility_name,
+				'facility_type_name' => $facility_type_name,
+				'region_name' => $region_name,
+				'institution_type' => $institution_type,
+				'district_name' => $district_name,
+				'job_id' => $job_id,
+				'dhis_job_id' => $dhis_job_id,
+				'job_name' => $job_name,
+				'job_classification' => $job_classification,
+				'job_category' => $job_category,
+				'cadre_name' => $cadre_name,
+				'salary_scale' => $salary_scale,
+				'approved' => (int)$approved,
+				'male' => (int)$male,
+				'female' => (int)$female,
+				'total' => (int)$total
+			);
+			
+			// Insert in batches
+			if (count($batch_data) >= $batch_size) {
+				$this->db->insert_batch('national_jobs', $batch_data);
+				$total_inserted += count($batch_data);
+				$batch_data = array();
+				
+				// Update progress
+				$processed = $index + 1;
+				$progress_bar = $this->_draw_progress_bar($processed, $total_records);
+				
+				// Calculate ETA
+				$elapsed = microtime(true) - $start_time;
+				$rate = $processed > 0 ? $processed / $elapsed : 0;
+				$remaining = $total_records - $processed;
+				$eta_seconds = $rate > 0 ? round($remaining / $rate) : 0;
+				$eta_formatted = $eta_seconds > 0 ? sprintf("%dm %ds", floor($eta_seconds / 60), $eta_seconds % 60) : "calculating...";
+				
+				if ($is_cli) {
+					printf("\rProgress: %s | Inserted: %s | ETA: %s   ", 
+						$progress_bar, 
+						number_format($total_inserted),
+						$eta_formatted
+					);
+				} else {
+					echo "<div style='font-family: monospace;'>Progress: $progress_bar | Inserted: " . number_format($total_inserted) . " | ETA: $eta_formatted</div>";
+					flush();
+				}
+			}
 
 
 
-		}                              
-    
-	    
-		echo "<br><p style=color='green';>".$this->db->affected_rows()."</p> National Jobs";
+		}
+		
+		// Insert remaining batch data
+		if (!empty($batch_data)) {
+			$this->db->insert_batch('national_jobs', $batch_data);
+			$total_inserted += count($batch_data);
+		}
+		
+		// Final summary
+		$elapsed_total = round(microtime(true) - $start_time, 2);
+		$final_progress = $this->_draw_progress_bar($total_inserted, $total_records);
+		
+		if ($is_cli) {
+			echo "\n\n";
+			echo "═══════════════════════════════════════════════════════════\n";
+			echo "  Status: COMPLETED\n";
+			echo "  Records Inserted: " . number_format($total_inserted) . "\n";
+			echo "  Progress: $final_progress\n";
+			echo "  Time Elapsed: " . round($elapsed_total, 2) . "s\n";
+			echo "═══════════════════════════════════════════════════════════\n";
+		} else {
+			echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
+			echo "<strong>Status:</strong> COMPLETED<br>";
+			echo "<strong>Records Inserted:</strong> " . number_format($total_inserted) . "<br>";
+			echo "<strong>Progress:</strong> $final_progress<br>";
+			echo "<strong>Time Elapsed:</strong> " . round($elapsed_total, 2) . "s";
+			echo "</div></pre>";
+		}
 	}
 
 	public function cache_ownership(){
