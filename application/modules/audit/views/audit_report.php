@@ -12,33 +12,38 @@ require_once 'includes/audit_report_filter.php';
     margin-top: -26px;
   }
   .audit-info-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   .audit-info-card h4 {
-    color: white;
+    color: #495057;
     margin-bottom: 15px;
     font-weight: 600;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
   }
   .audit-info-item {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
     font-size: 14px;
+    color: #495057;
   }
   .audit-info-item i {
     margin-right: 10px;
     font-size: 18px;
     width: 24px;
     text-align: center;
+    color: #007bff;
   }
   .audit-info-item strong {
     margin-right: 8px;
     min-width: 180px;
+    color: #212529;
   }
   .audit-legend {
     background: #f8f9fa;
