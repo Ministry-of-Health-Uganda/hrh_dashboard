@@ -387,15 +387,28 @@ return $dbConn;
 		$this->db->query("INSERT into quarterly_national_jobs SELECT * from national_jobs");
 	}
 
-	public function fetch_ihrisdata($page = 1, $batch_size = 100){
-		// Clear existing data or use truncate if needed
-	
+	private function _draw_progress_bar($current, $total, $bar_length = 50) {
+		if ($total == 0) return '';
+		
+		$percentage = min(100, round(($current / $total) * 100, 1));
+		$filled = round(($percentage / 100) * $bar_length);
+		$empty = $bar_length - $filled;
+		
+		$bar = '[' . str_repeat('=', $filled) . str_repeat(' ', $empty) . ']';
+		return sprintf("%s %s%% (%s/%s)", $bar, $percentage, number_format($current), number_format($total));
+	}
+
+	public function fetch_ihrisdata($offset = 0, $batch_size = 100){
+		// Clear existing data before starting
+		$this->db->query("TRUNCATE TABLE ihrisdata");
 		
 		$base_url = "https://hris.health.go.ug/apiv1/index.php/api/ihrisdatapaginated/92cfdef7-8f2c-433e-ba62-49fa7a243974";
-		$total_pages = 0;
+		$total_records = 0;
 		$total_inserted = 0;
-		$current_page = $page;
+		$current_offset = $offset;
 		$batch_data = array();
+		$page_limit = 200; // Request 200 records per page
+		$start_time = microtime(true);
 		
 		// Initialize cURL handle once
 		$ch = curl_init();
@@ -404,9 +417,17 @@ return $dbConn;
 		curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 		
+		// Check if running from CLI
+		$is_cli = (php_sapi_name() === 'cli');
+		$line_break = $is_cli ? "\r" : "<br>";
+		
+		echo $is_cli ? "\n" : "";
+		echo "Fetching iHRIS data...\n";
+		if (!$is_cli) echo "<pre>";
+		
 		do {
-			// Fetch page data
-			$url = $base_url . "?page=" . $current_page;
+			// Fetch data using offset and page_limit parameters
+			$url = $base_url . "?offset=" . $current_offset . "&page_limit=" . $page_limit;
 			curl_setopt($ch, CURLOPT_URL, $url);
 			
 			$result = curl_exec($ch);
@@ -414,7 +435,7 @@ return $dbConn;
 			
 			if ($http_code !== 200 || $result === false) {
 				$error = curl_error($ch);
-				log_message('error', "Failed to fetch page $current_page: HTTP $http_code - $error");
+				log_message('error', "Failed to fetch offset $current_offset: HTTP $http_code - $error");
 				// Wait before retrying
 				sleep(2);
 				continue;
@@ -423,20 +444,21 @@ return $dbConn;
 			$response = json_decode($result, true);
 			
 			if (!isset($response['status']) || $response['status'] !== 'SUCCESS') {
-				log_message('error', "API returned error for page $current_page: " . json_encode($response));
+				log_message('error', "API returned error for offset $current_offset: " . json_encode($response));
 				break;
 			}
 			
-			// Get pagination info on first page
-			if ($total_pages == 0 && isset($response['pagination'])) {
-				$total_pages = $response['pagination']['total_pages'];
-				echo "Total pages to fetch: $total_pages<br>";
-				flush();
+			// Get total records info on first request
+			if ($total_records == 0 && isset($response['pagination'])) {
+				$total_records = $response['pagination']['total_records'];
+				echo "Total records: " . number_format($total_records) . " | Page size: $page_limit\n";
+				if (!$is_cli) echo "<br>";
 			}
 			
-			// Process data from current page
+			// Process data from current request
+			$records_fetched = 0;
 			if (isset($response['data']) && is_array($response['data'])) {
-				$this->db->query("TRUNCATE TABLE ihrisdata");
+				$records_fetched = count($response['data']);
 				foreach ($response['data'] as $record) {
 					// Map API fields to database columns
 					$batch_data[] = array(
@@ -465,27 +487,48 @@ return $dbConn;
 						$this->db->insert_batch('ihrisdata', $batch_data);
 						$total_inserted += count($batch_data);
 						$batch_data = array();
-						echo "Inserted $total_inserted records so far...<br>";
-						flush();
 					}
 				}
 			}
 			
-			// Check if there's a next page
+			// Check if there's more data to fetch
 			$has_next = isset($response['pagination']['has_next_page']) ? $response['pagination']['has_next_page'] : false;
-			$current_page++;
 			
-			// Progress update
-			if ($total_pages > 0) {
-				$progress = round(($current_page - 1) / $total_pages * 100, 2);
-				echo "Page " . ($current_page - 1) . " of $total_pages ($progress%) - Total records inserted: $total_inserted<br>";
+			// Update progress
+			$processed = $current_offset + $records_fetched;
+			$progress_bar = $this->_draw_progress_bar($processed, $total_records);
+			
+			// Calculate ETA
+			$elapsed = microtime(true) - $start_time;
+			$rate = $processed > 0 ? $processed / $elapsed : 0;
+			$remaining = $total_records - $processed;
+			$eta_seconds = $rate > 0 ? round($remaining / $rate) : 0;
+			$eta_formatted = $eta_seconds > 0 ? sprintf("%dm %ds", floor($eta_seconds / 60), $eta_seconds % 60) : "calculating...";
+			
+			// Display progress (single line update)
+			if ($is_cli) {
+				printf("\rProgress: %s | Inserted: %s | ETA: %s   ", 
+					$progress_bar, 
+					number_format($total_inserted),
+					$eta_formatted
+				);
+			} else {
+				echo "<div style='font-family: monospace;'>Progress: $progress_bar | Inserted: " . number_format($total_inserted) . " | ETA: $eta_formatted</div>";
 				flush();
 			}
+			
+			// Stop if no records were fetched (end of data)
+			if ($records_fetched == 0) {
+				break;
+			}
+			
+			// Update offset for next request
+			$current_offset += $page_limit;
 			
 			// Small delay to avoid overwhelming the API server
 			usleep(100000); // 0.1 second delay between requests
 			
-		} while ($has_next && ($total_pages == 0 || $current_page <= $total_pages));
+		} while ($has_next && ($total_records == 0 || $current_offset < $total_records));
 		
 		// Insert remaining batch data
 		if (!empty($batch_data)) {
@@ -495,7 +538,27 @@ return $dbConn;
 		
 		curl_close($ch);
 		
-		echo "<br><strong>Completed! Total records inserted: $total_inserted</strong><br>";
+		// Final summary
+		$elapsed_total = round(microtime(true) - $start_time, 2);
+		$final_progress = $this->_draw_progress_bar($total_inserted, $total_records);
+		
+		if ($is_cli) {
+			echo "\n\n";
+			echo "═══════════════════════════════════════════════════════════\n";
+			echo "  Status: COMPLETED\n";
+			echo "  Records Inserted: " . number_format($total_inserted) . "\n";
+			echo "  Progress: $final_progress\n";
+			echo "  Time Elapsed: " . round($elapsed_total, 2) . "s\n";
+			echo "═══════════════════════════════════════════════════════════\n";
+		} else {
+			echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
+			echo "<strong>Status:</strong> COMPLETED<br>";
+			echo "<strong>Records Inserted:</strong> " . number_format($total_inserted) . "<br>";
+			echo "<strong>Progress:</strong> $final_progress<br>";
+			echo "<strong>Time Elapsed:</strong> " . round($elapsed_total, 2) . "s";
+			echo "</div></pre>";
+		}
+		
 		return $total_inserted;
 	}
 
