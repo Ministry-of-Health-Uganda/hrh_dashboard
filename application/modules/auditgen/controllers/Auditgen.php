@@ -398,24 +398,18 @@ return $dbConn;
 		return sprintf("%s %s%% (%s/%s)", $bar, $percentage, number_format($current), number_format($total));
 	}
 
-	public function fetch_ihrisdata($offset = 0, $batch_size = 100){
+	public function fetch_ihrisdata($page = 1, $batch_size = 100){
 		// Clear existing data before starting
 		$this->db->query("TRUNCATE TABLE ihrisdata");
 		
 		$base_url = "https://hris.health.go.ug/apiv1/index.php/api/ihrisdatapaginated/92cfdef7-8f2c-433e-ba62-49fa7a243974";
+		$per_page = 200; // 200 records per page as per new server changes
+		$total_pages = 0;
 		$total_records = 0;
 		$total_inserted = 0;
-		$current_offset = $offset;
+		$current_page = $page;
 		$batch_data = array();
-		$page_limit = 200; // Request 200 records per page
 		$start_time = microtime(true);
-		
-		// Initialize cURL handle once
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 		
 		// Check if running from CLI
 		$is_cli = (php_sapi_name() === 'cli');
@@ -425,9 +419,16 @@ return $dbConn;
 		echo "Fetching iHRIS data...\n";
 		if (!$is_cli) echo "<pre>";
 		
+		// Initialize cURL handle once
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		
 		do {
-			// Fetch data using offset and page_limit parameters
-			$url = $base_url . "?offset=" . $current_offset . "&page_limit=" . $page_limit;
+			// Fetch page data with 200 records per page
+			$url = $base_url . "?page=" . $current_page . "&per_page=" . $per_page;
 			curl_setopt($ch, CURLOPT_URL, $url);
 			
 			$result = curl_exec($ch);
@@ -435,7 +436,7 @@ return $dbConn;
 			
 			if ($http_code !== 200 || $result === false) {
 				$error = curl_error($ch);
-				log_message('error', "Failed to fetch offset $current_offset: HTTP $http_code - $error");
+				log_message('error', "Failed to fetch page $current_page: HTTP $http_code - $error");
 				// Wait before retrying
 				sleep(2);
 				continue;
@@ -444,18 +445,20 @@ return $dbConn;
 			$response = json_decode($result, true);
 			
 			if (!isset($response['status']) || $response['status'] !== 'SUCCESS') {
-				log_message('error', "API returned error for offset $current_offset: " . json_encode($response));
+				log_message('error', "API returned error for page $current_page: " . json_encode($response));
 				break;
 			}
 			
-			// Get total records info on first request
-			if ($total_records == 0 && isset($response['pagination'])) {
+			// Get pagination info on first page
+			if ($total_pages == 0 && isset($response['pagination'])) {
+				$total_pages = $response['pagination']['total_pages'];
 				$total_records = $response['pagination']['total_records'];
-				echo "Total records: " . number_format($total_records) . " | Page size: $page_limit\n";
+				echo "Total records: " . number_format($total_records) . " | Total pages: $total_pages | Page size: $per_page\n";
 				if (!$is_cli) echo "<br>";
+				flush();
 			}
 			
-			// Process data from current request
+			// Process data from current page
 			$records_fetched = 0;
 			if (isset($response['data']) && is_array($response['data'])) {
 				$records_fetched = count($response['data']);
@@ -491,11 +494,12 @@ return $dbConn;
 				}
 			}
 			
-			// Check if there's more data to fetch
+			// Check if there's a next page
 			$has_next = isset($response['pagination']['has_next_page']) ? $response['pagination']['has_next_page'] : false;
+			$current_page++;
 			
-			// Update progress
-			$processed = $current_offset + $records_fetched;
+			// Update progress with progress bar
+			$processed = $total_inserted;
 			$progress_bar = $this->_draw_progress_bar($processed, $total_records);
 			
 			// Calculate ETA
@@ -522,13 +526,10 @@ return $dbConn;
 				break;
 			}
 			
-			// Update offset for next request
-			$current_offset += $page_limit;
-			
 			// Small delay to avoid overwhelming the API server
 			usleep(100000); // 0.1 second delay between requests
 			
-		} while ($has_next && ($total_records == 0 || $current_offset < $total_records));
+		} while ($has_next && ($total_pages == 0 || $current_page <= $total_pages));
 		
 		// Insert remaining batch data
 		if (!empty($batch_data)) {
