@@ -32,6 +32,8 @@ class Audit extends MX_Controller {
 		$data['filters']= $this->DataPrep_mdl->getFilters(true);
 		$data['audit']  = $this->auditMdl->getAuditReport($facilityId=FALSE);
 		$data['legend']	= $this->auditMdl->auditReportLegend($search);
+		$data['last_staff_update'] = $this->auditMdl->getLastStaffUpdate();
+		$data['last_audit_generation'] = $this->auditMdl->getLastAuditGeneration();
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
 			$html     = $this->load->view("audit/audit_report_pdf",$data,true);
@@ -53,6 +55,9 @@ class Audit extends MX_Controller {
 		$orderDir = $this->input->post('order')[0]['dir'] ? $this->input->post('order')[0]['dir'] : 'asc';
 		
 		$result = $this->auditMdl->getAuditReport(FALSE, true, $start, $length, $searchValue, $orderColumn, $orderDir);
+		
+		// Get totals from all filtered data (not just current page)
+		$totals = $this->auditMdl->getAuditReportTotals(FALSE);
 		
 		$search = (Object) $this->input->post();
 		$aggColumn = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
@@ -90,7 +95,8 @@ class Audit extends MX_Controller {
 			"draw" => intval($this->input->post('draw')),
 			"recordsTotal" => $result['recordsTotal'],
 			"recordsFiltered" => $result['recordsFiltered'],
-			"data" => $data
+			"data" => $data,
+			"totals" => $totals
 		);
 		
 		echo json_encode($output);

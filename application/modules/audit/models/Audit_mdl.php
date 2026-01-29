@@ -342,11 +342,131 @@ class Audit_mdl extends CI_Model
 		$aggregate = str_replace('name', "", str_replace('_', " ", (!empty($aggregateLabel)) ? $aggregateLabel : "job_name"));
 		return $aggregate;
 	}
+	
+	public function getLastStaffUpdate()
+	{
+		$query = $this->db->select_max('last_gen')
+			->from('ihrisdata')
+			->get();
+		
+		if ($query->num_rows() > 0) {
+			$result = $query->row();
+			return $result->last_gen;
+		}
+		return null;
+	}
+	
+	public function getLastAuditGeneration()
+	{
+		// Get the most recent month/year combination from national_jobs
+		$query = $this->db->select('month, year')
+			->from('national_jobs')
+			->where('month IS NOT NULL')
+			->where('month !=', '')
+			->where('year IS NOT NULL')
+			->where('year !=', '')
+			->group_by('month, year')
+			->order_by('year', 'DESC')
+			->order_by('month', 'DESC')
+			->limit(1)
+			->get();
+		
+		if ($query->num_rows() > 0) {
+			$result = $query->row();
+			if (!empty($result->month) && !empty($result->year)) {
+				// Convert month name to number
+				$monthNum = date('m', strtotime($result->month . ' 1, 2000'));
+				if ($monthNum) {
+					return $result->year . '-' . $monthNum . '-01 00:00:00';
+				}
+				// Fallback: return formatted string
+				return $result->month . ' ' . $result->year;
+			}
+		}
+		
+		return null;
+	}
 
 	public function district_facility($district_id)
 	{
 		$dname = $this->getdname($district_id);
 		$data = $this->db->query("SELECT distinct facility_id,facility_name FROM `national_jobs` WHERE district_name='$dname'");
 		return $data->result();
+	}
+	
+	public function getAuditReportTotals($facilityid = false)
+	{
+		$search = (object) $this->input->post();
+		
+		if (empty($search->month_year)) {
+			$table = "national_jobs";
+		} else {
+			$table = "quarterly_national_jobs";
+		}
+		
+		$this->db->reset_query();
+		$this->db->select("
+			sum(approved) as total_approved,
+			sum(total)  as total_filled,
+			sum(male)   as total_male,
+			sum(female) as total_female
+			");
+		$this->db->from($table);
+		$this->auditReportFilters($search);
+		if (!empty($facilityid)) {
+			$this->db->where("facility_id", "$facilityid");
+		}
+		if (!empty($search->month_year)) {
+			$month = explode('-',$search->month_year)[0];
+			$year = explode('-', $search->month_year)[1];
+			$this->db->where("month", $month);
+			$this->db->where("year", $year);
+		}
+		
+		$result = $this->db->get()->row();
+		
+		if ($result) {
+			$totalApproved = (int)$result->total_approved;
+			$totalFilled = (int)$result->total_filled;
+			$totalMale = (int)$result->total_male;
+			$totalFemale = (int)$result->total_female;
+			
+			// Calculate vacant and excess from totals (matching original logic)
+			$difference = $totalApproved - $totalFilled;
+			$totalVacant = ($difference > 0) ? $difference : 0;
+			$totalExcess = ($difference < 0) ? $difference * -1 : 0;
+			
+			// Calculate percentages
+			$filledPct = ($totalApproved > 0) ? ($totalFilled / $totalApproved) * 100 : 0;
+			$vacantPct = ($totalApproved > 0) ? ($totalVacant / $totalApproved) * 100 : 0;
+			$malePct = ($totalFilled > 0) ? ($totalMale / $totalFilled) * 100 : 0;
+			$femalePct = ($totalFilled > 0) ? ($totalFemale / $totalFilled) * 100 : 0;
+			
+			return array(
+				'totalApproved' => $totalApproved,
+				'totalFilled' => $totalFilled,
+				'totalVacant' => $totalVacant,
+				'totalExcess' => $totalExcess,
+				'totalMale' => $totalMale,
+				'totalFemale' => $totalFemale,
+				'filledPct' => number_format($filledPct, 1),
+				'vacantPct' => number_format($vacantPct, 1),
+				'malePct' => number_format($malePct, 1),
+				'femalePct' => number_format($femalePct, 1)
+			);
+		}
+		
+		return array(
+			'totalApproved' => 0,
+			'totalFilled' => 0,
+			'totalVacant' => 0,
+			'totalExcess' => 0,
+			'totalMale' => 0,
+			'totalFemale' => 0,
+			'filledPct' => '0.0',
+			'vacantPct' => '0.0',
+			'malePct' => '0.0',
+			'femalePct' => '0.0'
+		);
 	}
 }
