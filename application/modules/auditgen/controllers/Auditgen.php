@@ -389,7 +389,7 @@ return $dbConn;
 
 	public function fetch_ihrisdata($page = 1, $batch_size = 100){
 		// Clear existing data or use truncate if needed
-		// $this->db->query("TRUNCATE TABLE ihrisdata");
+	
 		
 		$base_url = "https://hris.health.go.ug/apiv1/index.php/api/ihrisdatapaginated/92cfdef7-8f2c-433e-ba62-49fa7a243974";
 		$total_pages = 0;
@@ -436,6 +436,7 @@ return $dbConn;
 			
 			// Process data from current page
 			if (isset($response['data']) && is_array($response['data'])) {
+				$this->db->query("TRUNCATE TABLE ihrisdata");
 				foreach ($response['data'] as $record) {
 					// Map API fields to database columns
 					$batch_data[] = array(
