@@ -23,6 +23,7 @@ class Audit_mdl extends CI_Model
 		
 		if ($serverSide) {
 			// Build base query for total count
+			$this->db->reset_query();
 			$this->db->select($aggregation);
 			$this->db->from($table);
 			$this->auditReportFilters($search);
@@ -36,10 +37,11 @@ class Audit_mdl extends CI_Model
 				$this->db->where("year", $year);
 			}
 			$this->db->group_by($aggregation);
-			$totalQuery = $this->db->get_compiled_select();
+			$totalQuery = $this->db->get_compiled_select('', false);
 			$totalRecords = $this->db->query("SELECT COUNT(*) as cnt FROM ($totalQuery) as total_count")->row()->cnt;
 			
 			// Build filtered query with data
+			$this->db->reset_query();
 			$this->db->select("
 				job_name,
 				salary_scale,
@@ -81,8 +83,50 @@ class Audit_mdl extends CI_Model
 			$this->db->group_by($aggregation);
 			
 			// Get filtered count
-			$filteredQuery = $this->db->get_compiled_select();
+			$filteredQuery = $this->db->get_compiled_select('', false);
 			$filteredRecords = $this->db->query("SELECT COUNT(*) as cnt FROM ($filteredQuery) as filtered_count")->row()->cnt;
+			
+			// Rebuild query for data retrieval with ordering and pagination
+			$this->db->reset_query();
+			$this->db->select("
+				job_name,
+				salary_scale,
+				job_classification,
+				institution_type,
+				district_name,
+				facility_name,
+				facility_type_name,
+				region_name,
+				cadre_name,
+				sum(approved) as approved,
+				sum(total)  as filled,
+				sum(male)   as male,
+				sum(female) as female,
+				sum(excess) as excess,
+				sum(vacant) as vacant
+				");
+			$this->db->from($table);
+			$this->auditReportFilters($search);
+			if (!empty($facilityid)) {
+				$this->db->where("facility_id", "$facilityid");
+			}
+			if (!empty($search->month_year)) {
+				$month = explode('-',$search->month_year)[0];
+				$year = explode('-', $search->month_year)[1];
+				$this->db->where("month", $month);
+				$this->db->where("year", $year);
+			}
+			
+			// Apply search filter if provided
+			if (!empty($searchValue)) {
+				$this->db->group_start();
+				$this->db->like($aggregation, $searchValue);
+				$this->db->or_like('salary_scale', $searchValue);
+				$this->db->or_like('job_classification', $searchValue);
+				$this->db->group_end();
+			}
+			
+			$this->db->group_by($aggregation);
 			
 			// Apply ordering
 			$columns = array($aggregation, 'salary_scale', 'approved', 'filled', 'vacant', 'excess', 'male', 'female');
