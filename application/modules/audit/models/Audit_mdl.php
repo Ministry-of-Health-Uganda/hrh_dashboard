@@ -358,29 +358,18 @@ class Audit_mdl extends CI_Model
 	
 	public function getLastAuditGeneration()
 	{
-		// Get the most recent month/year combination from national_jobs
-		$query = $this->db->select('month, year')
+		// Get the most recent date_time from national_jobs
+		$query = $this->db->select('date_time')
 			->from('national_jobs')
-			->where('month IS NOT NULL')
-			->where('month !=', '')
-			->where('year IS NOT NULL')
-			->where('year !=', '')
-			->group_by('month, year')
-			->order_by('year', 'DESC')
-			->order_by('month', 'DESC')
+			->where('date_time IS NOT NULL')
+			->order_by('date_time', 'DESC')
 			->limit(1)
 			->get();
 		
 		if ($query->num_rows() > 0) {
 			$result = $query->row();
-			if (!empty($result->month) && !empty($result->year)) {
-				// Convert month name to number
-				$monthNum = date('m', strtotime($result->month . ' 1, 2000'));
-				if ($monthNum) {
-					return $result->year . '-' . $monthNum . '-01 00:00:00';
-				}
-				// Fallback: return formatted string
-				return $result->month . ' ' . $result->year;
+			if (!empty($result->date_time)) {
+				return $result->date_time;
 			}
 		}
 		
