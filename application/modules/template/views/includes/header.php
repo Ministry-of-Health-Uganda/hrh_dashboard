@@ -31,36 +31,53 @@
   <script src="https://code.highcharts.com/modules/export-data.js"></script>
   <script src="https://code.highcharts.com/modules/accessibility.js"></script>
   <style>
-      @media (max-width: 767px) {
-        .hidden-mobile {
-          display: none;
-        }
-        }
-      html{
-  zoom:85%;
-        }
+    /* Theme: HRH Dashboard – single color, Material Design, eye-friendly */
+    :root {
+      --hrh-primary: #00796B;
+      --hrh-primary-dark: #00695C;
+      --hrh-primary-light: #B2DFDB;
+      --hrh-surface: #FAFAFA;
+      --hrh-on-primary: #FFFFFF;
+      --hrh-elevation-1: 0 1px 3px rgba(0,0,0,0.08);
+      --hrh-elevation-2: 0 2px 6px rgba(0,0,0,0.1);
+      --hrh-elevation-4: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    @media (max-width: 767px) {
+      .hidden-mobile { display: none; }
+    }
+    @media (min-width: 992px) {
+      html { font-size: 14px; }
+    }
+    body {
+      -webkit-font-smoothing: antialiased;
+      background-color: var(--hrh-surface);
+    }
+    .hrh-theme .content-wrapper { background-color: var(--hrh-surface); }
+    .hrh-theme .card {
+      border: none;
+      border-radius: 8px;
+      box-shadow: var(--hrh-elevation-1);
+    }
   </style>
 
 <div class="facility_block">
 
   <?php
-  if($_GET['display']=="ihris"){
-    $hris_display = "display:none";
-    $body_sidebar = "sidebar-collapse";
-   
+  if (!isset($body_sidebar)) { $body_sidebar = ''; }
+  if (!isset($hris_display)) { $hris_display = ''; }
+  if (!empty($_GET['display']) && $_GET['display'] == 'ihris') {
+    $hris_display = 'display:none';
+    $body_sidebar = 'sidebar-collapse';
   ?>
   <style>
-    .btn{
-      font-size:9px;
-    }
+    .btn { font-size: 9px; }
   </style>
-
   <?php
   }
   ?>
 
 </head>
-<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed <?php echo $body_sidebar ?>">
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed hrh-theme <?php echo $body_sidebar ?>">
 <!-- Site wrapper -->
 <div class="wrapper">
 <div class="base_url" style="display:none;">

@@ -27,12 +27,12 @@
         ?>
         <div class="row mb-3">
           <div class="col-12">
-            <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+            <div class="alert alert-dismissible fade show shadow-sm last-data-update-alert" role="alert">
               <i class="fas fa-sync-alt mr-2"></i>
               <strong>Last Data Update:</strong> 
               <?php echo $formatted_date; ?>
               <?php if (!empty($time_ago)): ?>
-                <span class="badge badge-light ml-2"><?php echo $time_ago; ?></span>
+                <span class="badge badge-secondary ml-2"><?php echo $time_ago; ?></span>
               <?php endif; ?>
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -40,6 +40,14 @@
             </div>
           </div>
         </div>
+        <style>
+          .last-data-update-alert {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+            color: #495057;
+          }
+          .last-data-update-alert .close { color: #495057; }
+        </style>
         <?php endif; ?>
         
         <!-- Main row -->

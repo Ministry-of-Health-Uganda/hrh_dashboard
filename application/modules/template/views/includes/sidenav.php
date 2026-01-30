@@ -1,97 +1,84 @@
 <style>
   .btn-primary {
-    color: #fff;
-    background-color: #49878d;
-    border-color: #45969e;
-    box-shadow: none;
+    color: var(--hrh-on-primary);
+    background-color: var(--hrh-primary);
+    border: none;
+    box-shadow: var(--hrh-elevation-1);
   }
-
+  .btn-primary:hover {
+    background-color: var(--hrh-primary-dark);
+    box-shadow: var(--hrh-elevation-2);
+  }
   .bg-blue {
-    background-color: #096f75 !important;
+    background-color: var(--hrh-primary) !important;
   }
-
   .dropdown-item.active,
   .dropdown-item:active {
-    color: #fff;
-    text-decoration: none;
-    background-color: #348085;
+    color: var(--hrh-on-primary);
+    background-color: var(--hrh-primary-dark);
   }
-
-  .fa-bars {
-    background: #FFFFFF !important;
-
-  }
-
   .dash-icon {
-    color: #37989d;
-    font-size: 15px;
-    margin-right: 4px;
+    color: rgba(255,255,255,0.9);
+    font-size: 1rem;
+    margin-right: 0.5rem;
   }
-
-  .fa-circle {
-    color: #37989d;
+  .main-sidebar .fa-circle.nav-icon {
+    color: rgba(255,255,255,0.6);
     font-size: 6px !important;
   }
-
   .nav-drop {
-    font-size: 10px;
-    font-weight: 560;
+    font-size: 0.8125rem;
+    font-weight: 500;
     text-overflow: ellipsis;
     overflow: hidden;
-
-
   }
-
   .nav-item {
-    font-weight: 570;
+    font-weight: 500;
   }
-
-
   body::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    background-color: #F5F5F5;
+    background-color: #EEEEEE;
   }
-
   body::-webkit-scrollbar {
-    width: 0.5em;
-    background-color: #F5F5F5;
+    width: 8px;
+    height: 8px;
+    background-color: #EEEEEE;
   }
-
   body::-webkit-scrollbar-thumb {
-    background-color: #58a4aa;
-    height: 70%;
-    border: 1px solid #555555;
+    background-color: #BDBDBD;
     border-radius: 4px;
   }
-
+  body::-webkit-scrollbar-thumb:hover {
+    background-color: #9E9E9E;
+  }
   .sido {
     clear: both;
     overflow: auto;
     min-height: 100% !important;
   }
-
   .sido::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
-    background-color: #F5F5F5;
+    background-color: #37474F !important;
   }
-
   .sido::-webkit-scrollbar {
-    width: 0.5em;
-    background-color: #F5F5F5 !important;
+    width: 6px;
+    background-color: #37474F !important;
   }
-
   .sido::-webkit-scrollbar-thumb {
-    background-color: #58a4aa;
-    ;
-    border: 1px solid #555555 !important;
-    border-radius: 4px;
+    background-color: #546E7A;
+    border-radius: 3px;
+  }
+  /* Sidebar brand: same color as top nav (teal + white text) */
+  .main-sidebar .brand-link {
+    background-color: var(--hrh-primary) !important;
+    color: var(--hrh-on-primary) !important;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: none;
   }
 </style>
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4" style="<?php echo $hris_display; ?>">
   <!-- Brand Logo -->
-  <a href="<?php echo base_url(); ?>" class="brand-link" style="background: linear-gradient( 
-135deg , rgba(40,29,31,1) 0%, rgb(56 169 175) 100%); color:#FFFFFF; text-align:center;">
+  <a href="<?php echo base_url(); ?>" class="brand-link">
     <!-- <img src="../../dist/img/AdminLTELogo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"

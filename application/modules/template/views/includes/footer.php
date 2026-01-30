@@ -1,15 +1,14 @@
 </div>
   <!-- /.content-wrapper -->
 
-  <footer class="main-footer" style="background: linear-gradient( 
-135deg , rgba(40,29,31,1) 0%, rgb(56 169 175) 100%); color:#FFFFFF; <?php echo $hris_display; ?>">
-                <div class="col-lg-12">
-                    <div class="footer-copy-right">
-                    <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/USAID-Identity.svg" style="width:180px; height:50px;">
-                          <a href="http://health.go.ug" target="_blank"> <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Coat_of_arms_of_Uganda.svg" style="width:80px; height:50px;"> </a> -->
-                    <p style="text-algin:center;">&copy; <?php  echo date('Y'); ?>, Ministry of Health -Uganda. <strong>All Rights Reserved</strong></p>
-                    </div>
-                </div>
+  <footer class="main-footer" style="background: var(--hrh-primary); color: var(--hrh-on-primary); box-shadow: 0 -2px 4px rgba(0,0,0,0.06); <?php echo $hris_display; ?>">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 text-center py-2">
+          <p class="mb-0" style="font-size: 0.8125rem;">&copy; <?php echo date('Y'); ?>, Ministry of Health – Uganda. <strong>All Rights Reserved</strong></p>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <!-- Control Sidebar -->

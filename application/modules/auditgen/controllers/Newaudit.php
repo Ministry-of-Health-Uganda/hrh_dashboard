@@ -18,7 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *   remove '.', remove ')', replace '(' with '-', remove single quote.
  */
 class Newaudit extends MX_Controller {
-
+	
 	public function __Construct(){
 		// parent if needed
 	}
@@ -34,7 +34,7 @@ class Newaudit extends MX_Controller {
 	/**
 	 * Main entry: run the full pipeline to populate national_jobs from staff and structure.
 	 */
-	public function index(){
+public function index(){
 		$this->run_pipeline();
 	}
 

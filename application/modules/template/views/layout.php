@@ -11,7 +11,7 @@ require_once("includes/sidenav.php");
 
   <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-  <br>
+  <div class="content-top-spacer" style="padding-top: 0.75rem;"></div>
     <!-- Content Header (Page header) -->
     <?php 
            if($this->uri->segment(4)=="ihris_dashboard"||$this->uri->segment(1)=="data"): 
@@ -101,13 +101,13 @@ require_once("includes/sidenav.php");
     <!-- /.container-fluid -->
 
     <!-- Main content -->
-    <section class="content" style="font-size:12px;" >
+    <section class="content" style="font-size: 0.875rem;">
 
       <div class="container-fluid">
 
         <div class="row">
-          <div class="col-12" style="margin-bottom:3px;">
-             <div class="card">
+          <div class="col-12">
+             <div class="card shadow-sm">
                    <div class="card-body">
                         <?php 
                         $this->load->view($module.'/'.$page) ?>
