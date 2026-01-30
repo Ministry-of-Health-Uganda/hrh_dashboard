@@ -106,7 +106,7 @@ class Newaudit extends MX_Controller {
 		$district_list = "'HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office','Blood Bank Main Office','Blood Bank Regional Office','Medical Bureau Main Office','City Health Office'";
 
 		$norm_struct = self::_norm_sql('s.facility_facility_level');
-		$norm_ftype = self::_norm_sql('st.facility_type_name');
+		$norm_ftype_inner = self::_norm_sql('facility_type_name'); /* inner SELECT has no alias */
 
 		$national_approved = "
 		(SELECT
@@ -152,7 +152,7 @@ class Newaudit extends MX_Controller {
 			s.approved
 		FROM (
 			SELECT DISTINCT facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name,
-				$norm_ftype AS level
+				$norm_ftype_inner AS level
 			FROM staff
 			WHERE facility_type_name IN ($district_list)
 		) st
