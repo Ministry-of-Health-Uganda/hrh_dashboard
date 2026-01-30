@@ -1,6 +1,6 @@
 <?php 
 
-    include('connect.php');
+$mysqli = mysqli_connect("localhost","root","password","hrh_dashboard");
      
 ////National jobs for filled
 

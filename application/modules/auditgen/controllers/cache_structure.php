@@ -1,6 +1,6 @@
 <?php 
 
-    include('connect.php');
+       $mysqli = mysqli_connect("localhost","root","password","hrh_dashboard");
              $SQL =	mysqli_query($mysqli,"DELETE FROM structure WHERE approved=0 ");
 
              $SQL = mysqli_query($mysqli, "TRUNCATE TABLE structure_approved");

@@ -1,5 +1,5 @@
 <?php
- include('connect.php');
+   $mysqli = mysqli_connect("localhost","root","password","hrh_dashboard");
 
 	$sql1 = mysqli_query($mysqli,"UPDATE national_jobs SET ownership='Public' WHERE institution_type IN ('National Referral Hospital, Central Government','Specialised Facility, Central Government','Ministry, Central Government','Regional Referral Hospital, Central Government','District, Local Government (LG)','UBTS, Central Government','City, Local Government (LG)','Municipality, Local Government (LG)')");
 

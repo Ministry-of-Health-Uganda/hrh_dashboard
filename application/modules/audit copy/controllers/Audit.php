@@ -69,8 +69,8 @@ class Audit extends MX_Controller {
 			$vacantPosts = ($difference > 0) ? $difference : 0;
 			$excessPosts = ($difference < 0) ? $difference * -1 : 0;
 			
-			$male = ($structure > 0 && $row->filled > 0) ? ($row->male / $row->filled) * 100 : 0;
-			$female = ($structure > 0 && $row->filled > 0) ? ($row->female / $row->filled) * 100 : 0;
+			$male = ($structure > 0) ? ($row->male / $row->filled) * 100 : 0;
+			$female = ($structure > 0) ? ($row->female / $row->filled) * 100 : 0;
 			$vacant = ($structure > 0) ? ($vacantPosts / $structure) * 100 : 0;
 			$filled = ($structure > 0) ? ($row->filled / $structure) * 100 : 0;
 			
