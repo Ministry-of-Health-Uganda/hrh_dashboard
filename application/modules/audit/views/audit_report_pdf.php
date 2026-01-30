@@ -183,16 +183,16 @@ table tr:nth-child(even){
             <th><?php echo $totalMales; ?></th>
             <th><?php echo $totalFemales; ?></th>
             <th>
-              <?php echo number_format(($totalFilled/$totalApproved)*100,1); ?>%   
+              <?php echo ($totalApproved > 0) ? number_format(($totalFilled/$totalApproved)*100,1) : 0; ?>%   
               </th>
               <th>
-              <?php echo number_format(($totalVacant/$totalApproved)*100,1); ?>%   
+              <?php echo ($totalApproved > 0) ? number_format(($totalVacant/$totalApproved)*100,1) : 0; ?>%   
               </th>
               <th>
-              <?php echo number_format(($totalMales/$totalFilled)*100,1); ?>%   
+              <?php echo ($totalFilled > 0) ? number_format(($totalMales/$totalFilled)*100,1) : 0; ?>%   
               </th>
             <th>
-              <?php echo number_format(($totalFemales/$totalFilled)*100,1); ?>%   
+              <?php echo ($totalFilled > 0) ? number_format(($totalFemales/$totalFilled)*100,1) : 0; ?>%   
               </th>
         </tr>
           

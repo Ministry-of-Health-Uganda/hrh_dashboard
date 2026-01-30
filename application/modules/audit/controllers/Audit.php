@@ -36,9 +36,11 @@ class Audit extends MX_Controller {
 		$data['last_audit_generation'] = $this->auditMdl->getLastAuditGeneration();
 
 		if(isset($search->getPdf ) && $search->getPdf == 1):
-			$html     = $this->load->view("audit/audit_report_pdf",$data,true);
-			$filename = $_SESSION['district']."_District_audit_report_".date('Y-m-d_his').".pdf";
-			Modules::run('template/makePdf',$html,$filename,"D");
+			// Use same filtered data as the view (getAuditReport reads filters from input->post())
+			$html     = $this->load->view("audit/audit_report_pdf", $data, true);
+			$districtLabel = !empty($_SESSION['district']) ? $_SESSION['district'] . '_' : '';
+			$filename = $districtLabel . "audit_report_" . date('Y-m-d_His') . ".pdf";
+			Modules::run('template/streamPdf', $html, $filename);
 		else:
 			echo Modules::run('template/layout',$data);
 		endif;
