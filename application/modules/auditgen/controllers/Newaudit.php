@@ -95,17 +95,20 @@ class Newaudit extends MX_Controller {
 	}
 
 	/**
-	 * Build approved rows: distinct facilities from staff × structure on level (facility_name for 4 types, else facility_type_name).
-	 * Returns SQL for a derived table `a` with: facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name, job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale, approved.
+	 * Build approved rows: national-level (LIKE facility_name%) + district-level (exact facility_type_name).
+	 * National: structure.facility_facility_level is like 'GULU Regional Referral Hospital - Regional Referral Hospital';
+	 * staff.facility_name is 'GULU Regional Referral Hospital' – match with LIKE facility_name% (same as cache_structure).
+	 * District: exact match on facility_type_name (HCII, HCIII, General Hospital, etc.).
 	 */
 	private function _sql_approved_base(){
-		$types = self::_national_level_types();
-		$list = array_map(function($t) { return $this->db->escape($t); }, $types);
-		$in_list = implode(',', $list);
-		$norm_level_struct = self::_norm_sql('s.facility_facility_level');
-		$level_expr = "CASE WHEN facility_type_name IN ($in_list) THEN facility_name ELSE facility_type_name END";
-		$norm_level_staff = self::_norm_sql($level_expr);
-		return "
+		$national_types = self::_national_level_types();
+		$national_list = implode(',', array_map(function($t) { return $this->db->escape($t); }, $national_types));
+		$district_list = "'HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office','Blood Bank Main Office','Blood Bank Regional Office','Medical Bureau Main Office','City Health Office'";
+
+		$norm_struct = self::_norm_sql('s.facility_facility_level');
+		$norm_ftype = self::_norm_sql('st.facility_type_name');
+
+		$national_approved = "
 		(SELECT
 			st.facility_id,
 			st.dhis_facility_id,
@@ -123,19 +126,40 @@ class Newaudit extends MX_Controller {
 			s.salary_grade AS salary_scale,
 			s.approved
 		FROM (
-			SELECT DISTINCT
-				facility_id,
-				dhis_facility_id,
-				facility_name,
-				facility_type_name,
-				region_name,
-				institution_type,
-				district_name,
-				$norm_level_staff AS level
+			SELECT DISTINCT facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name
 			FROM staff
+			WHERE facility_type_name IN ($national_list)
 		) st
-		INNER JOIN structure s ON $norm_level_struct = st.level)
+		INNER JOIN structure s ON (s.facility_facility_level LIKE CONCAT(st.facility_name, '%') OR s.facility_facility_level = st.facility_name))
 		";
+
+		$district_approved = "
+		(SELECT
+			st.facility_id,
+			st.dhis_facility_id,
+			st.facility_name,
+			st.facility_type_name,
+			st.region_name,
+			st.institution_type,
+			st.district_name,
+			s.job_id,
+			s.dhis_job_id,
+			s.job AS job_name,
+			s.job_classification,
+			s.job_category,
+			s.cadre AS cadre_name,
+			s.salary_grade AS salary_scale,
+			s.approved
+		FROM (
+			SELECT DISTINCT facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name,
+				$norm_ftype AS level
+			FROM staff
+			WHERE facility_type_name IN ($district_list)
+		) st
+		INNER JOIN structure s ON $norm_struct = st.level)
+		";
+
+		return "($national_approved UNION $district_approved)";
 	}
 
 	/**
