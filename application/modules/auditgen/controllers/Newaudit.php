@@ -198,6 +198,16 @@ class Newaudit extends MX_Controller {
 		
 		return $total_inserted;
 	}
+	private function _draw_progress_bar($current, $total, $bar_length = 50) {
+		if ($total == 0) return '';
+		
+		$percentage = min(100, round(($current / $total) * 100, 1));
+		$filled = round(($percentage / 100) * $bar_length);
+		$empty = $bar_length - $filled;
+		
+		$bar = '[' . str_repeat('=', $filled) . str_repeat(' ', $empty) . ']';
+		return sprintf("%s %s%% (%s/%s)", $bar, $percentage, number_format($current), number_format($total));
+	}
 public function index(){
 	   
 		$this->run_pipeline();
@@ -218,6 +228,8 @@ public function index(){
 		flush();
 
 		$this->fetch_ihrisdata();
+		echo "iHRIS data fetched and inserted into ihrisdata table.$lb";
+		flush();
 
 		try {
 			// Step 1: Normalize staff (gender default Male; facility/job name special chars for search/filter safety)
