@@ -199,7 +199,7 @@ class Newaudit extends MX_Controller {
 		return $total_inserted;
 	}
 public function index(){
-	   $this->fetch_ihrisdata();
+	   
 		$this->run_pipeline();
 	}
 
@@ -216,6 +216,8 @@ public function index(){
 		if (!$is_cli) echo "<pre>";
 		echo "National Jobs Pipeline: starting...$lb";
 		flush();
+
+		$this->fetch_ihrisdata();
 
 		try {
 			// Step 1: Normalize staff (gender default Male; facility/job name special chars for search/filter safety)
