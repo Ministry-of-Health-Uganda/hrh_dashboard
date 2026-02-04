@@ -34,7 +34,172 @@ class Newaudit extends MX_Controller {
 	/**
 	 * Main entry: run the full pipeline to populate national_jobs from staff and structure.
 	 */
+	public function fetch_ihrisdata($page = 1, $batch_size = 100){
+		// Clear existing data before starting
+		$this->db->query("TRUNCATE TABLE ihrisdata");
+		
+		$base_url = "https://hris.health.go.ug/apiv1/index.php/api/ihrisdatapaginated/92cfdef7-8f2c-433e-ba62-49fa7a243974";
+		$per_page = 200; // 200 records per page as per new server changes
+		$total_pages = 0;
+		$total_records = 0;
+		$total_inserted = 0;
+		$current_page = $page;
+		$batch_data = array();
+		$start_time = microtime(true);
+		
+		// Check if running from CLI
+		$is_cli = (php_sapi_name() === 'cli');
+		$line_break = $is_cli ? "\r" : "<br>";
+		
+		echo $is_cli ? "\n" : "";
+		echo "Fetching iHRIS data...\n";
+		if (!$is_cli) echo "<pre>";
+		
+		// Initialize cURL handle once
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		
+		do {
+			// Fetch page data with 200 records per page
+			$url = $base_url . "?page=" . $current_page . "&per_page=" . $per_page;
+			curl_setopt($ch, CURLOPT_URL, $url);
+			
+			$result = curl_exec($ch);
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			
+			if ($http_code !== 200 || $result === false) {
+				$error = curl_error($ch);
+				log_message('error', "Failed to fetch page $current_page: HTTP $http_code - $error");
+				// Wait before retrying
+				sleep(2);
+				continue;
+			}
+			
+			$response = json_decode($result, true);
+			
+			if (!isset($response['status']) || $response['status'] !== 'SUCCESS') {
+				log_message('error', "API returned error for page $current_page: " . json_encode($response));
+				break;
+			}
+			
+			// Get pagination info on first page
+			if ($total_pages == 0 && isset($response['pagination'])) {
+				$total_pages = $response['pagination']['total_pages'];
+				$total_records = $response['pagination']['total_records'];
+				echo "Total records: " . number_format($total_records) . " | Total pages: $total_pages | Page size: $per_page\n";
+				if (!$is_cli) echo "<br>";
+				flush();
+			}
+			
+			// Process data from current page
+			$records_fetched = 0;
+			if (isset($response['data']) && is_array($response['data'])) {
+				$records_fetched = count($response['data']);
+				foreach ($response['data'] as $record) {
+					// Map API fields to database columns
+					$batch_data[] = array(
+						'ihris_pid' => isset($record['ihris_pid']) ? $record['ihris_pid'] : null,
+						'district_id' => isset($record['district_id']) ? $record['district_id'] : null,
+						'district' => isset($record['district']) ? $record['district'] : null,
+						'nin' => isset($record['nin']) ? $record['nin'] : null,
+						'ipps' => isset($record['ipps']) ? $record['ipps'] : null,
+						'facility_type_id' => isset($record['facility_type_id']) ? $record['facility_type_id'] : null,
+						'facility_id' => isset($record['facility_id']) ? $record['facility_id'] : null,
+						'facility' => isset($record['facility']) ? $record['facility'] : null,
+						'department' => isset($record['department']) ? $record['department'] : null,
+						'job_id' => isset($record['job_id']) ? $record['job_id'] : null,
+						'job' => isset($record['job']) ? $record['job'] : null,
+						'surname' => isset($record['surname']) ? $record['surname'] : null,
+						'firstname' => isset($record['firstname']) ? $record['firstname'] : null,
+						'othername' => isset($record['othername']) ? $record['othername'] : null,
+						'mobile' => isset($record['mobile']) ? $record['mobile'] : null,
+						'telephone' => isset($record['telephone']) ? $record['telephone'] : null,
+						'institution_type' => isset($record['institutiontype_name']) ? $record['institutiontype_name'] : null,
+						'last_gen' => isset($record['last_update']) ? $record['last_update'] : null
+					);
+					
+					// Insert in batches to avoid memory issues
+					if (count($batch_data) >= $batch_size) {
+						$this->db->insert_batch('ihrisdata', $batch_data);
+						$total_inserted += count($batch_data);
+						$batch_data = array();
+					}
+				}
+			}
+			
+			// Check if there's a next page
+			$has_next = isset($response['pagination']['has_next_page']) ? $response['pagination']['has_next_page'] : false;
+			$current_page++;
+			
+			// Update progress with progress bar
+			$processed = $total_inserted;
+			$progress_bar = $this->_draw_progress_bar($processed, $total_records);
+			
+			// Calculate ETA
+			$elapsed = microtime(true) - $start_time;
+			$rate = $processed > 0 ? $processed / $elapsed : 0;
+			$remaining = $total_records - $processed;
+			$eta_seconds = $rate > 0 ? round($remaining / $rate) : 0;
+			$eta_formatted = $eta_seconds > 0 ? sprintf("%dm %ds", floor($eta_seconds / 60), $eta_seconds % 60) : "calculating...";
+			
+			// Display progress (single line update)
+			if ($is_cli) {
+				printf("\rProgress: %s | Inserted: %s | ETA: %s   ", 
+					$progress_bar, 
+					number_format($total_inserted),
+					$eta_formatted
+				);
+			} else {
+				echo "<div style='font-family: monospace;'>Progress: $progress_bar | Inserted: " . number_format($total_inserted) . " | ETA: $eta_formatted</div>";
+				flush();
+			}
+			
+			// Stop if no records were fetched (end of data)
+			if ($records_fetched == 0) {
+				break;
+			}
+			
+			// Small delay to avoid overwhelming the API server
+			usleep(100000); // 0.1 second delay between requests
+			
+		} while ($has_next && ($total_pages == 0 || $current_page <= $total_pages));
+		
+		// Insert remaining batch data
+		if (!empty($batch_data)) {
+			$this->db->insert_batch('ihrisdata', $batch_data);
+			$total_inserted += count($batch_data);
+		}
+		
+		curl_close($ch);
+		
+		// Final summary
+		$elapsed_total = round(microtime(true) - $start_time, 2);
+		$final_progress = $this->_draw_progress_bar($total_inserted, $total_records);
+		
+		if ($is_cli) {
+			echo "\n\n";
+			echo "═══════════════════════════════════════════════════════════\n";
+			echo "  Status: COMPLETED\n";
+			echo "  Records Inserted: " . number_format($total_inserted) . "\n";
+			echo "  Progress: $final_progress\n";
+			echo "  Time Elapsed: " . round($elapsed_total, 2) . "s\n";
+			echo "═══════════════════════════════════════════════════════════\n";
+		} else {
+			echo "<br><div style='font-family: monospace; padding: 10px; background: #f0f0f0; border: 1px solid #ccc;'>";
+			echo "<strong>Status:</strong> COMPLETED<br>";
+			echo "<strong>Records Inserted:</strong> " . number_format($total_inserted) . "<br>";
+			echo "<strong>Progress:</strong> $final_progress<br>";
+			echo "<strong>Time Elapsed:</strong> " . round($elapsed_total, 2) . "s";
+			echo "</div></pre>";
+		}
+		
+		return $total_inserted;
+	}
 public function index(){
+	   $this->fetch_ihrisdata();
 		$this->run_pipeline();
 	}
 
