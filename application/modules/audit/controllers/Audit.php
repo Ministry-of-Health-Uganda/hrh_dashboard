@@ -79,27 +79,16 @@ class Audit extends MX_Controller {
 
 		
 		$data['filters'] = $this->DataPrep_mdl->getFilters(true);
-		// Full chain from ownership -> job name (national_jobs columns order)
-		$ownership = isset($search->ownership) ? $search->ownership : '';
-		$inst_arr = $this->_chainArray(isset($search->institution) ? $search->institution : null);
-		$region_arr = $this->_chainArray(isset($search->region) ? $search->region : null);
-		$district_arr = $this->_chainArray(isset($search->district) ? $search->district : null);
-		$facility_level_arr = $this->_chainArray(isset($search->facility_type) ? $search->facility_type : null);
-		$facility_arr = $this->_chainArray(isset($search->facility) ? $search->facility : null);
-		$cadre_arr = $this->_chainArray(isset($search->cadre) ? $search->cadre : null);
-		$job_cat_arr = $this->_chainArray(isset($search->job_category) ? $search->job_category : null);
-		$job_class_arr = $this->_chainArray(isset($search->job_class) ? $search->job_class : null);
-		// Chain 1: Ownership -> Institution Type only
-		$data['institution_types_for_chain'] = $this->DataPrep_mdl->getInstitutionTypesForChain($ownership);
-		// Chain 2: Region -> District -> ... -> Job Name; only show dependent options when parent(s) selected
+		// Unchained: each dropdown gets full list from national_jobs (no parent dependency)
+		$data['institution_types_for_chain'] = $this->DataPrep_mdl->getInstitutionTypesForChain('');
 		$data['regions_for_chain'] = $this->DataPrep_mdl->getRegionsForChain();
-		$data['districts_for_chain'] = empty($region_arr) ? array() : $this->DataPrep_mdl->getDistrictsForChain('', array(), $region_arr);
-		$data['facility_levels_for_chain'] = empty($region_arr) ? array() : $this->DataPrep_mdl->getFacilityLevelsForChain('', array(), $region_arr, $district_arr);
-		$data['facilities_for_chain'] = empty($region_arr) ? array() : $this->DataPrep_mdl->getFacilitiesForChain('', array(), $region_arr, $district_arr, $facility_level_arr);
-		$data['job_cadres_for_chain'] = empty($region_arr) ? array() : $this->DataPrep_mdl->getJobCadresForChain('', array(), $region_arr, $district_arr, $facility_level_arr, $facility_arr);
-		$data['job_categories_for_chain'] = empty($region_arr) ? array() : $this->DataPrep_mdl->getJobCategoriesForChain('', array(), $region_arr, $district_arr, $facility_level_arr, $facility_arr, $cadre_arr);
-		$data['job_classifications_for_chain'] = empty($region_arr) ? array() : $this->DataPrep_mdl->getJobClassificationsForChain('', array(), $region_arr, $district_arr, $facility_level_arr, $facility_arr, $cadre_arr, $job_cat_arr);
-		$data['job_names_for_chain'] = empty($region_arr) ? array() : $this->DataPrep_mdl->getJobNamesForChain('', array(), $region_arr, $district_arr, $facility_level_arr, $facility_arr, $cadre_arr, $job_cat_arr, $job_class_arr);
+		$data['districts_for_chain'] = $this->DataPrep_mdl->getDistrictsForChain('', array(), array());
+		$data['facility_levels_for_chain'] = $this->DataPrep_mdl->getFacilityLevelsForChain('', array(), array(), array());
+		$data['facilities_for_chain'] = $this->DataPrep_mdl->getFacilitiesForChain('', array(), array(), array(), array());
+		$data['job_cadres_for_chain'] = $this->DataPrep_mdl->getJobCadresForChain('', array(), array(), array(), array(), array());
+		$data['job_categories_for_chain'] = $this->DataPrep_mdl->getJobCategoriesForChain('', array(), array(), array(), array(), array(), array());
+		$data['job_classifications_for_chain'] = $this->DataPrep_mdl->getJobClassificationsForChain('', array(), array(), array(), array(), array(), array(), array());
+		$data['job_names_for_chain'] = $this->DataPrep_mdl->getJobNamesForChain('', array(), array(), array(), array(), array(), array(), array(), array());
 		$data['audit']  = $this->auditMdl->getAuditReport($facilityId=FALSE);
 		$data['legend']	= $this->auditMdl->auditReportLegend($search);
 		$data['last_staff_update'] = $this->auditMdl->getLastStaffUpdate();
@@ -283,12 +272,14 @@ class Audit extends MX_Controller {
 			$data[] = $rowData;
 		}
 		
+		$legend = $this->auditMdl->auditReportLegend($search);
 		$output = array(
 			"draw" => intval($this->input->post('draw')),
 			"recordsTotal" => $result['recordsTotal'],
 			"recordsFiltered" => $result['recordsFiltered'],
 			"data" => $data,
-			"totals" => $totals
+			"totals" => $totals,
+			"legend" => $legend
 		);
 		
 		echo json_encode($output);

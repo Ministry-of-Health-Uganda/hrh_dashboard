@@ -288,79 +288,35 @@ class Audit_mdl extends CI_Model
 		}
 	}
 
+	/**
+	 * Format a single filter value or array of values for display.
+	 */
+	private function _legendValues($v) {
+		if ($v === null || $v === '') return '';
+		if (is_array($v)) return implode(', ', array_filter(array_map('trim', array_map('strval', $v))));
+		return trim((string) $v);
+	}
+
 	public function auditReportLegend($search)
 	{
-		$legend = "";
+		$limitedBy = array();
+		if (!empty($search->ownership)) $limitedBy[] = 'Ownership (' . $this->_legendValues($search->ownership) . ')';
+		if (!empty($search->institution)) $limitedBy[] = 'Institution Type (' . $this->_legendValues($search->institution) . ')';
+		if (!empty($search->region)) $limitedBy[] = 'Region (' . $this->_legendValues($search->region) . ')';
+		if (!empty($search->district)) $limitedBy[] = 'District (' . $this->_legendValues($search->district) . ')';
+		if (!empty($search->facility_type)) $limitedBy[] = 'Facility Level (' . $this->_legendValues($search->facility_type) . ')';
+		if (!empty($search->facility)) $limitedBy[] = 'Facility (' . $this->_legendValues($search->facility) . ')';
+		if (!empty($search->cadre)) $limitedBy[] = 'Job Cadre (' . $this->_legendValues($search->cadre) . ')';
+		if (!empty($search->job_category)) $limitedBy[] = 'Job Category (' . $this->_legendValues($search->job_category) . ')';
+		if (!empty($search->job_class)) $limitedBy[] = 'Job Classification (' . $this->_legendValues($search->job_class) . ')';
+		if (!empty($search->job)) $limitedBy[] = 'Job Name (' . $this->_legendValues($search->job) . ')';
+		if (!empty($search->month_year)) $limitedBy[] = 'Month Year (' . $this->_legendValues($search->month_year) . ')';
+		if (!empty($_SESSION['district']) && !empty($_GET['display']) && $_GET['display'] == 'ihris') $limitedBy[] = 'District (' . $_SESSION['district'] . ')';
+		if (!empty($_SESSION['institution_type']) && !empty($_GET['display']) && $_GET['display'] == 'ihris') $limitedBy[] = 'Institution Type (' . $_SESSION['institution_type'] . ')';
 
-		if (!empty($search->district)) {
-			$districts = is_array($search->district) ? $search->district : array($search->district);
-			$legend .= "<b class='text-success'>District(s): </b>" . implode(', ', $districts);
-		}
-		if (!empty($_SESSION['district']) && $_GET['display'] == 'ihris') {
-
-			$legend .= "<b class='text-success'>District: </b>" . $_SESSION['district'];
-		}
-
-		if (!empty($search->institution)) {
-			$inst = is_array($search->institution) ? implode(', ', $search->institution) : $search->institution;
-			$legend .= " <b class='text-success'>Institution Type: </b>" . $inst;
-		}
-
-		if (!empty($_SESSION['institution_type']) && $_GET['display'] == 'ihris') {
-			$legend .= " <b class='text-success'>Institution Type: </b>" . $_SESSION['institution_type'];
-		}
-
-		if (!empty($search->job_category)) {
-			$categories = is_array($search->job_category) ? $search->job_category : array($search->job_category);
-			$legend .= " <b class='text-success'>Job Category: </b>" . implode(', ', $categories);
-		}
-
-		if (!empty($search->job)) {
-			$jobs = is_array($search->job) ? $search->job : array($search->job);
-			$legend .= " <b class='text-success'>Job : </b>" . implode(', ', $jobs);
-		}
-
-		if (!empty($search->job_class)) {
-			$classes = is_array($search->job_class) ? $search->job_class : array($search->job_class);
-			$legend .= " <b class='text-success'>Job Classification : </b>" . implode(', ', $classes);
-		}
-
-		if (!empty($search->facility_type)) {
-			$ft = is_array($search->facility_type) ? implode(', ', $search->facility_type) : $search->facility_type;
-			$legend .= " <b class='text-success'>Facility Type : </b>" . $ft;
-		}
-
-		if (!empty($search->region)) {
-			$regs = is_array($search->region) ? implode(', ', $search->region) : $search->region;
-			$legend .= " <b class='text-success'>Region : </b>" . $regs;
-		}
-		if (!empty($search->ownership)) {
-			$legend .= " <b class='text-success'>Ownership : </b>" . $search->ownership;
-		}
-
-		if (!empty($search->cadre)) {
-			$cadres = is_array($search->cadre) ? implode(', ', $search->cadre) : $search->cadre;
-			$legend .= " <b class='text-success'>Cadre : </b>" . $cadres;
-		}
-
-		if (!empty($search->facility)) {
-			$facs = is_array($search->facility) ? implode(', ', $search->facility) : $search->facility;
-			$legend .= " <b class='text-success'>Facility : </b>" . $facs;
-		}
-
-		if (!empty($search->aggregate)) {
-
-			$legend .= " <b class='text-success'>Aggregated By : </b>" . $this->getAggregateLabel($search->aggregate);
-		}
-		if (!empty($search->month_year)) {
-			//facility type
-			$legend .= " <b class='text-success'>Month_year : </b>" . $search->month_year;
-		}
-		
-
-
-
-		return $legend;
+		$limitedStr = count($limitedBy) ? implode('; ', $limitedBy) : 'None';
+		$aggLabel = $this->getAggregateLabel(isset($search->aggregate) ? $search->aggregate : 'job_name');
+		return 'Limited by: ' . $limitedStr . '. Aggregated by: ' . $aggLabel . '.';
 	}
 
 	public function getAggregateLabel($aggregateLabel)

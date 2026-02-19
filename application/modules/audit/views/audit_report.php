@@ -1,6 +1,20 @@
 <?php
-require_once 'includes/audit_report_filter.php';
+// Filters in collapsible panel
 ?>
+<div id="auditFiltersCard" class="card card-default collapsed-card mb-3">
+  <div class="card-header">
+    <h3 class="card-title"><i class="fas fa-filter mr-2"></i>Filters</h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-tool btn-sm" data-card-widget="collapse" id="auditFiltersToggle">
+        <span id="auditFiltersToggleText">Show filters</span>
+        <i class="fas fa-plus ml-1"></i>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+<?php require_once 'includes/audit_report_filter.php'; ?>
+  </div>
+</div>
 <style>
   div.dataTables_wrapper div.dataTables_filter {
     text-align: right;
@@ -23,7 +37,7 @@ require_once 'includes/audit_report_filter.php';
     color: #495057;
     margin-bottom: 15px;
     font-weight: 600;
-    border-bottom: 2px solid #007bff;
+    border-bottom: 2px solid #6c757d;
     padding-bottom: 10px;
   }
   .audit-info-item {
@@ -38,7 +52,7 @@ require_once 'includes/audit_report_filter.php';
     font-size: 18px;
     width: 24px;
     text-align: center;
-    color: #007bff;
+    color: #6c757d;
   }
   .audit-info-item strong {
     margin-right: 8px;
@@ -47,7 +61,7 @@ require_once 'includes/audit_report_filter.php';
   }
   .audit-legend {
     background: #f8f9fa;
-    border-left: 4px solid #007bff;
+    border-left: 4px solid #6c757d;
     padding: 15px;
     margin-bottom: 20px;
     border-radius: 4px;
@@ -82,6 +96,23 @@ require_once 'includes/audit_report_filter.php';
   }
   .table-hover tbody tr:hover {
     background-color: rgba(0,123,255,.075);
+  }
+  .audit-table-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+  .audit-table-overlay-inner {
+    text-align: center;
+    color: #6c757d;
   }
 </style>
 
@@ -128,12 +159,10 @@ require_once 'includes/audit_report_filter.php';
   </div>
 </div>
 
-<?php if (!empty($legend)) : ?>
-  <div class="audit-legend">
-    <h5><i class="fas fa-filter"></i> Active Filters</h5>
-    <div style="text-transform: capitalize;"><?php echo $legend; ?></div>
-  </div>
-<?php endif; ?>
+<div class="audit-legend">
+  <h5><i class="fas fa-filter"></i> Active Filters</h5>
+  <div id="auditLegendText"><?php echo isset($legend) ? htmlspecialchars($legend) : ''; ?></div>
+</div>
 
 <div class="card card-primary card-outline">
   <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
@@ -158,8 +187,13 @@ require_once 'includes/audit_report_filter.php';
       <button type="button" class="btn btn-tool ml-1" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
     </div>
   </div>
-  <div class="card-body">
-    <div id="auditTableLoading" class="text-center py-4" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+  <div class="card-body position-relative">
+    <div id="auditTableOverlay" class="audit-table-overlay" style="display: none;">
+      <div class="audit-table-overlay-inner">
+        <i class="fas fa-spinner fa-spin fa-3x text-secondary mb-2"></i>
+        <div>Loading...</div>
+      </div>
+    </div>
     <table id="auditReportTable" class="table table-striped table-bordered table-hover audit-table" style="width:100%">
       <thead>
         <tr>
@@ -235,7 +269,7 @@ require_once 'includes/audit_report_filter.php';
   }
 
   function loadTable() {
-    $('#auditTableLoading').show();
+    $('#auditTableOverlay').show();
     $('#auditReportTable tbody').empty();
     $.ajax({
       url: dataUrl,
@@ -245,6 +279,10 @@ require_once 'includes/audit_report_filter.php';
     }).done(function(json) {
       draw++;
       filteredRecords = json.recordsFiltered || 0;
+      if (json.legend !== undefined) {
+        var $leg = $('#auditLegendText');
+        if ($leg.length) $leg.text(json.legend);
+      }
       if (json.totals) {
         $('#totalApproved').text(json.totals.totalApproved.toLocaleString());
         $('#totalFilled').text(json.totals.totalFilled.toLocaleString());
@@ -272,8 +310,14 @@ require_once 'includes/audit_report_filter.php';
     }).fail(function() {
       $('#auditTableInfo').text('Error loading data');
     }).always(function() {
-      $('#auditTableLoading').hide();
+      $('#auditTableOverlay').hide();
     });
+  }
+
+  function updateFiltersToggleText() {
+    var $card = $('#auditFiltersCard');
+    var $text = $('#auditFiltersToggleText');
+    $text.text($card.hasClass('collapsed-card') ? 'Show filters' : 'Hide filters');
   }
 
   function escapeHtml(s) {
@@ -283,6 +327,13 @@ require_once 'includes/audit_report_filter.php';
   }
 
   $(function() {
+    updateFiltersToggleText();
+    $(document).on('expanded.lte.cardwidget collapsed.lte.cardwidget', function() {
+      updateFiltersToggleText();
+    });
+    $('#auditFiltersToggle').on('click', function() {
+      setTimeout(updateFiltersToggleText, 150);
+    });
     $('#auditPageSize').on('change', function() {
       pageSize = parseInt($(this).val(), 10);
       page = 0;
