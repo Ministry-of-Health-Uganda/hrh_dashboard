@@ -424,6 +424,9 @@ class Audit extends MX_Controller {
 
 		$data['legend'] = $this->auditMdl->auditReportLegend($search);
 		$data['district_param'] = $district_param;
+
+		print_r($data['legend']."<br>".$data['district_param']."<br>".$display);
+		exit;
 		$data['display'] = $display;
 		$data['ajax_query'] = http_build_query(array_filter(array(
 			'districts' => $district_param,
