@@ -52,7 +52,10 @@ public function makePdf($html,$filename,$action)
 	//download it D save F.
 	ob_end_clean();
 	$this->ml_pdf->pdf->Output($filename,$action);
-
+	// Exit so the response is only the PDF (no extra output from CI/MX buffer)
+	if ($action === 'D' || $action === 'I') {
+		exit;
+	}
 	}
 
 	/**

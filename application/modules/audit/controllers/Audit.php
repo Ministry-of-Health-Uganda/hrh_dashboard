@@ -59,7 +59,10 @@ class Audit extends MX_Controller {
 	}
 
 	public function auditReport(){
-		$this->_setCorsAndEmbedHeaders(true);
+		// Skip CORS/embed headers when outputting PDF so mPDF can send its own headers
+		if ($this->input->get_post('getPdf') != 1) {
+			$this->_setCorsAndEmbedHeaders(true);
+		}
 		Modules::run('dataprep/shareModel'); //model sharing handle 
 
 		$search = (Object) $this->input->post();
@@ -107,7 +110,9 @@ class Audit extends MX_Controller {
 			$html     = $this->load->view("audit/audit_report_pdf", $data, true);
 			$districtLabel = !empty($_SESSION['district']) ? $_SESSION['district'] . '_' : '';
 			$filename = $districtLabel . "audit_report_" . date('Y-m-d_His') . ".pdf";
-			Modules::run('template/streamPdf', $html, $filename);
+			// Use makePdf with 'D' (download) so mPDF sends a real PDF file; exit after to avoid extra output
+			Modules::run('template/makePdf', $html, $filename, 'D');
+			exit;
 		else:
 			if ($this->embed) {
 				echo Modules::run('template/layoutEmbed', $data);
