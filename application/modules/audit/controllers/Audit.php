@@ -392,14 +392,51 @@ class Audit extends MX_Controller {
 	}
 
 	public function lfacAudit(){
+		if ($this->input->get_post('getPdf') != 1) {
+			$this->_setCorsAndEmbedHeaders(true);
+		}
+		Modules::run('dataprep/shareModel');
 
-        $data['module']     = "audit";
+		$search = (object) $this->input->post();
+		$district_param = $this->input->get('districts') ?: $this->input->get('district');
+		$display = $this->input->get('display') ?: 'ihris';
+
+		$data['module']     = "audit";
 		$data['page']       = "fac_audit";
 		$data['title']      = "Facility Audit Report";
 		$data['uptitle']    = "HRH Facility Audit Report";
-		
-	      echo Modules::run('template/layout',$data);
-		
+		$data['search']     = $search;
+		$data['embed']      = $this->embed;
+
+		$data['aggTitle']   = $this->auditMdl->getAggregateLabel(@$search->aggregate);
+		$data['aggColumn']  = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
+
+		$data['filters'] = $this->DataPrep_mdl->getFilters(true);
+		$data['institution_types_for_chain'] = $this->DataPrep_mdl->getInstitutionTypesForChain('');
+		$data['regions_for_chain'] = $this->DataPrep_mdl->getRegionsForChain();
+		$data['districts_for_chain'] = $this->DataPrep_mdl->getDistrictsForChain('', array(), array());
+		$data['facility_levels_for_chain'] = $this->DataPrep_mdl->getFacilityLevelsForChain('', array(), array(), array());
+		$data['facilities_for_chain'] = $this->DataPrep_mdl->getFacilitiesForChain('', array(), array(), array(), array());
+		$data['job_cadres_for_chain'] = $this->DataPrep_mdl->getJobCadresForChain('', array(), array(), array(), array(), array());
+		$data['job_categories_for_chain'] = $this->DataPrep_mdl->getJobCategoriesForChain('', array(), array(), array(), array(), array(), array());
+		$data['job_classifications_for_chain'] = $this->DataPrep_mdl->getJobClassificationsForChain('', array(), array(), array(), array(), array(), array(), array());
+		$data['job_names_for_chain'] = $this->DataPrep_mdl->getJobNamesForChain('', array(), array(), array(), array(), array(), array(), array(), array());
+
+		$data['legend'] = $this->auditMdl->auditReportLegend($search);
+		$data['district_param'] = $district_param;
+		$data['display'] = $display;
+		$data['ajax_query'] = http_build_query(array_filter(array(
+			'districts' => $district_param,
+			'display'   => $display
+		)));
+		$data['last_staff_update'] = $this->auditMdl->getLastStaffUpdate();
+		$data['last_audit_generation'] = $this->auditMdl->getLastAuditGeneration();
+
+		if ($this->embed) {
+			echo Modules::run('template/layoutEmbed', $data);
+		} else {
+			echo Modules::run('template/layout', $data);
+		}
 	}
 	public function district_facility($district){
 		
