@@ -110,8 +110,11 @@ class Audit extends MX_Controller {
 			$html     = $this->load->view("audit/audit_report_pdf", $data, true);
 			$districtLabel = !empty($_SESSION['district']) ? $_SESSION['district'] . '_' : '';
 			$filename = $districtLabel . "audit_report_" . date('Y-m-d_His') . ".pdf";
-			// Use makePdf with 'D' (download) so mPDF sends a real PDF file; exit after to avoid extra output
-			Modules::run('template/makePdf', $html, $filename, 'D');
+			// makePdf with 'D' returns PDF string and sets headers; echo and exit so download triggers
+			$pdf = Modules::run('template/makePdf', $html, $filename, 'D');
+			if ($pdf !== null && $pdf !== '') {
+				echo $pdf;
+			}
 			exit;
 		else:
 			if ($this->embed) {

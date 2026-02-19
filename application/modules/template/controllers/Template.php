@@ -38,24 +38,24 @@ class Template extends MX_Controller {
 
 public function makePdf($html,$filename,$action)
 	{	
-
 	 $this->load->library('ML_pdf');  //or i used ML_pdf for landscape
-    
      ob_clean();
-     
 	$PDFContent = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
 	$this->ml_pdf->pdf->SetWatermarkImage($this->watermark);
     $this->ml_pdf->pdf->showWatermarkImage = true;
-
 	$this->ml_pdf->pdf->WriteHTML($PDFContent); 
-	 
-	//download it D save F.
+	// For download/inline, use 'S' (string) so caller can send it; avoids MX/ob capturing the echo
+	if ($action === 'D' || $action === 'I') {
+		$pdf = $this->ml_pdf->pdf->Output('', 'S');
+		ob_clean(); // clear only; do not pop so Modules::run() can ob_get_clean() normally
+		header('Content-Type: application/pdf');
+		header('Content-Disposition: ' . ($action === 'D' ? 'attachment' : 'inline') . '; filename="' . preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filename) . '"');
+		header('Content-Length: ' . strlen($pdf));
+		header('Cache-Control: private, max-age=0, must-revalidate');
+		return $pdf;
+	}
 	ob_end_clean();
 	$this->ml_pdf->pdf->Output($filename,$action);
-	// Exit so the response is only the PDF (no extra output from CI/MX buffer)
-	if ($action === 'D' || $action === 'I') {
-		exit;
-	}
 	}
 
 	/**
