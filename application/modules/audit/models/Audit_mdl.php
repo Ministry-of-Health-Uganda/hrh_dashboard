@@ -194,10 +194,15 @@ class Audit_mdl extends CI_Model
 
 	private function auditReportFilters($search)
 	{
+		// Ignore jobs where both approved and filled are 0 (applies to report, totals, and PDF)
+		$this->db->where('(approved != 0 OR total != 0)');
 
 		if (!empty($search->district)) {
-
-			$this->db->where('district_name', $search->district);
+			if (is_array($search->district)) {
+				$this->db->where_in('district_name', $search->district);
+			} else {
+				$this->db->where('district_name', $search->district);
+			}
 		}
 		if (!empty($_GET['districts']) && empty($search->district)) {
 			$district_id = $_GET['districts'];
@@ -214,13 +219,19 @@ class Audit_mdl extends CI_Model
 		}
 
 		if (!empty($search->institution)) {
-
-			$this->db->like('institution_type', $search->institution,'after');
+			if (is_array($search->institution)) {
+				$this->db->where_in('institution_type', $search->institution);
+			} else {
+				$this->db->where('institution_type', $search->institution);
+			}
 		}
 
 		if (!empty($search->facility_type)) {
-
-			$this->db->where('facility_type_name', $search->facility_type);
+			if (is_array($search->facility_type)) {
+				$this->db->where_in('facility_type_name', $search->facility_type);
+			} else {
+				$this->db->where('facility_type_name', $search->facility_type);
+			}
 		}
 
 		if (!empty($search->job_category)) {
@@ -240,29 +251,40 @@ class Audit_mdl extends CI_Model
 		}
 
 		if (!empty($search->job)) {
-			//job name
-			$this->db->where('job_name', $search->job);
+			if (is_array($search->job)) {
+				$this->db->where_in('job_name', $search->job);
+			} else {
+				$this->db->where('job_name', $search->job);
+			}
 		}
 
 		if (!empty($search->facility)) {
-			//facility
-			$facility = str_replace("'", "", $search->facility);
-			$this->db->where('facility_name', $facility);
+			if (is_array($search->facility)) {
+				$this->db->where_in('facility_name', array_map(function($f) { return str_replace("'", "", $f); }, $search->facility));
+			} else {
+				$facility = str_replace("'", "", $search->facility);
+				$this->db->where('facility_name', $facility);
+			}
 		}
 
 		if (!empty($search->region)) {
-			//facility
-			$this->db->where('region_name', $search->region);
+			if (is_array($search->region)) {
+				$this->db->where_in('region_name', $search->region);
+			} else {
+				$this->db->where('region_name', $search->region);
+			}
 		}
 
 		if (!empty($search->ownership)) {
-			//ownership
 			$this->db->where('ownership', $search->ownership);
 		}
 
 		if (!empty($search->cadre)) {
-			//cadre_name
-			$this->db->where('cadre_name', $search->cadre);
+			if (is_array($search->cadre)) {
+				$this->db->where_in('cadre_name', $search->cadre);
+			} else {
+				$this->db->where('cadre_name', $search->cadre);
+			}
 		}
 	}
 
@@ -271,8 +293,8 @@ class Audit_mdl extends CI_Model
 		$legend = "";
 
 		if (!empty($search->district)) {
-
-			$legend .= "<b class='text-success'>District: </b>" . $search->district;
+			$districts = is_array($search->district) ? $search->district : array($search->district);
+			$legend .= "<b class='text-success'>District(s): </b>" . implode(', ', $districts);
 		}
 		if (!empty($_SESSION['district']) && $_GET['display'] == 'ihris') {
 
@@ -280,7 +302,8 @@ class Audit_mdl extends CI_Model
 		}
 
 		if (!empty($search->institution)) {
-			$legend .= " <b class='text-success'>Institution Type: </b>" . $search->institution;
+			$inst = is_array($search->institution) ? implode(', ', $search->institution) : $search->institution;
+			$legend .= " <b class='text-success'>Institution Type: </b>" . $inst;
 		}
 
 		if (!empty($_SESSION['institution_type']) && $_GET['display'] == 'ihris') {
@@ -293,8 +316,8 @@ class Audit_mdl extends CI_Model
 		}
 
 		if (!empty($search->job)) {
-			//job name
-			$legend .= " <b class='text-success'>Job : </b>" . $search->job;
+			$jobs = is_array($search->job) ? $search->job : array($search->job);
+			$legend .= " <b class='text-success'>Job : </b>" . implode(', ', $jobs);
 		}
 
 		if (!empty($search->job_class)) {
@@ -303,23 +326,26 @@ class Audit_mdl extends CI_Model
 		}
 
 		if (!empty($search->facility_type)) {
-			//facility type
-			$legend .= " <b class='text-success'>Facility Type : </b>" . $search->facility_type;
+			$ft = is_array($search->facility_type) ? implode(', ', $search->facility_type) : $search->facility_type;
+			$legend .= " <b class='text-success'>Facility Type : </b>" . $ft;
 		}
 
 		if (!empty($search->region)) {
-			//facility type
-			$legend .= " <b class='text-success'>Region : </b>" . $search->region;
+			$regs = is_array($search->region) ? implode(', ', $search->region) : $search->region;
+			$legend .= " <b class='text-success'>Region : </b>" . $regs;
 		}
 		if (!empty($search->ownership)) {
-			//facility type
 			$legend .= " <b class='text-success'>Ownership : </b>" . $search->ownership;
 		}
-	
+
+		if (!empty($search->cadre)) {
+			$cadres = is_array($search->cadre) ? implode(', ', $search->cadre) : $search->cadre;
+			$legend .= " <b class='text-success'>Cadre : </b>" . $cadres;
+		}
 
 		if (!empty($search->facility)) {
-			//facility type
-			$legend .= " <b class='text-success'>Facility : </b>" . $search->facility;
+			$facs = is_array($search->facility) ? implode(', ', $search->facility) : $search->facility;
+			$legend .= " <b class='text-success'>Facility : </b>" . $facs;
 		}
 
 		if (!empty($search->aggregate)) {

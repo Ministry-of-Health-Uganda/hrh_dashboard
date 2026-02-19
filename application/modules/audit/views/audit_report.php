@@ -136,27 +136,37 @@ require_once 'includes/audit_report_filter.php';
 <?php endif; ?>
 
 <div class="card card-primary card-outline">
-  <div class="card-header">
-    <h3 class="card-title">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+    <h3 class="card-title mb-0">
       <i class="fas fa-table mr-2"></i>
       Audit Report Data
     </h3>
-    <div class="card-tools">
-      <button type="button" class="btn btn-tool" data-card-widget="collapse">
-        <i class="fas fa-minus"></i>
-      </button>
+    <div class="d-flex align-items-center flex-wrap">
+      <label class="mb-0 mr-2">Show</label>
+      <select id="auditPageSize" class="form-control form-control-sm" style="width: auto;">
+        <option value="25" selected>25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="250">250</option>
+        <option value="500">500</option>
+      </select>
+      <span class="ml-2 mr-3">per page</span>
+      <form id="auditExportForm" method="post" action="<?php echo base_url('audit/auditReportExcel'); ?>" target="_blank" class="d-inline">
+        <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-file-excel mr-1"></i> Export to Excel</button>
+      </form>
+      <button type="button" id="auditExportPdf" class="btn btn-sm btn-danger ml-2"><i class="fas fa-file-pdf mr-1"></i> Export PDF</button>
+      <button type="button" class="btn btn-tool ml-1" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
     </div>
   </div>
   <div class="card-body">
+    <div id="auditTableLoading" class="text-center py-4" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
     <table id="auditReportTable" class="table table-striped table-bordered table-hover audit-table" style="width:100%">
       <thead>
         <tr>
-          <th width="25%" style="text-transform: capitalize;">
-            <?php echo  $aggTitle; ?>
-          </th>
-          <?php if (($search->aggregate  == 'job_name') || ($search->aggregate  == '')) { ?><th>Salary Scale</th> <?php } ?>
-          <th>Approved</th>
-          <th>Filled</th>
+          <th width="25%" class="audit-sort" data-col="0" style="cursor:pointer; text-transform: capitalize;" title="Sort"><?php echo $aggTitle; ?> <i class="fas fa-sort ml-1"></i></th>
+          <?php if (($search->aggregate == 'job_name') || ($search->aggregate == '')) { ?><th class="audit-sort" data-col="1" style="cursor:pointer" title="Sort">Salary Scale <i class="fas fa-sort ml-1"></i></th><?php } ?>
+          <th class="audit-sort" data-col="<?php echo ($search->aggregate == 'job_name' || $search->aggregate == '') ? 2 : 1; ?>" style="cursor:pointer" title="Sort">Approved <i class="fas fa-sort ml-1"></i></th>
+          <th class="audit-sort" data-col="<?php echo ($search->aggregate == 'job_name' || $search->aggregate == '') ? 3 : 2; ?>" style="cursor:pointer" title="Sort">Filled <i class="fas fa-sort ml-1"></i></th>
           <th>Vacant</th>
           <th>Excess</th>
           <th>Male</th>
@@ -167,117 +177,153 @@ require_once 'includes/audit_report_filter.php';
           <th>Female %</th>
         </tr>
       </thead>
-  <tfoot>
-    <tr>
-      <th width="25%">TOTALS</th>
-      <?php if (($search->aggregate  == 'job_name') || ($search->aggregate  == '')) { ?><th></th> <?php } ?>
-      <th id="totalApproved">0</th>
-      <th id="totalFilled">0</th>
-      <th id="totalVacant">0</th>
-      <th id="totalExcess">0</th>
-      <th id="totalMales">0</th>
-      <th id="totalFemales">0</th>
-      <th id="totalFilledPct">0%</th>
-      <th id="totalVacantPct">0%</th>
-      <th id="totalMalePct">0%</th>
-      <th id="totalFemalePct">0%</th>
-    </tr>
-  </tfoot>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <th width="25%">TOTALS</th>
+          <?php if (($search->aggregate == 'job_name') || ($search->aggregate == '')) { ?><th></th><?php } ?>
+          <th id="totalApproved">0</th>
+          <th id="totalFilled">0</th>
+          <th id="totalVacant">0</th>
+          <th id="totalExcess">0</th>
+          <th id="totalMales">0</th>
+          <th id="totalFemales">0</th>
+          <th id="totalFilledPct">0%</th>
+          <th id="totalVacantPct">0%</th>
+          <th id="totalMalePct">0%</th>
+          <th id="totalFemalePct">0%</th>
+        </tr>
+      </tfoot>
     </table>
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <div id="auditTableInfo" class="text-muted">0 rows</div>
+      <div>
+        <button type="button" id="auditPrevPage" class="btn btn-sm btn-outline-secondary" disabled>Previous</button>
+        <span id="auditPageNum" class="mx-2">Page 1</span>
+        <button type="button" id="auditNextPage" class="btn btn-sm btn-outline-secondary">Next</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-$(document).ready(function() {
-    var table = $('#auditReportTable').DataTable({
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "<?php echo base_url('audit/auditReportData'); ?>",
-            "type": "POST",
-            "data": function(d) {
-                // Add form filter data to the request
-                var formData = $('.searchForm').serializeArray();
-                $.each(formData, function(i, field) {
-                    if (field.name.indexOf('[]') !== -1) {
-                        // Handle array fields
-                        var name = field.name.replace('[]', '');
-                        if (!d[name]) {
-                            d[name] = [];
-                        }
-                        if (field.value) {
-                            d[name].push(field.value);
-                        }
-                    } else {
-                        d[field.name] = field.value;
-                    }
-                });
-            },
-            "dataSrc": function(json) {
-                // Update footer totals with data from all filtered records
-                if (json.totals) {
-                    $('#totalApproved').text(json.totals.totalApproved.toLocaleString());
-                    $('#totalFilled').text(json.totals.totalFilled.toLocaleString());
-                    $('#totalVacant').text(json.totals.totalVacant.toLocaleString());
-                    $('#totalExcess').text(json.totals.totalExcess.toLocaleString());
-                    $('#totalMales').text(json.totals.totalMale.toLocaleString());
-                    $('#totalFemales').text(json.totals.totalFemale.toLocaleString());
-                    $('#totalFilledPct').text(json.totals.filledPct + '%');
-                    $('#totalVacantPct').text(json.totals.vacantPct + '%');
-                    $('#totalMalePct').text(json.totals.malePct + '%');
-                    $('#totalFemalePct').text(json.totals.femalePct + '%');
-                }
-                return json.data;
-            }
-        },
-        "columns": [
-            { "data": 0 }<?php 
-            $colOffset = 1;
-            if (($search->aggregate  == 'job_name') || ($search->aggregate  == '')) { 
-                echo ', { "data": 1 }';
-                $colOffset = 2;
-            } 
-            ?>,
-            { "data": <?php echo $colOffset; ?> },
-            { "data": <?php echo $colOffset + 1; ?> },
-            { "data": <?php echo $colOffset + 2; ?> },
-            { "data": <?php echo $colOffset + 3; ?> },
-            { "data": <?php echo $colOffset + 4; ?> },
-            { "data": <?php echo $colOffset + 5; ?> },
-            { "data": <?php echo $colOffset + 6; ?> },
-            { "data": <?php echo $colOffset + 7; ?> },
-            { "data": <?php echo $colOffset + 8; ?> },
-            { "data": <?php echo $colOffset + 9; ?> }
-        ],
-        "pageLength": 25,
-        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-        "order": [[<?php echo $colOffset; ?>, "asc"]],
-        "dom": 'Bfrtip',
-        "buttons": [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ],
-        "footerCallback": function (row, data, start, end, display) {
-            // This function can be used to calculate footer totals if needed
-            // For now, totals will be calculated server-side if needed
-        }
+(function() {
+  var dataUrl = "<?php echo base_url('audit/auditReportData'); ?>";
+  var colOffset = <?php echo ($search->aggregate == 'job_name' || $search->aggregate == '') ? 2 : 1; ?>;
+  var page = 0;
+  var pageSize = 25;
+  var sortCol = colOffset;
+  var sortDir = 'asc';
+  var filteredRecords = 0;
+  var draw = 0;
+
+  function getFormPayload() {
+    var d = { start: page * pageSize, length: pageSize, draw: draw };
+    d.order = [{ column: sortCol, dir: sortDir }];
+    d.search = { value: '' };
+    var formData = $('.searchForm').serializeArray();
+    $.each(formData, function(i, field) {
+      if (field.name.indexOf('[]') !== -1) {
+        var name = field.name.replace('[]', '');
+        if (!d[name]) d[name] = [];
+        if (field.value) d[name].push(field.value);
+      } else {
+        d[field.name] = field.value;
+      }
     });
-    
-    // Reload table when form is submitted (but not for PDF download)
+    return d;
+  }
+
+  function loadTable() {
+    $('#auditTableLoading').show();
+    $('#auditReportTable tbody').empty();
+    $.ajax({
+      url: dataUrl,
+      type: 'POST',
+      data: getFormPayload(),
+      dataType: 'json'
+    }).done(function(json) {
+      draw++;
+      filteredRecords = json.recordsFiltered || 0;
+      if (json.totals) {
+        $('#totalApproved').text(json.totals.totalApproved.toLocaleString());
+        $('#totalFilled').text(json.totals.totalFilled.toLocaleString());
+        $('#totalVacant').text(json.totals.totalVacant.toLocaleString());
+        $('#totalExcess').text(json.totals.totalExcess.toLocaleString());
+        $('#totalMales').text(json.totals.totalMale.toLocaleString());
+        $('#totalFemales').text(json.totals.totalFemale.toLocaleString());
+        $('#totalFilledPct').text(json.totals.filledPct + '%');
+        $('#totalVacantPct').text(json.totals.vacantPct + '%');
+        $('#totalMalePct').text(json.totals.malePct + '%');
+        $('#totalFemalePct').text(json.totals.femalePct + '%');
+      }
+      $.each(json.data || [], function(i, row) {
+        var tr = '<tr>';
+        for (var c = 0; c < row.length; c++) tr += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
+        tr += '</tr>';
+        $('#auditReportTable tbody').append(tr);
+      });
+      var from = filteredRecords === 0 ? 0 : page * pageSize + 1;
+      var to = Math.min((page + 1) * pageSize, filteredRecords);
+      $('#auditTableInfo').text(from + '–' + to + ' of ' + filteredRecords.toLocaleString());
+      $('#auditPageNum').text('Page ' + (page + 1) + ' of ' + (Math.ceil(filteredRecords / pageSize) || 1));
+      $('#auditPrevPage').prop('disabled', page === 0);
+      $('#auditNextPage').prop('disabled', (page + 1) * pageSize >= filteredRecords);
+    }).fail(function() {
+      $('#auditTableInfo').text('Error loading data');
+    }).always(function() {
+      $('#auditTableLoading').hide();
+    });
+  }
+
+  function escapeHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  $(function() {
+    $('#auditPageSize').on('change', function() {
+      pageSize = parseInt($(this).val(), 10);
+      page = 0;
+      loadTable();
+    });
+    $('#auditPrevPage').on('click', function() { if (page > 0) { page--; loadTable(); } });
+    $('#auditNextPage').on('click', function() { if ((page + 1) * pageSize < filteredRecords) { page++; loadTable(); } });
+    $(document).on('click', '.audit-sort', function() {
+      var col = parseInt($(this).data('col'), 10);
+      if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      else { sortCol = col; sortDir = 'asc'; }
+      page = 0;
+      loadTable();
+    });
     $('.searchForm').on('submit', function(e) {
-        var isPdf = $('#print').val() == '1';
-        if (!isPdf) {
-            e.preventDefault();
-            table.ajax.reload();
-            return false;
-        }
+      if ($('#print').val() == '1') return;
+      e.preventDefault();
+      page = 0;
+      loadTable();
+      return false;
     });
-    
-    // Initialize Select2 for multiple selects
-    $('select[name="job_category[]"], select[name="job_class[]"]').select2({
-        placeholder: function() {
-            return $(this).data('placeholder');
-        },
-        allowClear: true
+    loadTable();
+    $('#auditExportPdf').on('click', function() {
+      $('#print').val(1);
+      $('.searchForm').attr('target', '_blank').submit();
+      setTimeout(function() { $('#print').val(0); $('.searchForm').removeAttr('target'); }, 500);
     });
-});
+    $('select[name="job_category[]"], select[name="job_class[]"], select[name="district[]"], select[name="institution[]"], select[name="region[]"], select[name="facility_type[]"], select[name="facility[]"], select[name="cadre[]"], select[name="job[]"]').select2({
+      placeholder: function() { return $(this).data('placeholder') || 'All'; },
+      allowClear: true
+    });
+  });
+
+  $(document).on('submit', '#auditExportForm', function() {
+    var $form = $(this);
+    $form.find('input[type="hidden"]').remove();
+    var formData = $('.searchForm').serializeArray();
+    $.each(formData, function(i, field) {
+      if (field.name === 'getPdf') return;
+      $form.append($('<input type="hidden">').attr('name', field.name).val(field.value));
+    });
+  });
+})();
 </script>

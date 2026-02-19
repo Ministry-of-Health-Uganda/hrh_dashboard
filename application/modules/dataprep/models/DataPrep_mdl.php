@@ -363,6 +363,172 @@ class DataPrep_mdl extends CI_Model {
 		return $qry->result();
 	}
 
+	/**
+	 * Apply chained filters to current query (national_jobs). All params are "previous" selections.
+	 * Column names match national_jobs: ownership, institution_type, region_name, district_name,
+	 * facility_type_name, facility_name, cadre_name, job_category, job_classification.
+	 */
+	private function applyChainFilters($ownership = '', $institution_types = array(), $regions = array(), $districts = array(),
+		$facility_levels = array(), $facilities = array(), $cadres = array(), $job_categories = array(), $job_classifications = array()) {
+		if ($ownership !== '' && $ownership !== null) {
+			$this->db->where('ownership', $ownership);
+		}
+		if (!empty($institution_types) && is_array($institution_types)) {
+			$this->db->where_in('institution_type', $institution_types);
+		}
+		if (!empty($regions) && is_array($regions)) {
+			$this->db->where_in('region_name', $regions);
+		}
+		if (!empty($districts) && is_array($districts)) {
+			$this->db->where_in('district_name', $districts);
+		}
+		if (!empty($facility_levels) && is_array($facility_levels)) {
+			$this->db->where_in('facility_type_name', $facility_levels);
+		}
+		if (!empty($facilities) && is_array($facilities)) {
+			$this->db->where_in('facility_name', $facilities);
+		}
+		if (!empty($cadres) && is_array($cadres)) {
+			$this->db->where_in('cadre_name', $cadres);
+		}
+		if (!empty($job_categories) && is_array($job_categories)) {
+			$this->db->where_in('job_category', $job_categories);
+		}
+		if (!empty($job_classifications) && is_array($job_classifications)) {
+			$this->db->where_in('job_classification', $job_classifications);
+		}
+	}
+
+	/**
+	 * Chain: Ownership -> Institution Type. Returns distinct institution_type from national_jobs.
+	 */
+	public function getInstitutionTypesForChain($ownership = '') {
+		$this->db->select('institution_type');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('institution_type !=', '');
+		$this->applyChainFilters($ownership);
+		$this->db->order_by('institution_type', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Chain: Region (start of chain). Returns all distinct region_name.
+	 * Ownership and Institution Type are chained separately; region → job name chain does not use them.
+	 */
+	public function getRegionsForChain($ownership = '', $institution_types = array()) {
+		$this->db->select('region_name');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('region_name !=', '');
+		$this->db->order_by('region_name', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Chain: + District. Returns distinct district_name.
+	 */
+	public function getDistrictsForChain($ownership = '', $institution_types = array(), $regions = array()) {
+		$this->db->select('district_name as district');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('district_name !=', '');
+		$this->applyChainFilters($ownership, $institution_types, $regions);
+		$this->db->order_by('district_name', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Chain: + Facility Level (facility_type_name). Returns distinct facility_type_name.
+	 */
+	public function getFacilityLevelsForChain($ownership = '', $institution_types = array(), $regions = array(), $districts = array()) {
+		$this->db->select('facility_type_name as facility_type');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('facility_type_name !=', '');
+		$this->applyChainFilters($ownership, $institution_types, $regions, $districts);
+		$this->db->order_by('facility_type_name', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Chain: + Facility. Returns distinct facility_name.
+	 */
+	public function getFacilitiesForChain($ownership = '', $institution_types = array(), $regions = array(), $districts = array(), $facility_levels = array()) {
+		$this->db->select('facility_name as facility');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('facility_name !=', '');
+		$this->applyChainFilters($ownership, $institution_types, $regions, $districts, $facility_levels);
+		$this->db->order_by('facility_name', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Chain: + Job Cadre (cadre_name). Returns distinct cadre_name.
+	 */
+	public function getJobCadresForChain($ownership = '', $institution_types = array(), $regions = array(), $districts = array(), $facility_levels = array(), $facilities = array()) {
+		$this->db->select('cadre_name');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('cadre_name !=', '');
+		$this->applyChainFilters($ownership, $institution_types, $regions, $districts, $facility_levels, $facilities);
+		$this->db->order_by('cadre_name', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Chain: + Job Category. Returns distinct job_category.
+	 */
+	public function getJobCategoriesForChain($ownership = '', $institution_types = array(), $regions = array(), $districts = array(), $facility_levels = array(), $facilities = array(), $cadres = array()) {
+		$this->db->select('job_category');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('job_category !=', '');
+		$this->applyChainFilters($ownership, $institution_types, $regions, $districts, $facility_levels, $facilities, $cadres);
+		$this->db->order_by('job_category', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Chain: + Job Classification. Returns distinct job_classification (as job_class).
+	 */
+	public function getJobClassificationsForChain($ownership = '', $institution_types = array(), $regions = array(), $districts = array(), $facility_levels = array(), $facilities = array(), $cadres = array(), $job_categories = array()) {
+		$this->db->select('job_classification as job_class');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('job_classification !=', '');
+		$this->applyChainFilters($ownership, $institution_types, $regions, $districts, $facility_levels, $facilities, $cadres, $job_categories);
+		$this->db->order_by('job_classification', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Chain: + Job Name. Returns distinct job_name (as job).
+	 */
+	public function getJobNamesForChain($ownership = '', $institution_types = array(), $regions = array(), $districts = array(), $facility_levels = array(), $facilities = array(), $cadres = array(), $job_categories = array(), $job_classifications = array()) {
+		$this->db->select('job_name as job');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('job_name !=', '');
+		$this->applyChainFilters($ownership, $institution_types, $regions, $districts, $facility_levels, $facilities, $cadres, $job_categories, $job_classifications);
+		$this->db->order_by('job_name', 'asc');
+		return $this->db->get()->result();
+	}
+
+	/** Legacy: institution types (all or by category). Kept for backward compatibility. */
+	public function getInstitutionTypesByCategory($category) {
+		$this->db->select('institution_type');
+		$this->db->distinct();
+		$this->db->from('national_jobs');
+		$this->db->where('institution_type !=', '');
+		if (!empty($category)) {
+			$this->db->where('TRIM(SUBSTRING_INDEX(institution_type, ",", -1))', $category);
+		}
+		$this->db->order_by('institution_type', 'asc');
+		return $this->db->get()->result();
+	}
+
 	public function getFilters($showAll=false){
 
 		$data['facilities']   = $this->db->get("facilities")->result();
