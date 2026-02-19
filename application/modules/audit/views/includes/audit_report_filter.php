@@ -225,16 +225,11 @@
 		</select>
 	</div>
 
-	
-
-	<div class="form-group col-md-1 d-flex align-items-end">
+	<div class="form-group col-12 d-flex justify-content-end align-items-center mt-2 mb-0">
+		<input type="hidden" name="getPdf" id="print">
+		<?php if (!empty($embed)): ?><input type="hidden" name="embed" value="1"><?php endif; ?>
 		<input type="submit" class="btn btn-sm btn-success mr-1" value="Apply Filter" />
 		<button type="button" class="btn btn-sm btn-warning" onclick="resetFilters()">Reset Filters</button>
-	</div>
-	<input type="hidden" name="getPdf" id="print">
-	<?php if (!empty($embed)): ?><input type="hidden" name="embed" value="1"><?php endif; ?>
-	<div class="form-group col-md-1">
-		<br>
 	</div>
 
 </form>
