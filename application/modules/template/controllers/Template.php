@@ -19,6 +19,15 @@ class Template extends MX_Controller {
 		$data['setting'] = $this->template_model->setting();
 		$this->load->view('layout', $data);
 	}
+
+	/**
+	 * Minimal layout for embedding (e.g. iframe): no sidebar/nav, just content.
+	 */
+	public function layoutEmbed($data)
+	{
+		$data['setting'] = $this->template_model->setting();
+		$this->load->view('embed_layout', $data);
+	}
  
 	public function login($data)
 	{ 

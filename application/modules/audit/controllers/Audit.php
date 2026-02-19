@@ -3,21 +3,67 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Audit extends MX_Controller {
 
-	
+	/** When true, allow embedding in iframes and send CORS headers for cross-origin use. */
+	private $embed = false;
+
 	public function __Construct(){
-
 		parent::__Construct();
-
 		$this->load->model('Audit_mdl','auditMdl');
-		$this->watermark=FCPATH."assets/watermark.png";
+		$this->watermark = FCPATH."assets/watermark.png";
+		$this->embed = ($this->input->get_post('embed') === '1' || $this->input->get_post('embed') === 1);
+		// Preflight: respond to OPTIONS so cross-origin POST/fetch succeed without CORS errors
+		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+			$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+			if ($origin !== '') {
+				header('Access-Control-Allow-Origin: ' . $origin);
+				header('Access-Control-Allow-Credentials: true');
+			} else {
+				header('Access-Control-Allow-Origin: *');
+			}
+			header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+			header('Access-Control-Allow-Headers: Content-Type, X-Requested-With, Accept, Origin');
+			header('Access-Control-Max-Age: 86400');
+			if (function_exists('header_remove')) {
+				header_remove('X-Frame-Options');
+			}
+			exit(0);
+		}
 	}
 
+	/**
+	 * Send CORS and embed headers so the audit view can be embedded in external systems and JS avoids CORS errors.
+	 * Call before any output. When $for_html is true, also allows framing (frame-ancestors *).
+	 */
+	private function _setCorsAndEmbedHeaders($for_html = false) {
+		$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+		$allow_embed = $this->embed || $origin !== '';
+		if (!$allow_embed) {
+			return;
+		}
+		// Allow the request origin so credentials (cookies) work when embedded; fallback to * for simple embed
+		if ($origin !== '') {
+			header('Access-Control-Allow-Origin: ' . $origin);
+			header('Access-Control-Allow-Credentials: true');
+		} else {
+			header('Access-Control-Allow-Origin: *');
+		}
+		header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type, X-Requested-With, Accept, Origin');
+		if ($for_html && $this->embed) {
+			// Allow this page to be embedded in any frame (e.g. iframe on external site)
+			header('Content-Security-Policy: frame-ancestors *');
+			if (function_exists('header_remove')) {
+				header_remove('X-Frame-Options');
+			}
+		}
+	}
 
 	public function auditReport(){
-
+		$this->_setCorsAndEmbedHeaders(true);
 		Modules::run('dataprep/shareModel'); //model sharing handle 
 
 		$search = (Object) $this->input->post();
+		$data['embed'] = $this->embed;
       
         $data['module']     = "audit";
 		$data['page']       = "audit_report";
@@ -63,7 +109,11 @@ class Audit extends MX_Controller {
 			$filename = $districtLabel . "audit_report_" . date('Y-m-d_His') . ".pdf";
 			Modules::run('template/streamPdf', $html, $filename);
 		else:
-			echo Modules::run('template/layout',$data);
+			if ($this->embed) {
+				echo Modules::run('template/layoutEmbed', $data);
+			} else {
+				echo Modules::run('template/layout', $data);
+			}
 		endif;
 	}
 	
@@ -71,6 +121,7 @@ class Audit extends MX_Controller {
 	 * AJAX: get institution types by category for chained filter.
 	 */
 	public function getInstitutionTypesByCategory() {
+		$this->_setCorsAndEmbedHeaders(false);
 		Modules::run('dataprep/shareModel');
 		$category = $this->input->get_post('category');
 		$types = $this->DataPrep_mdl->getInstitutionTypesByCategory($category);
@@ -82,6 +133,7 @@ class Audit extends MX_Controller {
 	 * AJAX: get districts by region for chained filter.
 	 */
 	public function getDistrictsByRegion() {
+		$this->_setCorsAndEmbedHeaders(false);
 		Modules::run('dataprep/shareModel');
 		$region = $this->input->get_post('region');
 		$districts = $this->DataPrep_mdl->getDistrictsByRegion($region);
@@ -93,6 +145,7 @@ class Audit extends MX_Controller {
 	 * AJAX: get facility levels by region and optional districts (chained filter).
 	 */
 	public function getFacilityLevelsByRegionDistrict() {
+		$this->_setCorsAndEmbedHeaders(false);
 		Modules::run('dataprep/shareModel');
 		$region = $this->input->get_post('region');
 		$districts = $this->input->get_post('district') ?: $this->input->get_post('districts');
@@ -109,6 +162,7 @@ class Audit extends MX_Controller {
 	 * AJAX: get facilities by region, optional districts, and optional facility level (chained filter).
 	 */
 	public function getFacilitiesByRegionDistrictLevel() {
+		$this->_setCorsAndEmbedHeaders(false);
 		Modules::run('dataprep/shareModel');
 		$region = $this->input->get_post('region');
 		$districts = $this->input->get_post('district') ?: $this->input->get_post('districts');
@@ -126,6 +180,7 @@ class Audit extends MX_Controller {
 	 * AJAX: get job categories by cadre (chained job filter).
 	 */
 	public function getJobCategoriesByCadre() {
+		$this->_setCorsAndEmbedHeaders(false);
 		Modules::run('dataprep/shareModel');
 		$cadre = $this->input->get_post('cadre');
 		$list = $this->DataPrep_mdl->getJobCategoriesByCadre($cadre ?: '');
@@ -137,6 +192,7 @@ class Audit extends MX_Controller {
 	 * AJAX: get job classifications by cadre and optional job categories (chained).
 	 */
 	public function getJobClassificationsByCadreCategory() {
+		$this->_setCorsAndEmbedHeaders(false);
 		Modules::run('dataprep/shareModel');
 		$cadre = $this->input->get_post('cadre');
 		$categories = $this->input->get_post('categories') ?: $this->input->get_post('job_category');
@@ -153,6 +209,7 @@ class Audit extends MX_Controller {
 	 * AJAX: get job names by cadre, optional categories, optional classifications (chained).
 	 */
 	public function getJobNamesByCadreCategoryClassification() {
+		$this->_setCorsAndEmbedHeaders(false);
 		Modules::run('dataprep/shareModel');
 		$cadre = $this->input->get_post('cadre');
 		$categories = $this->input->get_post('categories') ?: $this->input->get_post('job_category');
@@ -171,6 +228,7 @@ class Audit extends MX_Controller {
 	}
 
 	public function auditReportData(){
+		$this->_setCorsAndEmbedHeaders(false);
 		// Server-side DataTables endpoint
 		Modules::run('dataprep/shareModel');
 		
@@ -232,6 +290,7 @@ class Audit extends MX_Controller {
 	 * Export audit report to Excel (CSV). Uses same filters and excludes approved=0 and filled=0. Streams in chunks.
 	 */
 	public function auditReportExcel() {
+		$this->_setCorsAndEmbedHeaders(false);
 		$search = (object) $this->input->post();
 		$aggColumn = (!empty($search->aggregate)) ? $search->aggregate : 'job_name';
 		$aggTitle = $this->auditMdl->getAggregateLabel(@$search->aggregate);
@@ -360,6 +419,7 @@ class Audit extends MX_Controller {
 	 * POST: level, ownership (for institution_type), and for chain 2: regions[], districts[], facility_levels[], facilities[], cadres[], job_categories[], job_classifications[].
 	 */
 	public function getChainedFilterOptions() {
+		$this->_setCorsAndEmbedHeaders(false);
 		Modules::run('dataprep/shareModel');
 		$level = $this->input->get_post('level');
 		if (!$level) {

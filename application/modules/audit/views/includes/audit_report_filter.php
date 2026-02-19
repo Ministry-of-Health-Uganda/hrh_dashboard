@@ -236,6 +236,7 @@
 		<button type="button" class="btn btn-sm btn-warning" onclick="resetFilters()">Reset Filters</button>
 	</div>
 	<input type="hidden" name="getPdf" id="print">
+	<?php if (!empty($embed)): ?><input type="hidden" name="embed" value="1"><?php endif; ?>
 	<div class="form-group col-md-1">
 		<br>
 	</div>

@@ -154,7 +154,7 @@ require_once 'includes/audit_report_filter.php';
       <form id="auditExportForm" method="post" action="<?php echo base_url('audit/auditReportExcel'); ?>" target="_blank" class="d-inline">
         <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-file-excel mr-1"></i> Export to Excel</button>
       </form>
-      <button type="button" id="auditExportPdf" class="btn btn-sm btn-danger ml-2"><i class="fas fa-file-pdf mr-1"></i> Export PDF</button>
+      <button type="button" id="auditExportPdf" class="btn btn-sm btn-danger ml-2" data-report-url="<?php echo htmlspecialchars(base_url('audit/auditReport')); ?>"><i class="fas fa-file-pdf mr-1"></i> Export PDF</button>
       <button type="button" class="btn btn-tool ml-1" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
     </div>
   </div>
@@ -305,7 +305,10 @@ require_once 'includes/audit_report_filter.php';
       return false;
     });
     loadTable();
+    // Export PDF: submit search form with current filters so PDF uses same filters as table
     $('#auditExportPdf').on('click', function() {
+      var reportUrl = $(this).data('report-url');
+      if (reportUrl) $('.searchForm').attr('action', reportUrl);
       $('#print').val(1);
       $('.searchForm').attr('target', '_blank').submit();
       setTimeout(function() { $('#print').val(0); $('.searchForm').removeAttr('target'); }, 500);
@@ -316,6 +319,7 @@ require_once 'includes/audit_report_filter.php';
     });
   });
 
+  // Export to Excel: copy current filter state from search form so export uses same filters as table
   $(document).on('submit', '#auditExportForm', function() {
     var $form = $(this);
     $form.find('input[type="hidden"]').remove();
