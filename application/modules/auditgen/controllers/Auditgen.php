@@ -403,12 +403,12 @@ FROM (" . $union_sql . ") u";
 
 
 	public function render_audit(){
-		//$this->db->query("CALL populate_ihrisdata()");
-		//$this->fetch_ihrisdata();
-		//$this->cache_filled();
+		$this->db->query("CALL populate_ihrisdata()");
+		$this->fetch_ihrisdata();
+		$this->cache_filled();
 		$this->cache_structure();
-		//$this->cache_nationaljobs();
-		//$this->cache_ownership();
+		$this->cache_nationaljobs();
+		$this->cache_ownership();
 	}
 
 	public function quarterly_jobs()

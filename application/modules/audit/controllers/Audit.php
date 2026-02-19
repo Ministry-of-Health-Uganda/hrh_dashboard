@@ -247,8 +247,8 @@ class Audit extends MX_Controller {
 		foreach ($result['data'] as $row) {
 			$structure = $row->approved;
 			$difference = $row->approved - $row->filled;
-			$vacantPosts = ($difference > 0) ? $difference : 0;
-			$excessPosts = ($difference < 0) ? $difference * -1 : 0;
+			$vacantPosts = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference > 0) ? $difference : 0);
+			$excessPosts = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference < 0) ? $difference * -1 : 0);
 			
 			$male = ($structure > 0 && $row->filled > 0) ? ($row->male / $row->filled) * 100 : 0;
 			$female = ($structure > 0 && $row->filled > 0) ? ($row->female / $row->filled) * 100 : 0;
@@ -308,8 +308,8 @@ class Audit extends MX_Controller {
 			$result = $this->auditMdl->getAuditReport(FALSE, true, $start, $pageSize, '', 0, 'asc');
 			foreach ($result['data'] as $row) {
 				$difference = $row->approved - $row->filled;
-				$vacantPosts = ($difference > 0) ? $difference : 0;
-				$excessPosts = ($difference < 0) ? $difference * -1 : 0;
+				$vacantPosts = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference > 0) ? $difference : 0);
+				$excessPosts = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference < 0) ? $difference * -1 : 0);
 				$male = ($row->approved > 0 && $row->filled > 0) ? ($row->male / $row->filled) * 100 : 0;
 				$female = ($row->approved > 0 && $row->filled > 0) ? ($row->female / $row->filled) * 100 : 0;
 				$vacant = ($row->approved > 0) ? ($vacantPosts / $row->approved) * 100 : 0;
@@ -425,7 +425,7 @@ class Audit extends MX_Controller {
 		$data['legend'] = $this->auditMdl->auditReportLegend($search);
 		$data['district_param'] = $district_param;
 
-		print_r($data['legend']."<br>".$data['district_param']."<br>".$display);
+		//print_r($data['legend']."<br>".$data['district_param']."<br>".$display);
 		exit;
 		$data['display'] = $display;
 		$data['ajax_query'] = http_build_query(array_filter(array(

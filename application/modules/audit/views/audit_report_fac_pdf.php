@@ -141,12 +141,11 @@ foreach ($facilities as $fac):
 
               $structure    = $row->approved;
               $difference   = $row->approved - $row->filled;
+              $vacantPosts  = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
+              $excessPosts  = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference<0) ? $difference * -1 : 0);
 
-              $vacantPosts  = ($difference>0)?$difference :0; //vacant +
-              $excessPosts  = ($difference<0)?$difference *-1:0; //excess -
-
-              $male    = ($structure >0)?($row->male/$row->filled)* 100:0;
-              $female  = ($structure >0)?($row->female/$row->filled) * 100:0;
+              $male    = ($structure >0 && $row->filled > 0) ? ($row->male/$row->filled)* 100 : 0;
+              $female  = ($structure >0 && $row->filled > 0) ? ($row->female/$row->filled) * 100 : 0;
               $vacant  = ($structure >0)?($vacantPosts/$structure) * 100:0;
               $filled  = ($structure >0)?($row->filled/$structure) * 100:0;
 
@@ -196,16 +195,16 @@ foreach ($facilities as $fac):
             <th><?php echo $totalMales; ?></th>
             <th><?php echo $totalFemales; ?></th>
             <th>
-              <?php echo number_format(($totalFilled/$totalApproved)*100,1); ?>%   
+              <?php echo ($totalApproved > 0) ? number_format(($totalFilled/$totalApproved)*100,1) : 0; ?>%   
               </th>
               <th>
-              <?php echo number_format(($totalVacant/$totalApproved)*100,1); ?>%   
+              <?php echo ($totalApproved > 0) ? number_format(($totalVacant/$totalApproved)*100,1) : 0; ?>%   
               </th>
               <th>
-              <?php echo number_format(($totalMales/$totalFilled)*100,1); ?>%   
+              <?php echo ($totalFilled > 0) ? number_format(($totalMales/$totalFilled)*100,1) : 0; ?>%   
               </th>
             <th>
-              <?php echo number_format(($totalFemales/$totalFilled)*100,1); ?>%   
+              <?php echo ($totalFilled > 0) ? number_format(($totalFemales/$totalFilled)*100,1) : 0; ?>%   
               </th>
         </tr>
           

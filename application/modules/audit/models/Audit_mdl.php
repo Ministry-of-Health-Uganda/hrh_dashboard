@@ -383,7 +383,9 @@ class Audit_mdl extends CI_Model
 			sum(approved) as total_approved,
 			sum(total)  as total_filled,
 			sum(male)   as total_male,
-			sum(female) as total_female
+			sum(female) as total_female,
+			sum(vacant) as total_vacant,
+			sum(excess) as total_excess
 			");
 		$this->db->from($table);
 		$this->auditReportFilters($search);
@@ -404,11 +406,15 @@ class Audit_mdl extends CI_Model
 			$totalFilled = (int)$result->total_filled;
 			$totalMale = (int)$result->total_male;
 			$totalFemale = (int)$result->total_female;
-			
-			// Calculate vacant and excess from totals (matching original logic)
-			$difference = $totalApproved - $totalFilled;
-			$totalVacant = ($difference > 0) ? $difference : 0;
-			$totalExcess = ($difference < 0) ? $difference * -1 : 0;
+			// Use DB sum(vacant) and sum(excess) so table, Excel and PDF match row-level data
+			if (property_exists($result, 'total_vacant') && $result->total_vacant !== null && property_exists($result, 'total_excess') && $result->total_excess !== null) {
+				$totalVacant = (int)$result->total_vacant;
+				$totalExcess = (int)$result->total_excess;
+			} else {
+				$difference = $totalApproved - $totalFilled;
+				$totalVacant = ($difference > 0) ? $difference : 0;
+				$totalExcess = ($difference < 0) ? $difference * -1 : 0;
+			}
 			
 			// Calculate percentages
 			$filledPct = ($totalApproved > 0) ? ($totalFilled / $totalApproved) * 100 : 0;
