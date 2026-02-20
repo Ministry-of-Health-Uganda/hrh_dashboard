@@ -183,6 +183,9 @@
       <form id="auditExportForm" method="post" action="<?php echo base_url('audit/auditReportExcel'); ?>" target="_blank" class="d-inline">
         <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-file-excel mr-1"></i> Export to Excel</button>
       </form>
+      <form id="auditExportWordForm" method="post" action="<?php echo base_url('audit/auditReportWord'); ?>" target="_blank" class="d-inline ml-2">
+        <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-file-word mr-1"></i> Export to Word</button>
+      </form>
       <button type="button" id="auditExportPdf" class="btn btn-sm btn-danger ml-2" data-report-url="<?php echo htmlspecialchars(base_url('audit/auditReport')); ?>"><i class="fas fa-file-pdf mr-1"></i> Export PDF</button>
       <button type="button" class="btn btn-tool ml-1" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
     </div>
@@ -194,13 +197,21 @@
         <div>Loading...</div>
       </div>
     </div>
+    <?php
+      $hasAggregate2 = !empty($search->aggregate2);
+      $showSalaryScaleCol = ($search->aggregate == 'job_name' || $search->aggregate == '');
+    ?>
     <table id="auditReportTable" class="table table-striped table-bordered table-hover audit-table" style="width:100%">
       <thead>
         <tr>
-          <th width="25%" class="audit-sort" data-col="0" style="cursor:pointer; text-transform: capitalize;" title="Sort"><?php echo $aggTitle; ?> <i class="fas fa-sort ml-1"></i></th>
-          <?php if (($search->aggregate == 'job_name') || ($search->aggregate == '')) { ?><th class="audit-sort" data-col="1" style="cursor:pointer" title="Sort">Salary Scale <i class="fas fa-sort ml-1"></i></th><?php } ?>
-          <th class="audit-sort" data-col="<?php echo ($search->aggregate == 'job_name' || $search->aggregate == '') ? 2 : 1; ?>" style="cursor:pointer" title="Sort">Approved <i class="fas fa-sort ml-1"></i></th>
-          <th class="audit-sort" data-col="<?php echo ($search->aggregate == 'job_name' || $search->aggregate == '') ? 3 : 2; ?>" style="cursor:pointer" title="Sort">Filled <i class="fas fa-sort ml-1"></i></th>
+          <?php if ($hasAggregate2): ?>
+            <th width="20%" style="text-transform: capitalize;"><?php echo isset($aggTitle2) ? htmlspecialchars($aggTitle2) : 'Value 2'; ?> (Side)</th>
+          <?php else: ?>
+            <th width="25%" class="audit-sort" data-col="0" style="cursor:pointer; text-transform: capitalize;" title="Sort"><?php echo $aggTitle; ?> <i class="fas fa-sort ml-1"></i></th>
+          <?php endif; ?>
+          <?php if ($showSalaryScaleCol) { ?><th class="audit-sort" data-col="<?php echo $hasAggregate2 ? 2 : 1; ?>" style="cursor:pointer" title="Sort">Salary Scale <i class="fas fa-sort ml-1"></i></th><?php } ?>
+          <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? ($hasAggregate2 ? 3 : 2) : ($hasAggregate2 ? 2 : 1); ?>" style="cursor:pointer" title="Sort">Approved <i class="fas fa-sort ml-1"></i></th>
+          <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? ($hasAggregate2 ? 4 : 3) : ($hasAggregate2 ? 3 : 2); ?>" style="cursor:pointer" title="Sort">Filled <i class="fas fa-sort ml-1"></i></th>
           <th>Vacant</th>
           <th>Excess</th>
           <th>Male</th>
@@ -214,8 +225,8 @@
       <tbody></tbody>
       <tfoot>
         <tr>
-          <th width="25%">TOTALS</th>
-          <?php if (($search->aggregate == 'job_name') || ($search->aggregate == '')) { ?><th></th><?php } ?>
+          <th width="<?php echo $hasAggregate2 ? '20' : '25'; ?>%">TOTALS</th>
+          <?php if ($showSalaryScaleCol) { ?><th></th><?php } ?>
           <th id="totalApproved">0</th>
           <th id="totalFilled">0</th>
           <th id="totalVacant">0</th>
@@ -244,7 +255,9 @@
 (function() {
   var dataUrl = "<?php echo base_url('audit/auditReportData'); ?>";
   var chainedFilterUrl = "<?php echo base_url('audit/getChainedFilterOptions'); ?>";
-  var colOffset = <?php echo ($search->aggregate == 'job_name' || $search->aggregate == '') ? 2 : 1; ?>;
+  var hasAggregate2 = <?php echo $hasAggregate2 ? 'true' : 'false'; ?>;
+  var showSalaryScaleCol = <?php echo $showSalaryScaleCol ? 'true' : 'false'; ?>;
+  var colOffset = hasAggregate2 ? (showSalaryScaleCol ? 3 : 2) : (showSalaryScaleCol ? 2 : 1);
   var page = 0;
   var pageSize = 25;
   var sortCol = colOffset;
@@ -345,12 +358,34 @@
         $('#totalMalePct').text(json.totals.malePct + '%');
         $('#totalFemalePct').text(json.totals.femalePct + '%');
       }
-      $.each(json.data || [], function(i, row) {
-        var tr = '<tr>';
-        for (var c = 0; c < row.length; c++) tr += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
-        tr += '</tr>';
-        $('#auditReportTable tbody').append(tr);
-      });
+      if (hasAggregate2 && (json.data || []).length) {
+        var groups = {};
+        $.each(json.data, function(i, row) {
+          var key = row[0] !== undefined && row[0] !== null ? String(row[0]) : '';
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(row);
+        });
+        $.each(groups, function(value1, rows) {
+          $('#auditReportTable tbody').append('<tr class="table-secondary"><td colspan="' + (showSalaryScaleCol ? 12 : 11) + '" style="font-weight:bold;">' + escapeHtml(value1) + '</td></tr>');
+          $.each(rows, function(j, row) {
+            var tr = '<tr>';
+            var start = 1;
+            tr += '<td>' + (row[1] !== undefined && row[1] !== null ? escapeHtml(String(row[1])) : '') + '</td>';
+            for (var c = 2; c < row.length; c++) tr += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
+            tr += '</tr>';
+            $('#auditReportTable tbody').append(tr);
+          });
+        });
+      } else {
+        $.each(json.data || [], function(i, row) {
+          var tr = '<tr>';
+          var start = 0;
+          if (hasAggregate2) start = 1;
+          for (var c = start; c < row.length; c++) tr += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
+          tr += '</tr>';
+          $('#auditReportTable tbody').append(tr);
+        });
+      }
       var from = filteredRecords === 0 ? 0 : page * pageSize + 1;
       var to = Math.min((page + 1) * pageSize, filteredRecords);
       $('#auditTableInfo').text(from + '–' + to + ' of ' + filteredRecords.toLocaleString());
@@ -439,8 +474,8 @@
     });
   });
 
-  // Export to Excel: copy current filter state from search form so export uses same filters as table
-  $(document).on('submit', '#auditExportForm', function() {
+  // Export to Excel/Word: copy current filter state from search form so export uses same filters as table
+  $(document).on('submit', '#auditExportForm, #auditExportWordForm', function() {
     var $form = $(this);
     $form.find('input[type="hidden"]').remove();
     var formData = $('.searchForm').serializeArray();

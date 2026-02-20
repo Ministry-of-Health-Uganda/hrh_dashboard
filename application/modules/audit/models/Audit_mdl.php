@@ -20,11 +20,13 @@ class Audit_mdl extends CI_Model
 		}
 		
 		$aggregation = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
+		$aggregation2 = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
+		$groupByCols = $aggregation2 ? array($aggregation, $aggregation2) : array($aggregation);
 		
 		if ($serverSide) {
 			// Build base query for total count
 			$this->db->reset_query();
-			$this->db->select($aggregation);
+			$this->db->select(implode(', ', $groupByCols));
 			$this->db->from($table);
 			$this->auditReportFilters($search);
 			if (!empty($facilityid)) {
@@ -36,7 +38,7 @@ class Audit_mdl extends CI_Model
 				$this->db->where("month", $month);
 				$this->db->where("year", $year);
 			}
-			$this->db->group_by($aggregation);
+			$this->db->group_by($groupByCols);
 			$totalQuery = $this->db->get_compiled_select('', false);
 			$totalRecords = $this->db->query("SELECT COUNT(*) as cnt FROM ($totalQuery) as total_count")->row()->cnt;
 			
@@ -75,12 +77,13 @@ class Audit_mdl extends CI_Model
 			if (!empty($searchValue)) {
 				$this->db->group_start();
 				$this->db->like($aggregation, $searchValue);
+				if ($aggregation2) $this->db->or_like($aggregation2, $searchValue);
 				$this->db->or_like('salary_scale', $searchValue);
 				$this->db->or_like('job_classification', $searchValue);
 				$this->db->group_end();
 			}
 			
-			$this->db->group_by($aggregation);
+			$this->db->group_by($groupByCols);
 			
 			// Get filtered count
 			$filteredQuery = $this->db->get_compiled_select('', false);
@@ -121,20 +124,20 @@ class Audit_mdl extends CI_Model
 			if (!empty($searchValue)) {
 				$this->db->group_start();
 				$this->db->like($aggregation, $searchValue);
+				if ($aggregation2) $this->db->or_like($aggregation2, $searchValue);
 				$this->db->or_like('salary_scale', $searchValue);
 				$this->db->or_like('job_classification', $searchValue);
 				$this->db->group_end();
 			}
 			
-			$this->db->group_by($aggregation);
+			$this->db->group_by($groupByCols);
 			
-			// Apply ordering
-			$columns = array($aggregation, 'salary_scale', 'approved', 'filled', 'vacant', 'excess', 'male', 'female');
-			if (isset($columns[$orderColumn])) {
-				$orderColumnName = $columns[$orderColumn];
-				$this->db->order_by($orderColumnName, $orderDir);
-			} else {
-				$this->db->order_by('salary_scale', 'asc');
+			// Apply ordering: value1 then value2
+			$this->db->order_by($aggregation, 'asc');
+			if ($aggregation2) $this->db->order_by($aggregation2, 'asc');
+			$colMap = array_values(array_filter(array($aggregation, $aggregation2, 'salary_scale', 'approved', 'filled', 'vacant', 'excess', 'male', 'female'), function($c) { return $c !== null && $c !== ''; }));
+			if (isset($colMap[$orderColumn])) {
+				$this->db->order_by($colMap[$orderColumn], $orderDir);
 			}
 			
 			// Apply pagination
@@ -181,8 +184,9 @@ class Audit_mdl extends CI_Model
 				sum(excess) as excess,
 				sum(vacant) as vacant
 				");
-			$this->db->order_by('salary_scale', 'asc');
-			$this->db->group_by($aggregation);
+			$this->db->order_by($aggregation, 'asc');
+			if ($aggregation2) $this->db->order_by($aggregation2, 'asc');
+			$this->db->group_by($groupByCols);
 			return $this->db->get($table)->result();
 		}
 	}
@@ -316,7 +320,9 @@ class Audit_mdl extends CI_Model
 
 		$limitedStr = count($limitedBy) ? implode('; ', $limitedBy) : 'None';
 		$aggLabel = $this->getAggregateLabel(isset($search->aggregate) ? $search->aggregate : 'job_name');
-		return 'Limited by: ' . $limitedStr . '. Aggregated by: ' . $aggLabel . '.';
+		$agg2Label = !empty($search->aggregate2) ? $this->getAggregateLabel($search->aggregate2) : '';
+		$aggStr = $agg2Label ? $aggLabel . ' (top), ' . $agg2Label . ' (side)' : $aggLabel;
+		return 'Limited by: ' . $limitedStr . '. Aggregated by: ' . $aggStr . '.';
 	}
 
 	public function getAggregateLabel($aggregateLabel)

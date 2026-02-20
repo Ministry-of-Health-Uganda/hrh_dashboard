@@ -87,19 +87,22 @@ table tr:nth-child(even){
             <h2> Staff Audit Report</h2>
             <?php if(!empty($legend)): ?>
                 <br/>
-                <p style="text-transform: capitalize;"><?php echo $legend; ?></p>
+                <p style="text-transform: capitalize; font-weight: bold;"><?php echo $legend; ?></p>
             <?php endif; ?>
         </td>
       </tr>
   </table>
   <hr />
   <br/>
+  <?php $hasAgg2 = !empty($search->aggregate2) && !empty($aggColumn2); ?>
   <table class="items" style="font-size: 10pt; border-collapse: collapse; " cellpadding="8" width="100%">
     <thead>
         <tr>
-            <th width="25%" style="text-transform: capitalize;">
-              <?php echo  $aggTitle; ?>
-            </th>
+            <?php if ($hasAgg2): ?>
+            <th width="20%" style="text-transform: capitalize;"><?php echo isset($aggTitle2) ? htmlspecialchars($aggTitle2) : ''; ?> (Side)</th>
+            <?php else: ?>
+            <th width="25%" style="text-transform: capitalize;"><?php echo $aggTitle; ?></th>
+            <?php endif; ?>
             <?php if ($search->aggregate  == 'job_name') { ?><th>Salary Scale</th> <?php }?>
             <th>Approved</th>
             <th>Filled</th>
@@ -124,6 +127,43 @@ table tr:nth-child(even){
             $totalMales    = 0;
             $totalFemales  = 0;
 
+            if ($hasAgg2):
+              $groups = array();
+              foreach ($audit as $row) {
+                $k = $row->$aggColumn;
+                if (!isset($groups[$k])) $groups[$k] = array();
+                $groups[$k][] = $row;
+              }
+              foreach ($groups as $value1 => $rows):
+                $ncols = ($search->aggregate == 'job_name') ? 12 : 11;
+                echo '<tr style="background:#ddd;"><td colspan="' . $ncols . '" style="font-weight:bold;">' . htmlspecialchars($value1) . '</td></tr>';
+                foreach ($rows as $row):
+                  $structure    = $row->approved;
+                  $difference   = $row->approved - $row->filled;
+                  $vacantPosts  = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
+                  $excessPosts  = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference<0) ? $difference * -1 : 0);
+                  $male    = ($structure >0 && $row->filled > 0) ? ($row->male/$row->filled)* 100 : 0;
+                  $female  = ($structure >0 && $row->filled > 0) ? ($row->female/$row->filled) * 100 : 0;
+                  $vacant  = ($structure >0)?($vacantPosts/$structure) * 100:0;
+                  $filled  = ($structure >0)?($row->filled/$structure) * 100:0;
+                  $totalApproved += $structure; $totalFilled += $row->filled; $totalVacant += $vacantPosts; $totalExcess += $excessPosts; $totalFemales += $row->female; $totalMales += $row->male;
+            ?>
+        <tr>
+            <td><?php echo htmlspecialchars($row->$aggColumn2); ?></td>
+            <?php if ($search->aggregate  == 'job_name') { ?> <td><?php echo $row->salary_scale; ?></td> <?php } ?>
+            <td><?php echo $row->approved; ?></td>
+            <td><?php echo $row->filled; ?></td>
+            <td><?php echo $vacantPosts; ?></td>
+            <td><?php echo $excessPosts; ?></td>
+            <td><?php echo $row->male;   ?></td>
+            <td><?php echo $row->female; ?></td>
+            <td class="text-bold"><?php echo ($filled>0)?number_format($filled,1):0; ?>%</td>
+            <td class="text-bold"><?php echo ($vacant>0)?number_format($vacant,1):0; ?>%</td>
+            <td class="text-bold"><?php echo ($male>0)?number_format($male,1):0;   ?>%</td>
+            <td class="text-bold"><?php echo ($female>0)?number_format($female,1):0; ?>%</td>
+        </tr>
+            <?php endforeach; endforeach;
+            else:
             foreach($audit as $row):
 
               $structure    = $row->approved;
@@ -167,13 +207,13 @@ table tr:nth-child(even){
             </td>
         </tr>
 
-    <?php endforeach; ?>
+    <?php endforeach; endif; ?>
     
       </tbody>
       
       <tfoot>
           <tr>
-            <th width="25%">TOTALS</th>
+            <th width="<?php echo $hasAgg2 ? '20' : '25'; ?>%">TOTALS</th>
             <?php if ($search->aggregate  == 'job_name') { ?><th></th><?php } ?>
             <th><?php echo $totalApproved; ?></th>
             <th><?php echo $totalFilled; ?></th>

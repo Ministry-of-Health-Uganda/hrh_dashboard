@@ -176,32 +176,30 @@
 	</div>
 
 	<div class="form-group col-md-2">
-		<label>Aggregate By</label>
+		<label>Aggregate By (Value 1 - Top heading)</label>
 		<select class="select form-control" name="aggregate">
-			<option value="job_name">
-				Job
-			</option>
-			<option value="institution_type" <?php echo ($search->aggregate == 'institution_type') ? 'selected' : ''; ?>>
-				Institution Type
-			</option>
-			<option value="district_name" <?php echo ($search->aggregate == 'district_name') ? 'selected' : ''; ?>>
-				District
-			</option>
-			<option value="facility_name" <?php echo ($search->aggregate == 'facility_name') ? 'selected' : ''; ?>>
-				Facility
-			</option>
-			<option value="facility_type_name" <?php echo ($search->aggregate == 'facility_type_name') ? 'selected' : ''; ?>>
-				Facility Type
-			</option>
-			<option value="cadre_name" <?php echo ($search->aggregate == 'cadre_name') ? 'selected' : ''; ?>>
-				Cadre
-			</option>
-			<option value="job_classification" <?php echo ($search->aggregate == 'job_classification') ? 'selected' : ''; ?>>
-				Classification
-			</option>
-			<option value="region_name" <?php echo ($search->aggregate == 'region_name') ? 'selected' : ''; ?>>
-				Region
-			</option>
+			<option value="job_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'job_name') ? 'selected' : ''; ?>>Job</option>
+			<option value="institution_type" <?php echo (isset($search->aggregate) && $search->aggregate == 'institution_type') ? 'selected' : ''; ?>>Institution Type</option>
+			<option value="district_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'district_name') ? 'selected' : ''; ?>>District</option>
+			<option value="facility_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'facility_name') ? 'selected' : ''; ?>>Facility</option>
+			<option value="facility_type_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'facility_type_name') ? 'selected' : ''; ?>>Facility Type</option>
+			<option value="cadre_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'cadre_name') ? 'selected' : ''; ?>>Cadre</option>
+			<option value="job_classification" <?php echo (isset($search->aggregate) && $search->aggregate == 'job_classification') ? 'selected' : ''; ?>>Classification</option>
+			<option value="region_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'region_name') ? 'selected' : ''; ?>>Region</option>
+		</select>
+	</div>
+	<div class="form-group col-md-2">
+		<label>Then by (Value 2 - Side)</label>
+		<select class="select form-control" name="aggregate2">
+			<option value="">None</option>
+			<option value="job_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'job_name') ? 'selected' : ''; ?>>Job</option>
+			<option value="institution_type" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'institution_type') ? 'selected' : ''; ?>>Institution Type</option>
+			<option value="district_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'district_name') ? 'selected' : ''; ?>>District</option>
+			<option value="facility_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'facility_name') ? 'selected' : ''; ?>>Facility</option>
+			<option value="facility_type_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'facility_type_name') ? 'selected' : ''; ?>>Facility Type</option>
+			<option value="cadre_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'cadre_name') ? 'selected' : ''; ?>>Cadre</option>
+			<option value="job_classification" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'job_classification') ? 'selected' : ''; ?>>Classification</option>
+			<option value="region_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'region_name') ? 'selected' : ''; ?>>Region</option>
 		</select>
 	</div>
 		<div class="form-group col-md-2">

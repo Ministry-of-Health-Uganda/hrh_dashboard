@@ -76,6 +76,8 @@ class Audit extends MX_Controller {
 
 		$data['aggTitle']   = $this->auditMdl->getAggregateLabel(@$search->aggregate);
 		$data['aggColumn']  = (!empty($search->aggregate))?$search->aggregate:"job_name";
+		$data['aggTitle2']  = $this->auditMdl->getAggregateLabel(@$search->aggregate2);
+		$data['aggColumn2'] = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
 
 		
 		$data['filters'] = $this->DataPrep_mdl->getFilters(true);
@@ -99,8 +101,8 @@ class Audit extends MX_Controller {
 			$html     = $this->load->view("audit/audit_report_pdf", $data, true);
 			$districtLabel = !empty($_SESSION['district']) ? $_SESSION['district'] . '_' : '';
 			$filename = $districtLabel . "audit_report_" . date('Y-m-d_His') . ".pdf";
-			// makePdf with 'D' returns PDF string and sets headers; echo and exit so download triggers
-			$pdf = Modules::run('template/makePdf', $html, $filename, 'D');
+			// makePdf with 'I' displays PDF in browser (inline); use 'D' for attachment/download
+			$pdf = Modules::run('template/makePdf', $html, $filename, 'I');
 			if ($pdf !== null && $pdf !== '') {
 				echo $pdf;
 			}
@@ -242,6 +244,7 @@ class Audit extends MX_Controller {
 		
 		$search = (Object) $this->input->post();
 		$aggColumn = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
+		$aggColumn2 = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
 		
 		$data = array();
 		foreach ($result['data'] as $row) {
@@ -255,8 +258,9 @@ class Audit extends MX_Controller {
 			$vacant = ($structure > 0) ? ($vacantPosts / $structure) * 100 : 0;
 			$filled = ($structure > 0) ? ($row->filled / $structure) * 100 : 0;
 			
-			$rowData = array(
-				$row->$aggColumn,
+			$rowData = array($row->$aggColumn);
+			if ($aggColumn2) $rowData[] = $row->$aggColumn2;
+			$rowData = array_merge($rowData, array(
 				(($search->aggregate == 'job_name') || ($search->aggregate == '')) ? $row->salary_scale : '',
 				$row->approved,
 				$row->filled,
@@ -268,7 +272,7 @@ class Audit extends MX_Controller {
 				($vacant > 0) ? number_format($vacant, 1) . '%' : '0%',
 				($male > 0) ? number_format($male, 1) . '%' : '0%',
 				($female > 0) ? number_format($female, 1) . '%' : '0%'
-			);
+			));
 			$data[] = $rowData;
 		}
 		
@@ -293,14 +297,23 @@ class Audit extends MX_Controller {
 		$search = (object) $this->input->post();
 		$aggColumn = (!empty($search->aggregate)) ? $search->aggregate : 'job_name';
 		$aggTitle = $this->auditMdl->getAggregateLabel(@$search->aggregate);
+		$aggColumn2 = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
+		$aggTitle2 = $aggColumn2 ? $this->auditMdl->getAggregateLabel($search->aggregate2) : '';
 		$showSalaryScale = ($search->aggregate == 'job_name' || $search->aggregate == '');
+		$legend = $this->auditMdl->auditReportLegend($search);
 		$filename = 'audit_report_' . date('Y-m-d_His') . '.csv';
 		header('Content-Type: text/csv; charset=UTF-8');
-		header('Content-Disposition: attachment; filename="' . $filename . '"');
+		header('Content-Disposition: inline; filename="' . $filename . '"');
 		$out = fopen('php://output', 'w');
 		fprintf($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel
-		$headers = array($aggTitle, 'Salary Scale', 'Approved', 'Filled', 'Vacant', 'Excess', 'Male', 'Female', 'Filled %', 'Vacant %', 'Male %', 'Female %');
-		if (!$showSalaryScale) array_splice($headers, 1, 1);
+		// Filters heading (bold when opened in Excel: user can format row 1)
+		fputcsv($out, array('Filters applied:'));
+		fputcsv($out, array($legend));
+		fputcsv($out, array());
+		$headers = array($aggTitle);
+		if ($aggColumn2) $headers[] = $aggTitle2;
+		$headers = array_merge($headers, array('Salary Scale', 'Approved', 'Filled', 'Vacant', 'Excess', 'Male', 'Female', 'Filled %', 'Vacant %', 'Male %', 'Female %'));
+		if (!$showSalaryScale) array_splice($headers, $aggColumn2 ? 2 : 1, 1);
 		fputcsv($out, $headers);
 		$pageSize = 5000;
 		$start = 0;
@@ -314,8 +327,9 @@ class Audit extends MX_Controller {
 				$female = ($row->approved > 0 && $row->filled > 0) ? ($row->female / $row->filled) * 100 : 0;
 				$vacant = ($row->approved > 0) ? ($vacantPosts / $row->approved) * 100 : 0;
 				$filled = ($row->approved > 0) ? ($row->filled / $row->approved) * 100 : 0;
-				$r = array(
-					$row->$aggColumn,
+				$r = array($row->$aggColumn);
+				if ($aggColumn2) $r[] = $row->$aggColumn2;
+				$r = array_merge($r, array(
 					$showSalaryScale ? $row->salary_scale : '',
 					$row->approved,
 					$row->filled,
@@ -327,8 +341,8 @@ class Audit extends MX_Controller {
 					$vacant > 0 ? number_format($vacant, 1) . '%' : '0%',
 					$male > 0 ? number_format($male, 1) . '%' : '0%',
 					$female > 0 ? number_format($female, 1) . '%' : '0%'
-				);
-				if (!$showSalaryScale) array_splice($r, 1, 1);
+				));
+				if (!$showSalaryScale) array_splice($r, $aggColumn2 ? 2 : 1, 1);
 				fputcsv($out, $r);
 			}
 			$start += $pageSize;
@@ -339,6 +353,7 @@ class Audit extends MX_Controller {
 		$totals = $this->auditMdl->getAuditReportTotals(FALSE);
 		fputcsv($out, array());
 		$totalRow = array('TOTALS');
+		if ($aggColumn2) $totalRow[] = '';
 		if ($showSalaryScale) $totalRow[] = '';
 		$totalRow = array_merge($totalRow, array(
 			$totals['totalApproved'],
@@ -357,6 +372,29 @@ class Audit extends MX_Controller {
 		exit;
 	}
 
+	/**
+	 * Export audit report to Word (HTML as .doc). Uses same filters and data as PDF; outputs HTML with application/msword so Word opens it.
+	 */
+	public function auditReportWord() {
+		$this->_setCorsAndEmbedHeaders(false);
+		Modules::run('dataprep/shareModel');
+		$search = (object) $this->input->post();
+		$data['search']     = $search;
+		$data['aggTitle']   = $this->auditMdl->getAggregateLabel(@$search->aggregate);
+		$data['aggColumn']  = (!empty($search->aggregate)) ? $search->aggregate : 'job_name';
+		$data['aggTitle2']  = $this->auditMdl->getAggregateLabel(@$search->aggregate2);
+		$data['aggColumn2'] = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
+		$data['audit']      = $this->auditMdl->getAuditReport(FALSE);
+		$data['legend']     = $this->auditMdl->auditReportLegend($search);
+		$html = $this->load->view('audit/audit_report_pdf', $data, true);
+		$filename = 'audit_report_' . date('Y-m-d_His') . '.doc';
+		header('Content-Type: application/msword');
+		header('Content-Disposition: inline; filename="' . $filename . '"');
+		header('Cache-Control: private, max-age=0, must-revalidate');
+		echo $html;
+		exit;
+	}
+
 	public function facAudit($facilityId=FALSE){
 
 		Modules::run('dataprep/shareModel'); //model sharing handle 
@@ -371,6 +409,8 @@ class Audit extends MX_Controller {
 
 		$data['aggTitle']   = $this->auditMdl->getAggregateLabel(@$search->aggregate);
 		$data['aggColumn']  = (!empty($search->aggregate))?$search->aggregate:"job_name";
+		$data['aggTitle2']  = $this->auditMdl->getAggregateLabel(@$search->aggregate2);
+		$data['aggColumn2'] = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
 
 		
 		$data['filters']= $this->DataPrep_mdl->getFilters(true);
@@ -383,7 +423,7 @@ class Audit extends MX_Controller {
             if($this->input->post('getPdf')==1){
 			$html     = $this->load->view("audit/audit_report_fac_pdf","",true);
 			$filename = $_SESSION['district']."_Facilities_audit_report_".date('Y-m-d_his').".pdf";
-			Modules::run('template/makePdf',$html,$filename,"D");
+			Modules::run('template/makePdf',$html,$filename,'I');
 			}
 			else{
 				$this->lfacAudit();
@@ -410,6 +450,8 @@ class Audit extends MX_Controller {
 
 		$data['aggTitle']   = $this->auditMdl->getAggregateLabel(@$search->aggregate);
 		$data['aggColumn']  = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
+		$data['aggTitle2']  = $this->auditMdl->getAggregateLabel(@$search->aggregate2);
+		$data['aggColumn2'] = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
 
 		$data['filters'] = $this->DataPrep_mdl->getFilters(true);
 		$data['institution_types_for_chain'] = $this->DataPrep_mdl->getInstitutionTypesForChain('');
