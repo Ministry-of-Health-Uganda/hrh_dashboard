@@ -1,7 +1,7 @@
-<form class="form-horizontal row searchForm" method="post" action="">
+<form class="form-horizontal row searchForm mx-0" method="post" action="">
 
 	<!-- 1. Ownership (first) -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Ownership</label>
 		<select class="select form-control" name="ownership" id="filterOwnership">
 			<option value="">All</option>
@@ -14,7 +14,7 @@
 	</div>
 
 	<!-- 2. Institution Type: chained to ownership, multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Institution Type</label>
 		<select class="select form-control select2" name="institution[]" id="filterInstitutionType" multiple="multiple" data-placeholder="All institution types">
 			<?php
@@ -32,7 +32,7 @@
 	</div>
 
 	<!-- 3. Region: multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Region</label>
 		<select class="select form-control select2" name="region[]" id="filterRegion" multiple="multiple" data-placeholder="All regions">
 			<?php
@@ -50,7 +50,7 @@
 	</div>
 
 	<!-- 4. District: multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>District</label>
 		<select class="select form-control select2" name="district[]" id="filterDistrict" multiple="multiple" data-placeholder="All districts">
 			<?php
@@ -68,7 +68,7 @@
 	</div>
 
 	<!-- 5. Facility: multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Facility</label>
 		<select class="select form-control select2" name="facility[]" id="filterFacility" multiple="multiple" data-placeholder="All facilities">
 			<?php
@@ -86,7 +86,7 @@
 	</div>
 
 	<!-- 6. Facility Level: multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Facility Level</label>
 		<select class="select form-control select2" name="facility_type[]" id="filterFacilityLevel" multiple="multiple" data-placeholder="All facility levels">
 			<?php
@@ -104,7 +104,7 @@
 	</div>
 
 	<!-- 7. Job Cadre: multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Job Cadre</label>
 		<select class="select form-control select2" name="cadre[]" id="filterJobCadre" multiple="multiple" data-placeholder="All cadres">
 			<?php
@@ -122,7 +122,7 @@
 	</div>
 
 	<!-- 8. Job Category: multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Job Category</label>
 		<select class="select form-control select2" name="job_category[]" id="filterJobCategory" multiple="multiple" data-placeholder="All job categories">
 			<?php
@@ -140,7 +140,7 @@
 	</div>
 
 	<!-- 9. Job Classification: multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Job Classification</label>
 		<select class="select form-control select2" name="job_class[]" id="filterJobClassification" multiple="multiple" data-placeholder="All job classifications">
 			<?php
@@ -158,7 +158,7 @@
 	</div>
 
 	<!-- 10. Job Name: multiple -->
-	<div class="form-group col-md-3">
+	<div class="form-group col-12 col-sm-6 col-md-3">
 		<label>Job Name</label>
 		<select class="select form-control select2" name="job[]" id="filterJobName" multiple="multiple" data-placeholder="All jobs">
 			<?php

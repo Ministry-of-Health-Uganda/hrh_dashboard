@@ -121,11 +121,67 @@
     text-align: center;
     color: #6c757d;
   }
+  /* Responsive: scrollable table and layout */
+  .audit-table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+  }
+  .audit-table-responsive .table {
+    margin-bottom: 0;
+  }
+  @media (max-width: 991px) {
+    .audit-info-card { padding: 12px 14px; margin-bottom: 14px; }
+    .audit-info-card h4 { font-size: 1rem; margin-bottom: 10px; }
+    .audit-info-item { font-size: 13px; flex-wrap: wrap; }
+    .audit-info-item strong { min-width: 140px; }
+    .audit-legend { padding: 10px 12px; margin-bottom: 14px; }
+    .audit-legend h5 { font-size: 0.95rem; }
+    .card-header .d-flex.flex-wrap { gap: 0.35rem; }
+    .card-header .form-control-sm { min-width: 4em; }
+  }
+  @media (max-width: 767px) {
+    .audit-info-card { padding: 10px 12px; }
+    .audit-info-item { font-size: 12px; }
+    .audit-info-item strong { min-width: 100%; margin-bottom: 2px; }
+    .audit-legend { padding: 8px 10px; font-size: 0.9rem; }
+    .card.card-primary .card-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .card.card-primary .card-header .d-flex {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+    .card.card-primary .card-header .btn,
+    .card.card-primary .card-header .form-control-sm {
+      flex: 1 1 auto;
+    }
+    .d-flex.justify-content-between.mt-2 {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .d-flex.justify-content-between.mt-2 > div:first-child {
+      width: 100%;
+      order: 2;
+      text-align: center;
+    }
+    .d-flex.justify-content-between.mt-2 > div:last-child {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  @media (max-width: 576px) {
+    .audit-info-card .row .col-md-6 { max-width: 100%; flex: 0 0 100%; }
+    .audit-table-responsive { margin-left: -0.5rem; margin-right: -0.5rem; }
+  }
 </style>
 
 <!-- Timestamp Information Card -->
-<div class="row">
-  <div class="col-12">
+<div class="row mx-0">
+  <div class="col-12 px-0">
     <div class="audit-info-card">
       <h4><i class="fas fa-info-circle"></i> Report Information</h4>
       <div class="row">
@@ -172,7 +228,7 @@
 </div>
 
 <div class="card card-primary card-outline">
-  <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
     <h3 class="card-title mb-0">
       <i class="fas fa-table mr-2"></i>
       Audit Report Data
@@ -211,7 +267,7 @@
       $showSalaryScaleCol = ($rowsCol === 'job_name');
       $sideLabel = isset($aggTitle2) ? $aggTitle2 : 'Job';
     ?>
-    <div id="auditReportWrapper">
+    <div id="auditReportWrapper" class="audit-table-responsive">
       <div id="auditReportSingleTable" style="<?php echo $hasAggregate2 ? 'display:none;' : ''; ?>">
         <table id="auditReportTable" class="table table-striped table-bordered table-hover audit-table" style="width:100%">
           <thead>
@@ -253,9 +309,9 @@
       </div>
       <div id="auditReportMultiTables" style="<?php echo $hasAggregate2 ? '' : 'display:none;'; ?>"></div>
     </div>
-    <div class="d-flex justify-content-between align-items-center mt-2">
-      <div id="auditTableInfo" class="text-muted">0 rows</div>
-      <div>
+    <div class="d-flex justify-content-between align-items-center mt-2 flex-wrap">
+      <div id="auditTableInfo" class="text-muted small">0 rows</div>
+      <div class="d-flex align-items-center flex-wrap justify-content-center">
         <button type="button" id="auditPrevPage" class="btn btn-sm btn-outline-secondary" disabled>Previous</button>
         <span id="auditPageNum" class="mx-2">Page 1</span>
         <button type="button" id="auditNextPage" class="btn btn-sm btn-outline-secondary">Next</button>

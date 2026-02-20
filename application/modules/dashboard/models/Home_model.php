@@ -41,7 +41,7 @@ class Home_model extends CI_Model {
 		
 	}
 	public function staffcount(){
-		$count=$this->db->get('ihrisdata')->num_rows();
+		$count=$this->db->get('staff')->num_rows();
 		return $count;
 		
 	}
@@ -56,13 +56,13 @@ class Home_model extends CI_Model {
 		
 	}
 	public function getLastUpdate(){
-		$query = $this->db->select_max('last_gen')
-			->from('ihrisdata')
+		$query = $this->db->select_max('last_update')
+			->from('staff')
 			->get();
 		
 		if ($query->num_rows() > 0) {
 			$result = $query->row();
-			return $result->last_gen;
+			return $result->last_update;
 		}
 		return null;
 	}
