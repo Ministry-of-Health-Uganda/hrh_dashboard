@@ -321,8 +321,8 @@ class Audit_mdl extends CI_Model
 		$limitedStr = count($limitedBy) ? implode('; ', $limitedBy) : 'None';
 		$aggLabel = $this->getAggregateLabel(isset($search->aggregate) ? $search->aggregate : 'job_name');
 		$agg2Label = !empty($search->aggregate2) ? $this->getAggregateLabel($search->aggregate2) : '';
-		$aggStr = $agg2Label ? $aggLabel . ' (top), ' . $agg2Label . ' (side)' : $aggLabel;
-		return 'Limited by: ' . $limitedStr . '. Aggregated by: ' . $aggStr . '.';
+		$aggStr = $agg2Label ? 'Section by: ' . $aggLabel . '. Rows by: ' . $agg2Label . '.' : 'Section by: ' . $aggLabel . '.';
+		return 'Limited by: ' . $limitedStr . '. ' . $aggStr;
 	}
 
 	public function getAggregateLabel($aggregateLabel)

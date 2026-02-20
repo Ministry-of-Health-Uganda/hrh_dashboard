@@ -200,46 +200,48 @@
     <?php
       $hasAggregate2 = !empty($search->aggregate2);
       $showSalaryScaleCol = ($search->aggregate == 'job_name' || $search->aggregate == '');
+      $sideLabel = isset($aggTitle2) ? $aggTitle2 : 'Job';
     ?>
-    <table id="auditReportTable" class="table table-striped table-bordered table-hover audit-table" style="width:100%">
-      <thead>
-        <tr>
-          <?php if ($hasAggregate2): ?>
-            <th width="20%" style="text-transform: capitalize;"><?php echo isset($aggTitle2) ? htmlspecialchars($aggTitle2) : 'Value 2'; ?> (Side)</th>
-          <?php else: ?>
-            <th width="25%" class="audit-sort" data-col="0" style="cursor:pointer; text-transform: capitalize;" title="Sort"><?php echo $aggTitle; ?> <i class="fas fa-sort ml-1"></i></th>
-          <?php endif; ?>
-          <?php if ($showSalaryScaleCol) { ?><th class="audit-sort" data-col="<?php echo $hasAggregate2 ? 2 : 1; ?>" style="cursor:pointer" title="Sort">Salary Scale <i class="fas fa-sort ml-1"></i></th><?php } ?>
-          <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? ($hasAggregate2 ? 3 : 2) : ($hasAggregate2 ? 2 : 1); ?>" style="cursor:pointer" title="Sort">Approved <i class="fas fa-sort ml-1"></i></th>
-          <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? ($hasAggregate2 ? 4 : 3) : ($hasAggregate2 ? 3 : 2); ?>" style="cursor:pointer" title="Sort">Filled <i class="fas fa-sort ml-1"></i></th>
-          <th>Vacant</th>
-          <th>Excess</th>
-          <th>Male</th>
-          <th>Female</th>
-          <th>Filled %</th>
-          <th>Vacant %</th>
-          <th>Male %</th>
-          <th>Female %</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-      <tfoot>
-        <tr>
-          <th width="<?php echo $hasAggregate2 ? '20' : '25'; ?>%">TOTALS</th>
-          <?php if ($showSalaryScaleCol) { ?><th></th><?php } ?>
-          <th id="totalApproved">0</th>
-          <th id="totalFilled">0</th>
-          <th id="totalVacant">0</th>
-          <th id="totalExcess">0</th>
-          <th id="totalMales">0</th>
-          <th id="totalFemales">0</th>
-          <th id="totalFilledPct">0%</th>
-          <th id="totalVacantPct">0%</th>
-          <th id="totalMalePct">0%</th>
-          <th id="totalFemalePct">0%</th>
-        </tr>
-      </tfoot>
-    </table>
+    <div id="auditReportWrapper">
+      <div id="auditReportSingleTable" style="<?php echo $hasAggregate2 ? 'display:none;' : ''; ?>">
+        <table id="auditReportTable" class="table table-striped table-bordered table-hover audit-table" style="width:100%">
+          <thead>
+            <tr>
+              <th width="25%" class="audit-sort" data-col="0" style="cursor:pointer; text-transform: capitalize;" title="Sort"><?php echo $aggTitle; ?> <i class="fas fa-sort ml-1"></i></th>
+              <?php if ($showSalaryScaleCol) { ?><th class="audit-sort" data-col="1" style="cursor:pointer" title="Sort">Salary Scale <i class="fas fa-sort ml-1"></i></th><?php } ?>
+              <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? 2 : 1; ?>" style="cursor:pointer" title="Sort">Approved <i class="fas fa-sort ml-1"></i></th>
+              <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? 3 : 2; ?>" style="cursor:pointer" title="Sort">Filled <i class="fas fa-sort ml-1"></i></th>
+              <th>Vacant</th>
+              <th>Excess</th>
+              <th>Male</th>
+              <th>Female</th>
+              <th>Filled %</th>
+              <th>Vacant %</th>
+              <th>Male %</th>
+              <th>Female %</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <th width="25%">TOTALS</th>
+              <?php if ($showSalaryScaleCol) { ?><th></th><?php } ?>
+              <th id="totalApproved">0</th>
+              <th id="totalFilled">0</th>
+              <th id="totalVacant">0</th>
+              <th id="totalExcess">0</th>
+              <th id="totalMales">0</th>
+              <th id="totalFemales">0</th>
+              <th id="totalFilledPct">0%</th>
+              <th id="totalVacantPct">0%</th>
+              <th id="totalMalePct">0%</th>
+              <th id="totalFemalePct">0%</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div id="auditReportMultiTables" style="<?php echo $hasAggregate2 ? '' : 'display:none;'; ?>"></div>
+    </div>
     <div class="d-flex justify-content-between align-items-center mt-2">
       <div id="auditTableInfo" class="text-muted">0 rows</div>
       <div>
@@ -257,6 +259,7 @@
   var chainedFilterUrl = "<?php echo base_url('audit/getChainedFilterOptions'); ?>";
   var hasAggregate2 = <?php echo $hasAggregate2 ? 'true' : 'false'; ?>;
   var showSalaryScaleCol = <?php echo $showSalaryScaleCol ? 'true' : 'false'; ?>;
+  var sideLabel = <?php echo json_encode(isset($sideLabel) ? $sideLabel : 'Job'); ?>;
   var colOffset = hasAggregate2 ? (showSalaryScaleCol ? 3 : 2) : (showSalaryScaleCol ? 2 : 1);
   var page = 0;
   var pageSize = 25;
@@ -359,29 +362,40 @@
         $('#totalFemalePct').text(json.totals.femalePct + '%');
       }
       if (hasAggregate2 && (json.data || []).length) {
+        $('#auditReportSingleTable').hide();
+        var $multi = $('#auditReportMultiTables').empty().show();
         var groups = {};
         $.each(json.data, function(i, row) {
           var key = row[0] !== undefined && row[0] !== null ? String(row[0]) : '';
           if (!groups[key]) groups[key] = [];
           groups[key].push(row);
         });
-        $.each(groups, function(value1, rows) {
-          $('#auditReportTable tbody').append('<tr class="table-secondary"><td colspan="' + (showSalaryScaleCol ? 12 : 11) + '" style="font-weight:bold;">' + escapeHtml(value1) + '</td></tr>');
+        var headerRow = '<tr><th>' + escapeHtml(sideLabel) + '</th>' + (showSalaryScaleCol ? '<th>Salary Scale</th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr>';
+        $.each(groups, function(sectionVal, rows) {
+          $multi.append('<div class="audit-section mb-4"><h5 class="audit-section-heading font-weight-bold mb-2">' + escapeHtml(sectionVal) + '</h5></div>');
+          var $last = $multi.children('.audit-section').last();
+          var tbl = '<table class="table table-striped table-bordered table-sm audit-table" style="width:100%"><thead>' + headerRow + '</thead><tbody>';
           $.each(rows, function(j, row) {
-            var tr = '<tr>';
-            var start = 1;
-            tr += '<td>' + (row[1] !== undefined && row[1] !== null ? escapeHtml(String(row[1])) : '') + '</td>';
-            for (var c = 2; c < row.length; c++) tr += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
-            tr += '</tr>';
-            $('#auditReportTable tbody').append(tr);
+            tbl += '<tr>';
+            tbl += '<td>' + (row[1] !== undefined && row[1] !== null ? escapeHtml(String(row[1])) : '') + '</td>';
+            for (var c = 2; c < row.length; c++) tbl += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
+            tbl += '</tr>';
           });
+          tbl += '</tbody></table>';
+          $last.append(tbl);
         });
+        if (json.totals) {
+          var t = json.totals;
+          var totRow = '<tr><th>TOTALS</th>' + (showSalaryScaleCol ? '<th></th>' : '') + '<th>' + (t.totalApproved || 0) + '</th><th>' + (t.totalFilled || 0) + '</th><th>' + (t.totalVacant || 0) + '</th><th>' + (t.totalExcess || 0) + '</th><th>' + (t.totalMale || 0) + '</th><th>' + (t.totalFemale || 0) + '</th><th>' + (t.filledPct || 0) + '%</th><th>' + (t.vacantPct || 0) + '%</th><th>' + (t.malePct || 0) + '%</th><th>' + (t.femalePct || 0) + '%</th></tr>';
+          $multi.append('<div class="audit-section mt-2"><table class="table table-bordered table-sm"><thead><tr><th>TOTALS</th>' + (showSalaryScaleCol ? '<th></th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody>' + totRow + '</tbody></table></div>');
+        }
       } else {
+        $('#auditReportMultiTables').hide().empty();
+        $('#auditReportSingleTable').show();
+        $('#auditReportTable tbody').empty();
         $.each(json.data || [], function(i, row) {
           var tr = '<tr>';
-          var start = 0;
-          if (hasAggregate2) start = 1;
-          for (var c = start; c < row.length; c++) tr += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
+          for (var c = 0; c < row.length; c++) tr += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
           tr += '</tr>';
           $('#auditReportTable tbody').append(tr);
         });

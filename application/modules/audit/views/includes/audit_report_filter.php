@@ -176,7 +176,7 @@
 	</div>
 
 	<div class="form-group col-md-2">
-		<label>Aggregate By (Value 1 - Top heading)</label>
+		<label>Section by (top – one table per value)</label>
 		<select class="select form-control" name="aggregate">
 			<option value="job_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'job_name') ? 'selected' : ''; ?>>Job</option>
 			<option value="institution_type" <?php echo (isset($search->aggregate) && $search->aggregate == 'institution_type') ? 'selected' : ''; ?>>Institution Type</option>
@@ -187,9 +187,10 @@
 			<option value="job_classification" <?php echo (isset($search->aggregate) && $search->aggregate == 'job_classification') ? 'selected' : ''; ?>>Classification</option>
 			<option value="region_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'region_name') ? 'selected' : ''; ?>>Region</option>
 		</select>
+		<small class="form-text text-muted">Default: Job (single table).</small>
 	</div>
 	<div class="form-group col-md-2">
-		<label>Then by (Value 2 - Side)</label>
+		<label>Rows by (side – default Job)</label>
 		<select class="select form-control" name="aggregate2">
 			<option value="">None</option>
 			<option value="job_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'job_name') ? 'selected' : ''; ?>>Job</option>

@@ -94,15 +94,50 @@ table tr:nth-child(even){
   </table>
   <hr />
   <br/>
-  <?php $hasAgg2 = !empty($search->aggregate2) && !empty($aggColumn2); ?>
+  <?php $hasAgg2 = !empty($search->aggregate2) && !empty($aggColumn2);
+        $totalApproved = 0; $totalFilled = 0; $totalVacant = 0; $totalExcess = 0; $totalMales = 0; $totalFemales = 0;
+        if ($hasAgg2):
+          $groups = array();
+          foreach ($audit as $row) {
+            $k = $row->$aggColumn;
+            if (!isset($groups[$k])) $groups[$k] = array();
+            $groups[$k][] = $row;
+          }
+          foreach ($groups as $sectionVal => $rows):
+            echo '<p style="font-weight:bold; margin-top:1em;">' . htmlspecialchars($sectionVal) . '</p>';
+            echo '<table class="items" style="font-size: 10pt; border-collapse: collapse; margin-bottom: 1em;" cellpadding="6" width="100%"><thead><tr>';
+            echo '<th width="25%" style="text-transform: capitalize;">' . (isset($aggTitle2) ? htmlspecialchars($aggTitle2) : 'Job') . '</th>';
+            if ($search->aggregate == 'job_name') echo '<th>Salary Scale</th>';
+            echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody>';
+            foreach ($rows as $row):
+              $structure = $row->approved;
+              $difference = $row->approved - $row->filled;
+              $vacantPosts = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
+              $excessPosts = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference<0) ? $difference * -1 : 0);
+              $male = ($structure > 0 && $row->filled > 0) ? ($row->male/$row->filled)*100 : 0;
+              $female = ($structure > 0 && $row->filled > 0) ? ($row->female/$row->filled)*100 : 0;
+              $vacant = ($structure > 0) ? ($vacantPosts/$structure)*100 : 0;
+              $filled = ($structure > 0) ? ($row->filled/$structure)*100 : 0;
+              $totalApproved += $structure; $totalFilled += $row->filled; $totalVacant += $vacantPosts; $totalExcess += $excessPosts; $totalFemales += $row->female; $totalMales += $row->male;
+              echo '<tr><td>' . htmlspecialchars($row->$aggColumn2) . '</td>';
+              if ($search->aggregate == 'job_name') echo '<td>' . htmlspecialchars($row->salary_scale) . '</td>';
+              echo '<td>' . $row->approved . '</td><td>' . $row->filled . '</td><td>' . $vacantPosts . '</td><td>' . $excessPosts . '</td><td>' . $row->male . '</td><td>' . $row->female . '</td>';
+              echo '<td class="text-bold">' . (($filled>0)?number_format($filled,1):0) . '%</td><td class="text-bold">' . (($vacant>0)?number_format($vacant,1):0) . '%</td><td class="text-bold">' . (($male>0)?number_format($male,1):0) . '%</td><td class="text-bold">' . (($female>0)?number_format($female,1):0) . '%</td></tr>';
+            endforeach;
+            echo '</tbody></table>';
+          endforeach;
+          echo '<table class="items" style="font-size: 10pt; border-collapse: collapse;" cellpadding="6" width="100%"><thead><tr><th>TOTALS</th>';
+          if ($search->aggregate == 'job_name') echo '<th></th>';
+          echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody><tr><th>TOTALS</th>';
+          if ($search->aggregate == 'job_name') echo '<th></th>';
+          echo '<th>' . $totalApproved . '</th><th>' . $totalFilled . '</th><th>' . $totalVacant . '</th><th>' . $totalExcess . '</th><th>' . $totalMales . '</th><th>' . $totalFemales . '</th>';
+          echo '<th>' . ($totalApproved > 0 ? number_format(($totalFilled/$totalApproved)*100,1) : 0) . '%</th><th>' . ($totalApproved > 0 ? number_format(($totalVacant/$totalApproved)*100,1) : 0) . '%</th>';
+          echo '<th>' . ($totalFilled > 0 ? number_format(($totalMales/$totalFilled)*100,1) : 0) . '%</th><th>' . ($totalFilled > 0 ? number_format(($totalFemales/$totalFilled)*100,1) : 0) . '%</th></tr></tbody></table>';
+        else: ?>
   <table class="items" style="font-size: 10pt; border-collapse: collapse; " cellpadding="8" width="100%">
     <thead>
         <tr>
-            <?php if ($hasAgg2): ?>
-            <th width="20%" style="text-transform: capitalize;"><?php echo isset($aggTitle2) ? htmlspecialchars($aggTitle2) : ''; ?> (Side)</th>
-            <?php else: ?>
             <th width="25%" style="text-transform: capitalize;"><?php echo $aggTitle; ?></th>
-            <?php endif; ?>
             <?php if ($search->aggregate  == 'job_name') { ?><th>Salary Scale</th> <?php }?>
             <th>Approved</th>
             <th>Filled</th>
@@ -116,54 +151,8 @@ table tr:nth-child(even){
             <th>Female %</th>
         </tr>
       </thead>
-
-      <tbody> 
+      <tbody>
       <?php
-            $totalApproved = 0;
-            $totalFilled   = 0;
-            $totalVacant   = 0;
-            $totalExcess   = 0;
-            $overAllTotal  = 0;
-            $totalMales    = 0;
-            $totalFemales  = 0;
-
-            if ($hasAgg2):
-              $groups = array();
-              foreach ($audit as $row) {
-                $k = $row->$aggColumn;
-                if (!isset($groups[$k])) $groups[$k] = array();
-                $groups[$k][] = $row;
-              }
-              foreach ($groups as $value1 => $rows):
-                $ncols = ($search->aggregate == 'job_name') ? 12 : 11;
-                echo '<tr style="background:#ddd;"><td colspan="' . $ncols . '" style="font-weight:bold;">' . htmlspecialchars($value1) . '</td></tr>';
-                foreach ($rows as $row):
-                  $structure    = $row->approved;
-                  $difference   = $row->approved - $row->filled;
-                  $vacantPosts  = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
-                  $excessPosts  = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference<0) ? $difference * -1 : 0);
-                  $male    = ($structure >0 && $row->filled > 0) ? ($row->male/$row->filled)* 100 : 0;
-                  $female  = ($structure >0 && $row->filled > 0) ? ($row->female/$row->filled) * 100 : 0;
-                  $vacant  = ($structure >0)?($vacantPosts/$structure) * 100:0;
-                  $filled  = ($structure >0)?($row->filled/$structure) * 100:0;
-                  $totalApproved += $structure; $totalFilled += $row->filled; $totalVacant += $vacantPosts; $totalExcess += $excessPosts; $totalFemales += $row->female; $totalMales += $row->male;
-            ?>
-        <tr>
-            <td><?php echo htmlspecialchars($row->$aggColumn2); ?></td>
-            <?php if ($search->aggregate  == 'job_name') { ?> <td><?php echo $row->salary_scale; ?></td> <?php } ?>
-            <td><?php echo $row->approved; ?></td>
-            <td><?php echo $row->filled; ?></td>
-            <td><?php echo $vacantPosts; ?></td>
-            <td><?php echo $excessPosts; ?></td>
-            <td><?php echo $row->male;   ?></td>
-            <td><?php echo $row->female; ?></td>
-            <td class="text-bold"><?php echo ($filled>0)?number_format($filled,1):0; ?>%</td>
-            <td class="text-bold"><?php echo ($vacant>0)?number_format($vacant,1):0; ?>%</td>
-            <td class="text-bold"><?php echo ($male>0)?number_format($male,1):0;   ?>%</td>
-            <td class="text-bold"><?php echo ($female>0)?number_format($female,1):0; ?>%</td>
-        </tr>
-            <?php endforeach; endforeach;
-            else:
             foreach($audit as $row):
 
               $structure    = $row->approved;
