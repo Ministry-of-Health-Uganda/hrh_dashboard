@@ -43,7 +43,7 @@ if ($hasAgg2):
     $subApproved = 0; $subFilled = 0; $subVacant = 0; $subExcess = 0; $subMales = 0; $subFemales = 0;
     echo '<div class="section-heading">' . htmlspecialchars($sectionVal) . '</div>';
     echo '<table class="data-table"><thead><tr>';
-    echo '<th>' . htmlspecialchars($sideLabel) . '</th>';
+    echo '<th>#</th><th>' . htmlspecialchars($sideLabel) . '</th>';
     if (!empty($showSalaryScale)) echo '<th>Salary Scale</th>';
     echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody>';
     $rowIndex = 0;
@@ -58,7 +58,7 @@ if ($hasAgg2):
       $filled = ($structure > 0) ? ($row->filled/$structure)*100 : 0;
       $subApproved += $structure; $subFilled += $row->filled; $subVacant += $vacantPosts; $subExcess += $excessPosts; $subMales += $row->male; $subFemales += $row->female;
       $totalApproved += $structure; $totalFilled += $row->filled; $totalVacant += $vacantPosts; $totalExcess += $excessPosts; $totalFemales += $row->female; $totalMales += $row->male;
-      echo '<tr><td>' . htmlspecialchars($row->$aggColumn2) . '</td>';
+      echo '<tr><td>' . ($rowIndex + 1) . '</td><td>' . htmlspecialchars($row->$aggColumn2) . '</td>';
       if (!empty($showSalaryScale)) echo '<td>' . htmlspecialchars($row->salary_scale) . '</td>';
       echo '<td>' . $row->approved . '</td><td>' . $row->filled . '</td><td>' . $vacantPosts . '</td><td>' . $excessPosts . '</td><td>' . $row->male . '</td><td>' . $row->female . '</td>';
       echo '<td>' . (($filled>0)?number_format($filled,1):0) . '%</td><td>' . (($vacant>0)?number_format($vacant,1):0) . '%</td><td>' . (($male>0)?number_format($male,1):0) . '%</td><td>' . (($female>0)?number_format($female,1):0) . '%</td></tr>';
@@ -68,14 +68,14 @@ if ($hasAgg2):
     $subVacantPct = $subApproved > 0 ? number_format(($subVacant/$subApproved)*100, 1) : 0;
     $subMalePct = $subFilled > 0 ? number_format(($subMales/$subFilled)*100, 1) : 0;
     $subFemalePct = $subFilled > 0 ? number_format(($subFemales/$subFilled)*100, 1) : 0;
-    echo '</tbody><tfoot><tr class="subtotal-row"><th>Subtotal</th>';
+    echo '</tbody><tfoot><tr class="subtotal-row"><th></th><th>Subtotal</th>';
     if (!empty($showSalaryScale)) echo '<th></th>';
     echo '<th>' . $subApproved . '</th><th>' . $subFilled . '</th><th>' . $subVacant . '</th><th>' . $subExcess . '</th><th>' . $subMales . '</th><th>' . $subFemales . '</th><th>' . $subFilledPct . '%</th><th>' . $subVacantPct . '%</th><th>' . $subMalePct . '%</th><th>' . $subFemalePct . '%</th></tr></tfoot></table>';
   endforeach;
   if (!empty($totals)):
-  echo '<table class="totals-table" style="margin-top: 12px;"><thead><tr><th>TOTALS</th>';
+  echo '<table class="totals-table" style="margin-top: 12px;"><thead><tr><th>#</th><th>TOTALS</th>';
   if (!empty($showSalaryScale)) echo '<th></th>';
-  echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody><tr><th>TOTALS</th>';
+  echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody><tr><th></th><th>TOTALS</th>';
   if (!empty($showSalaryScale)) echo '<th></th>';
   echo '<th>' . $totalApproved . '</th><th>' . $totalFilled . '</th><th>' . $totalVacant . '</th><th>' . $totalExcess . '</th><th>' . $totalMales . '</th><th>' . $totalFemales . '</th>';
   echo '<th>' . ($totalApproved > 0 ? number_format(($totalFilled/$totalApproved)*100,1) : 0) . '%</th><th>' . ($totalApproved > 0 ? number_format(($totalVacant/$totalApproved)*100,1) : 0) . '%</th>';
@@ -86,13 +86,16 @@ else:
 <table class="data-table">
   <thead>
     <tr>
+      <th>#</th>
       <th><?php echo htmlspecialchars($aggTitle); ?></th>
       <?php if (!empty($showSalaryScale)) { ?><th>Salary Scale</th><?php } ?>
       <th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th>
     </tr>
   </thead>
   <tbody>
-  <?php foreach ($audit as $row):
+  <?php $rowNum = 0;
+  foreach ($audit as $row):
+    $rowNum++;
     $structure = $row->approved;
     $difference = $row->approved - $row->filled;
     $vacantPosts = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
@@ -104,6 +107,7 @@ else:
     $totalApproved += $structure; $totalFilled += $row->filled; $totalVacant += $vacantPosts; $totalExcess += $excessPosts; $totalFemales += $row->female; $totalMales += $row->male;
   ?>
     <tr>
+      <td><?php echo $rowNum; ?></td>
       <td><?php echo htmlspecialchars($row->$aggColumn); ?></td>
       <?php if (!empty($showSalaryScale)) { ?><td><?php echo htmlspecialchars($row->salary_scale); ?></td><?php } ?>
       <td><?php echo $row->approved; ?></td><td><?php echo $row->filled; ?></td><td><?php echo $vacantPosts; ?></td><td><?php echo $excessPosts; ?></td><td><?php echo $row->male; ?></td><td><?php echo $row->female; ?></td>
@@ -113,6 +117,7 @@ else:
   </tbody>
   <tfoot>
     <tr class="subtotal-row">
+      <th></th>
       <th>TOTALS</th>
       <?php if (!empty($showSalaryScale)) { ?><th></th><?php } ?>
       <th><?php echo $totalApproved; ?></th><th><?php echo $totalFilled; ?></th><th><?php echo $totalVacant; ?></th><th><?php echo $totalExcess; ?></th><th><?php echo $totalMales; ?></th><th><?php echo $totalFemales; ?></th>

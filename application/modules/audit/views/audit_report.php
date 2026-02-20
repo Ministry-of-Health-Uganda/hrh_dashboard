@@ -209,6 +209,7 @@
         <table id="auditReportTable" class="table table-striped table-bordered table-hover audit-table" style="width:100%">
           <thead>
             <tr>
+              <th style="width:3%;">#</th>
               <th width="25%" class="audit-sort" data-col="0" style="cursor:pointer; text-transform: capitalize;" title="Sort"><?php echo $aggTitle; ?> <i class="fas fa-sort ml-1"></i></th>
               <?php if ($showSalaryScaleCol) { ?><th class="audit-sort" data-col="1" style="cursor:pointer" title="Sort">Salary Scale <i class="fas fa-sort ml-1"></i></th><?php } ?>
               <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? 2 : 1; ?>" style="cursor:pointer" title="Sort">Approved <i class="fas fa-sort ml-1"></i></th>
@@ -226,6 +227,7 @@
           <tbody></tbody>
           <tfoot>
             <tr>
+              <th></th>
               <th width="25%">TOTALS</th>
               <?php if ($showSalaryScaleCol) { ?><th></th><?php } ?>
               <th id="totalApproved">0</th>
@@ -383,7 +385,7 @@
           groups[key].push(row);
         });
         var dataOffset = showSalary ? 3 : 2; // first numeric column index (approved)
-        var headerRow = '<tr><th>' + escapeHtml(sideLbl) + '</th>' + (showSalary ? '<th>Salary Scale</th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr>';
+        var headerRow = '<tr><th>#</th><th>' + escapeHtml(sideLbl) + '</th>' + (showSalary ? '<th>Salary Scale</th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr>';
         $.each(groups, function(sectionName, rows) {
           var sub = { approved: 0, filled: 0, vacant: 0, excess: 0, male: 0, female: 0 };
           $.each(rows, function(j, row) {
@@ -398,12 +400,12 @@
           var subVacantPct = sub.approved > 0 ? (100 * sub.vacant / sub.approved).toFixed(1) : 0;
           var subMalePct   = sub.filled > 0 ? (100 * sub.male / sub.filled).toFixed(1) : 0;
           var subFemalePct = sub.filled > 0 ? (100 * sub.female / sub.filled).toFixed(1) : 0;
-          var subRow = '<tr class="table-secondary font-weight-bold"><th>Subtotal</th>' + (showSalary ? '<th></th>' : '') + '<th>' + sub.approved + '</th><th>' + sub.filled + '</th><th>' + sub.vacant + '</th><th>' + sub.excess + '</th><th>' + sub.male + '</th><th>' + sub.female + '</th><th>' + subFilledPct + '%</th><th>' + subVacantPct + '%</th><th>' + subMalePct + '%</th><th>' + subFemalePct + '%</th></tr>';
+          var subRow = '<tr class="table-secondary font-weight-bold"><th></th><th>Subtotal</th>' + (showSalary ? '<th></th>' : '') + '<th>' + sub.approved + '</th><th>' + sub.filled + '</th><th>' + sub.vacant + '</th><th>' + sub.excess + '</th><th>' + sub.male + '</th><th>' + sub.female + '</th><th>' + subFilledPct + '%</th><th>' + subVacantPct + '%</th><th>' + subMalePct + '%</th><th>' + subFemalePct + '%</th></tr>';
           $multi.append('<div class="audit-section mb-4"><h5 class="audit-section-heading font-weight-bold mb-2">' + escapeHtml(sectionName) + '</h5></div>');
           var $last = $multi.children('.audit-section').last();
           var tbl = '<table class="table table-striped table-bordered table-sm audit-table" style="width:100%"><thead>' + headerRow + '</thead><tbody>';
           $.each(rows, function(j, row) {
-            tbl += '<tr>';
+            tbl += '<tr><td>' + (j + 1) + '</td>';
             tbl += '<td>' + (row[1] !== undefined && row[1] !== null ? escapeHtml(String(row[1])) : '') + '</td>';
             for (var c = 2; c < row.length; c++) tbl += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
             tbl += '</tr>';
@@ -413,15 +415,15 @@
         });
         if (json.totals) {
           var t = json.totals;
-          var totRow = '<tr><th>TOTALS</th>' + (showSalary ? '<th></th>' : '') + '<th>' + (t.totalApproved || 0) + '</th><th>' + (t.totalFilled || 0) + '</th><th>' + (t.totalVacant || 0) + '</th><th>' + (t.totalExcess || 0) + '</th><th>' + (t.totalMale || 0) + '</th><th>' + (t.totalFemale || 0) + '</th><th>' + (t.filledPct || 0) + '%</th><th>' + (t.vacantPct || 0) + '%</th><th>' + (t.malePct || 0) + '%</th><th>' + (t.femalePct || 0) + '%</th></tr>';
-          $multi.append('<div class="audit-section mt-2"><table class="table table-bordered table-sm"><thead><tr><th>TOTALS</th>' + (showSalary ? '<th></th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody>' + totRow + '</tbody></table></div>');
+          var totRow = '<tr><th></th><th>TOTALS</th>' + (showSalary ? '<th></th>' : '') + '<th>' + (t.totalApproved || 0) + '</th><th>' + (t.totalFilled || 0) + '</th><th>' + (t.totalVacant || 0) + '</th><th>' + (t.totalExcess || 0) + '</th><th>' + (t.totalMale || 0) + '</th><th>' + (t.totalFemale || 0) + '</th><th>' + (t.filledPct || 0) + '%</th><th>' + (t.vacantPct || 0) + '%</th><th>' + (t.malePct || 0) + '%</th><th>' + (t.femalePct || 0) + '%</th></tr>';
+          $multi.append('<div class="audit-section mt-2"><table class="table table-bordered table-sm"><thead><tr><th>#</th><th>TOTALS</th>' + (showSalary ? '<th></th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody>' + totRow + '</tbody></table></div>');
         }
       } else {
         $('#auditReportMultiTables').hide().empty();
         $('#auditReportSingleTable').show();
         $('#auditReportTable tbody').empty();
         $.each(json.data || [], function(i, row) {
-          var tr = '<tr>';
+          var tr = '<tr><td>' + (i + 1) + '</td>';
           for (var c = 0; c < row.length; c++) tr += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
           tr += '</tr>';
           $('#auditReportTable tbody').append(tr);
