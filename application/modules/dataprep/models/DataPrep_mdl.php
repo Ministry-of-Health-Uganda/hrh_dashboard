@@ -440,13 +440,14 @@ class DataPrep_mdl extends CI_Model {
 
 	/**
 	 * Chain: + Facility Level (facility_type_name). Returns distinct facility_type_name.
+	 * When $facilities is provided, only levels for those facilities are returned; otherwise all levels (optionally filtered by region/district).
 	 */
-	public function getFacilityLevelsForChain($ownership = '', $institution_types = array(), $regions = array(), $districts = array()) {
+	public function getFacilityLevelsForChain($ownership = '', $institution_types = array(), $regions = array(), $districts = array(), $facilities = array()) {
 		$this->db->select('facility_type_name as facility_type');
 		$this->db->distinct();
 		$this->db->from('national_jobs');
 		$this->db->where('facility_type_name !=', '');
-		$this->applyChainFilters($ownership, $institution_types, $regions, $districts);
+		$this->applyChainFilters($ownership, $institution_types, $regions, $districts, array(), $facilities);
 		$this->db->order_by('facility_type_name', 'asc');
 		return $this->db->get()->result();
 	}

@@ -433,6 +433,10 @@
     $('#filterFacilityLevel').on('change', function() {
       refreshChainedSelect('facility', 'filterFacility', 'facility', 'facility');
     });
+    // When facility changes: refresh Facility Level (levels for selected facilities, or all levels if none selected)
+    $('#filterFacility').on('change', function() {
+      refreshChainedSelect('facility_level', 'filterFacilityLevel', 'facility_type', 'facility_type');
+    });
   });
 
   // Export to Excel: copy current filter state from search form so export uses same filters as table
