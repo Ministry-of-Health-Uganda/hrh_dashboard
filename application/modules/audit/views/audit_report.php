@@ -243,6 +243,7 @@
 <script>
 (function() {
   var dataUrl = "<?php echo base_url('audit/auditReportData'); ?>";
+  var chainedFilterUrl = "<?php echo base_url('audit/getChainedFilterOptions'); ?>";
   var colOffset = <?php echo ($search->aggregate == 'job_name' || $search->aggregate == '') ? 2 : 1; ?>;
   var page = 0;
   var pageSize = 25;
@@ -250,6 +251,55 @@
   var sortDir = 'asc';
   var filteredRecords = 0;
   var draw = 0;
+
+  /** Build POST data for getChainedFilterOptions from current form values */
+  function getChainedPostData(level) {
+    var regions = $('#filterRegion').val() || [];
+    var districts = $('#filterDistrict').val() || [];
+    var facilityLevels = $('#filterFacilityLevel').val() || [];
+    var facilities = $('#filterFacility').val() || [];
+    var cadres = $('#filterJobCadre').val() || [];
+    var jobCategories = $('#filterJobCategory').val() || [];
+    var jobClasses = $('#filterJobClassification').val() || [];
+    var jobNames = $('#filterJobName').val() || [];
+    var data = { level: level };
+    if (regions.length) data['region[]'] = regions;
+    if (districts.length) data['district[]'] = districts;
+    if (facilityLevels.length) data['facility_type[]'] = facilityLevels;
+    if (facilities.length) data['facility[]'] = facilities;
+    if (cadres.length) data['cadre[]'] = cadres;
+    if (jobCategories.length) data['job_category[]'] = jobCategories;
+    if (jobClasses.length) data['job_class[]'] = jobClasses;
+    if (jobNames.length) data['job[]'] = jobNames;
+    return data;
+  }
+
+  /** Fetch chained options and repopulate a select. valueKey/labelKey: property name in API response objects (e.g. "district", "facility_type", "facility"). */
+  function refreshChainedSelect(level, selectId, valueKey, labelKey, thenReload) {
+    var $sel = $('#' + selectId);
+    if (!$sel.length) return $.when();
+    var payload = getChainedPostData(level);
+    return $.ajax({
+      url: chainedFilterUrl,
+      type: 'POST',
+      data: payload,
+      dataType: 'json'
+    }).done(function(list) {
+      var currentVal = $sel.val();
+      $sel.empty();
+      if (list && list.length) {
+        $.each(list, function(i, row) {
+          var val = row[valueKey] !== undefined ? row[valueKey] : (row[labelKey] || '');
+          if (val === '' || val == null) return;
+          var label = row[labelKey] !== undefined ? row[labelKey] : (row[valueKey] || String(val));
+          $sel.append($('<option>').val(String(val)).text(String(label)));
+        });
+      }
+      var newVal = currentVal && $.isArray(currentVal) ? currentVal.filter(function(v) { return $sel.find('option[value="' + String(v).replace(/"/g, '&quot;') + '"]').length; }) : (($sel.find('option[value="' + String(currentVal).replace(/"/g, '&quot;') + '"]').length) ? currentVal : null);
+      $sel.val(newVal || null).trigger('change.select2');
+      if (thenReload && typeof loadTable === 'function') loadTable();
+    });
+  }
 
   function getFormPayload() {
     var d = { start: page * pageSize, length: pageSize, draw: draw };
@@ -367,6 +417,21 @@
     $('select[name="job_category[]"], select[name="job_class[]"], select[name="district[]"], select[name="institution[]"], select[name="region[]"], select[name="facility_type[]"], select[name="facility[]"], select[name="cadre[]"], select[name="job[]"]').select2({
       placeholder: function() { return $(this).data('placeholder') || 'All'; },
       allowClear: true
+    });
+
+    // Chained filters: when region/district/facility_level change, refresh dependent dropdowns via AJAX
+    $('#filterRegion').on('change', function() {
+      refreshChainedSelect('district', 'filterDistrict', 'district', 'district').done(function() {
+        refreshChainedSelect('facility_level', 'filterFacilityLevel', 'facility_type', 'facility_type');
+        refreshChainedSelect('facility', 'filterFacility', 'facility', 'facility');
+      });
+    });
+    $('#filterDistrict').on('change', function() {
+      refreshChainedSelect('facility_level', 'filterFacilityLevel', 'facility_type', 'facility_type');
+      refreshChainedSelect('facility', 'filterFacility', 'facility', 'facility');
+    });
+    $('#filterFacilityLevel').on('change', function() {
+      refreshChainedSelect('facility', 'filterFacility', 'facility', 'facility');
     });
   });
 
