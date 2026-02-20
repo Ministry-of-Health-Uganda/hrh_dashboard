@@ -253,18 +253,22 @@ class Audit extends MX_Controller {
 		// Server-side DataTables endpoint
 		Modules::run('dataprep/shareModel');
 		
-		$start = $this->input->post('start') ? $this->input->post('start') : 0;
-		$length = $this->input->post('length') ? $this->input->post('length') : 10;
-		$searchValue = $this->input->post('search')['value'] ? $this->input->post('search')['value'] : '';
-		$orderColumn = $this->input->post('order')[0]['column'] ? $this->input->post('order')[0]['column'] : 0;
-		$orderDir = $this->input->post('order')[0]['dir'] ? $this->input->post('order')[0]['dir'] : 'asc';
+		$search = (object) $this->input->post();
+		$start = $this->input->post('start') ? (int) $this->input->post('start') : 0;
+		$length = $this->input->post('length') ? (int) $this->input->post('length') : 10;
+		// When Section by (top) is set, use 1000 rows per page so many sections can appear per page
+		if (!empty($search->aggregate)) {
+			$length = 1000;
+		}
+		$searchValue = isset($this->input->post('search')['value']) ? $this->input->post('search')['value'] : '';
+		$orderColumn = isset($this->input->post('order')[0]['column']) ? (int) $this->input->post('order')[0]['column'] : 0;
+		$orderDir = isset($this->input->post('order')[0]['dir']) ? $this->input->post('order')[0]['dir'] : 'asc';
 		
 		$result = $this->auditMdl->getAuditReport(FALSE, true, $start, $length, $searchValue, $orderColumn, $orderDir);
 		
 		// Get totals from all filtered data (not just current page)
 		$totals = $this->auditMdl->getAuditReportTotals(FALSE);
 		
-		$search = (Object) $this->input->post();
 		$agg = $this->_auditReportAggregation($search);
 		$aggColumn = $agg['aggColumn'];
 		$aggColumn2 = $agg['aggColumn2'];

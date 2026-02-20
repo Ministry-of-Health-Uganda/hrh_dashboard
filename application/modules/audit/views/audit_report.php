@@ -178,6 +178,7 @@
         <option value="100">100</option>
         <option value="250">250</option>
         <option value="500">500</option>
+        <option value="1000">1000</option>
       </select>
       <span class="ml-2 mr-3">per page</span>
       <form id="auditExportForm" method="post" action="<?php echo base_url('audit/auditReportExcel'); ?>" class="d-inline">
@@ -319,7 +320,9 @@
   }
 
   function getFormPayload() {
-    var d = { start: page * pageSize, length: pageSize, draw: draw };
+    var sectionSet = ($('select[name="aggregate"]').val() || '').toString().trim() !== '';
+    var effectivePageSize = sectionSet ? 1000 : pageSize;
+    var d = { start: page * effectivePageSize, length: effectivePageSize, draw: draw };
     d.order = [{ column: sortCol, dir: sortDir }];
     d.search = { value: '' };
     var formData = $('.searchForm').serializeArray();
@@ -424,12 +427,14 @@
           $('#auditReportTable tbody').append(tr);
         });
       }
-      var from = filteredRecords === 0 ? 0 : page * pageSize + 1;
-      var to = Math.min((page + 1) * pageSize, filteredRecords);
+      var sectionSet = ($('select[name="aggregate"]').val() || '').toString().trim() !== '';
+      var effectivePageSize = sectionSet ? 1000 : pageSize;
+      var from = filteredRecords === 0 ? 0 : page * effectivePageSize + 1;
+      var to = Math.min((page + 1) * effectivePageSize, filteredRecords);
       $('#auditTableInfo').text(from + '–' + to + ' of ' + filteredRecords.toLocaleString());
-      $('#auditPageNum').text('Page ' + (page + 1) + ' of ' + (Math.ceil(filteredRecords / pageSize) || 1));
+      $('#auditPageNum').text('Page ' + (page + 1) + ' of ' + (Math.ceil(filteredRecords / effectivePageSize) || 1));
       $('#auditPrevPage').prop('disabled', page === 0);
-      $('#auditNextPage').prop('disabled', (page + 1) * pageSize >= filteredRecords);
+      $('#auditNextPage').prop('disabled', (page + 1) * effectivePageSize >= filteredRecords);
     }).fail(function() {
       $('#auditTableInfo').text('Error loading data');
     }).always(function() {
@@ -463,7 +468,11 @@
       loadTable();
     });
     $('#auditPrevPage').on('click', function() { if (page > 0) { page--; loadTable(); } });
-    $('#auditNextPage').on('click', function() { if ((page + 1) * pageSize < filteredRecords) { page++; loadTable(); } });
+    $('#auditNextPage').on('click', function() {
+      var sectionSet = ($('select[name="aggregate"]').val() || '').toString().trim() !== '';
+      var eff = sectionSet ? 1000 : pageSize;
+      if ((page + 1) * eff < filteredRecords) { page++; loadTable(); }
+    });
     $(document).on('click', '.audit-sort', function() {
       var col = parseInt($(this).data('col'), 10);
       if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
@@ -475,8 +484,20 @@
       if ($('#print').val() == '1') return;
       e.preventDefault();
       page = 0;
+      if (($('select[name="aggregate"]').val() || '').toString().trim() !== '') {
+        $('#auditPageSize').val(1000);
+        pageSize = 1000;
+      }
       loadTable();
       return false;
+    });
+    $('select[name="aggregate"]').on('change', function() {
+      if (($(this).val() || '').toString().trim() !== '') {
+        $('#auditPageSize').val(1000);
+        pageSize = 1000;
+        page = 0;
+        loadTable();
+      }
     });
     loadTable();
     // Export PDF: submit search form with current filters so PDF uses same filters as table
