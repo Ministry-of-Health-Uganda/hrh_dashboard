@@ -67,25 +67,7 @@
 		<small class="form-text text-muted">Leave empty for all.</small>
 	</div>
 
-	<!-- 5. Facility Level: multiple -->
-	<div class="form-group col-md-3">
-		<label>Facility Level</label>
-		<select class="select form-control select2" name="facility_type[]" id="filterFacilityLevel" multiple="multiple" data-placeholder="All facility levels">
-			<?php
-			$selectedLevels = empty($search->facility_type) ? array() : (is_array($search->facility_type) ? $search->facility_type : array($search->facility_type));
-			$levelOptions = isset($facility_levels_for_chain) ? $facility_levels_for_chain : array();
-			foreach ($levelOptions as $facilityType):
-				$ft = isset($facilityType->facility_type) ? $facilityType->facility_type : (isset($facilityType->facility_type_name) ? $facilityType->facility_type_name : '');
-				if (empty($ft)) continue;
-				$selected = in_array($ft, $selectedLevels) ? 'selected' : '';
-			?>
-				<option <?php echo $selected ?> value="<?php echo htmlspecialchars($ft); ?>"><?php echo htmlspecialchars($ft); ?></option>
-			<?php endforeach; ?>
-		</select>
-		<small class="form-text text-muted">Leave empty for all.</small>
-	</div>
-
-	<!-- 6. Facility: multiple -->
+	<!-- 5. Facility: multiple -->
 	<div class="form-group col-md-3">
 		<label>Facility</label>
 		<select class="select form-control select2" name="facility[]" id="filterFacility" multiple="multiple" data-placeholder="All facilities">
@@ -98,6 +80,24 @@
 				$selected = in_array($fname, $selectedFacilities) ? 'selected' : '';
 			?>
 				<option <?php echo $selected ?> value="<?php echo htmlspecialchars($fname); ?>"><?php echo htmlspecialchars($fname); ?></option>
+			<?php endforeach; ?>
+		</select>
+		<small class="form-text text-muted">Leave empty for all.</small>
+	</div>
+
+	<!-- 6. Facility Level: multiple -->
+	<div class="form-group col-md-3">
+		<label>Facility Level</label>
+		<select class="select form-control select2" name="facility_type[]" id="filterFacilityLevel" multiple="multiple" data-placeholder="All facility levels">
+			<?php
+			$selectedLevels = empty($search->facility_type) ? array() : (is_array($search->facility_type) ? $search->facility_type : array($search->facility_type));
+			$levelOptions = isset($facility_levels_for_chain) ? $facility_levels_for_chain : array();
+			foreach ($levelOptions as $facilityType):
+				$ft = isset($facilityType->facility_type) ? $facilityType->facility_type : (isset($facilityType->facility_type_name) ? $facilityType->facility_type_name : '');
+				if (empty($ft)) continue;
+				$selected = in_array($ft, $selectedLevels) ? 'selected' : '';
+			?>
+				<option <?php echo $selected ?> value="<?php echo htmlspecialchars($ft); ?>"><?php echo htmlspecialchars($ft); ?></option>
 			<?php endforeach; ?>
 		</select>
 		<small class="form-text text-muted">Leave empty for all.</small>
@@ -238,7 +238,7 @@
 function resetFilters() {
 	var $form = $('.searchForm');
 	if ($form.length) $form[0].reset();
-	var ids = ['filterInstitutionType','filterRegion','filterDistrict','filterFacilityLevel','filterFacility','filterJobCadre','filterJobCategory','filterJobClassification','filterJobName'];
+	var ids = ['filterInstitutionType','filterRegion','filterDistrict','filterFacility','filterFacilityLevel','filterJobCadre','filterJobCategory','filterJobClassification','filterJobName'];
 	$.each(ids, function(i, id) {
 		var $s = $('#' + id);
 		if ($s.length) $s.val(null).trigger('change.select2');

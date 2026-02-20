@@ -480,9 +480,9 @@ class Audit extends MX_Controller {
 		switch ($level) {
 			case 'institution_type': $result = $this->DataPrep_mdl->getInstitutionTypesForChain($ownership); break;
 			case 'region_name': $result = $this->DataPrep_mdl->getRegionsForChain(); break;
-			case 'district': $result = empty($regions) ? array() : $this->DataPrep_mdl->getDistrictsForChain('', array(), $regions); break;
+			case 'district': $result = $this->DataPrep_mdl->getDistrictsForChain('', array(), $regions); break;
 			case 'facility_level': $result = empty($regions) ? array() : $this->DataPrep_mdl->getFacilityLevelsForChain('', array(), $regions, $districts); break;
-			case 'facility': $result = empty($regions) ? array() : $this->DataPrep_mdl->getFacilitiesForChain('', array(), $regions, $districts, $levels); break;
+			case 'facility': $result = $this->DataPrep_mdl->getFacilitiesForChain('', array(), $regions, $districts, $levels); break;
 			case 'cadre': $result = empty($regions) ? array() : $this->DataPrep_mdl->getJobCadresForChain('', array(), $regions, $districts, $levels, $facilities); break;
 			case 'job_category': $result = empty($regions) ? array() : $this->DataPrep_mdl->getJobCategoriesForChain('', array(), $regions, $districts, $levels, $facilities, $cadres); break;
 			case 'job_classification': $result = empty($regions) ? array() : $this->DataPrep_mdl->getJobClassificationsForChain('', array(), $regions, $districts, $levels, $facilities, $cadres, $job_cats); break;
