@@ -19,9 +19,10 @@ class Audit_mdl extends CI_Model
 			$table = "quarterly_national_jobs";
 		}
 		
-		$aggregation = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
-		$aggregation2 = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
-		$groupByCols = $aggregation2 ? array($aggregation, $aggregation2) : array($aggregation);
+		// Side (rows) = default Job; top (section) = optional. When no section, single table by rows only.
+		$aggregation  = (!empty($search->aggregate)) ? $search->aggregate : null;
+		$aggregation2 = (!empty($search->aggregate2)) ? $search->aggregate2 : 'job_name';
+		$groupByCols  = $aggregation ? array($aggregation, $aggregation2) : array($aggregation2);
 		
 		if ($serverSide) {
 			// Build base query for total count
@@ -132,9 +133,9 @@ class Audit_mdl extends CI_Model
 			
 			$this->db->group_by($groupByCols);
 			
-			// Apply ordering: value1 then value2
-			$this->db->order_by($aggregation, 'asc');
-			if ($aggregation2) $this->db->order_by($aggregation2, 'asc');
+			// Apply ordering: section then rows (when section present)
+			if ($aggregation) $this->db->order_by($aggregation, 'asc');
+			$this->db->order_by($aggregation2, 'asc');
 			$colMap = array_values(array_filter(array($aggregation, $aggregation2, 'salary_scale', 'approved', 'filled', 'vacant', 'excess', 'male', 'female'), function($c) { return $c !== null && $c !== ''; }));
 			if (isset($colMap[$orderColumn])) {
 				$this->db->order_by($colMap[$orderColumn], $orderDir);
@@ -184,8 +185,8 @@ class Audit_mdl extends CI_Model
 				sum(excess) as excess,
 				sum(vacant) as vacant
 				");
-			$this->db->order_by($aggregation, 'asc');
-			if ($aggregation2) $this->db->order_by($aggregation2, 'asc');
+			if ($aggregation) $this->db->order_by($aggregation, 'asc');
+			$this->db->order_by($aggregation2, 'asc');
 			$this->db->group_by($groupByCols);
 			return $this->db->get($table)->result();
 		}
@@ -319,9 +320,9 @@ class Audit_mdl extends CI_Model
 		if (!empty($_SESSION['institution_type']) && !empty($_GET['display']) && $_GET['display'] == 'ihris') $limitedBy[] = 'Institution Type (' . $_SESSION['institution_type'] . ')';
 
 		$limitedStr = count($limitedBy) ? implode('; ', $limitedBy) : 'None';
-		$aggLabel = $this->getAggregateLabel(isset($search->aggregate) ? $search->aggregate : 'job_name');
-		$agg2Label = !empty($search->aggregate2) ? $this->getAggregateLabel($search->aggregate2) : '';
-		$aggStr = $agg2Label ? 'Section by: ' . $aggLabel . '. Rows by: ' . $agg2Label . '.' : 'Section by: ' . $aggLabel . '.';
+		$rowsLabel = $this->getAggregateLabel(!empty($search->aggregate2) ? $search->aggregate2 : 'job_name');
+		$sectionLabel = !empty($search->aggregate) ? $this->getAggregateLabel($search->aggregate) : '';
+		$aggStr = $sectionLabel ? 'Section by: ' . $sectionLabel . '. Rows by: ' . $rowsLabel . '.' : 'Rows by: ' . $rowsLabel . '.';
 		return 'Limited by: ' . $limitedStr . '. ' . $aggStr;
 	}
 

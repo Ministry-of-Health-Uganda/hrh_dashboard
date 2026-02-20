@@ -180,10 +180,10 @@
         <option value="500">500</option>
       </select>
       <span class="ml-2 mr-3">per page</span>
-      <form id="auditExportForm" method="post" action="<?php echo base_url('audit/auditReportExcel'); ?>" target="_blank" class="d-inline">
+      <form id="auditExportForm" method="post" action="<?php echo base_url('audit/auditReportExcel'); ?>" class="d-inline">
         <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-file-excel mr-1"></i> Export to Excel</button>
       </form>
-      <form id="auditExportWordForm" method="post" action="<?php echo base_url('audit/auditReportWord'); ?>" target="_blank" class="d-inline ml-2">
+      <form id="auditExportWordForm" method="post" action="<?php echo base_url('audit/auditReportWord'); ?>" class="d-inline ml-2">
         <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-file-word mr-1"></i> Export to Word</button>
       </form>
       <button type="button" id="auditExportPdf" class="btn btn-sm btn-danger ml-2" data-report-url="<?php echo htmlspecialchars(base_url('audit/auditReport')); ?>"><i class="fas fa-file-pdf mr-1"></i> Export PDF</button>
@@ -198,8 +198,9 @@
       </div>
     </div>
     <?php
-      $hasAggregate2 = !empty($search->aggregate2);
-      $showSalaryScaleCol = ($search->aggregate == 'job_name' || $search->aggregate == '');
+      $hasAggregate2 = !empty($search->aggregate); // multiple tables when Section by (top) is set
+      $rowsCol = !empty($search->aggregate2) ? $search->aggregate2 : 'job_name';
+      $showSalaryScaleCol = ($rowsCol === 'job_name');
       $sideLabel = isset($aggTitle2) ? $aggTitle2 : 'Job';
     ?>
     <div id="auditReportWrapper">
@@ -361,7 +362,15 @@
         $('#totalMalePct').text(json.totals.malePct + '%');
         $('#totalFemalePct').text(json.totals.femalePct + '%');
       }
-      if (hasAggregate2 && (json.data || []).length) {
+      // Use current form selection: Section by (top) set = multiple tables (one per section value)
+      var sectionVal = $('select[name="aggregate"]').val();
+      var useMultiTable = (sectionVal !== undefined && sectionVal !== null && String(sectionVal).trim() !== '');
+      var rowsVal = $('select[name="aggregate2"]').val();
+      var showSalary = (rowsVal === 'job_name' || rowsVal === '' || rowsVal === undefined);
+      var sideLbl = sideLabel;
+      var $agg2Sel = $('select[name="aggregate2"] option:selected');
+      if ($agg2Sel.length && $agg2Sel.text()) sideLbl = $agg2Sel.text();
+      if (useMultiTable && (json.data || []).length) {
         $('#auditReportSingleTable').hide();
         var $multi = $('#auditReportMultiTables').empty().show();
         var groups = {};
@@ -370,9 +379,24 @@
           if (!groups[key]) groups[key] = [];
           groups[key].push(row);
         });
-        var headerRow = '<tr><th>' + escapeHtml(sideLabel) + '</th>' + (showSalaryScaleCol ? '<th>Salary Scale</th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr>';
-        $.each(groups, function(sectionVal, rows) {
-          $multi.append('<div class="audit-section mb-4"><h5 class="audit-section-heading font-weight-bold mb-2">' + escapeHtml(sectionVal) + '</h5></div>');
+        var dataOffset = showSalary ? 3 : 2; // first numeric column index (approved)
+        var headerRow = '<tr><th>' + escapeHtml(sideLbl) + '</th>' + (showSalary ? '<th>Salary Scale</th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr>';
+        $.each(groups, function(sectionName, rows) {
+          var sub = { approved: 0, filled: 0, vacant: 0, excess: 0, male: 0, female: 0 };
+          $.each(rows, function(j, row) {
+            sub.approved += parseFloat(row[dataOffset]) || 0;
+            sub.filled   += parseFloat(row[dataOffset + 1]) || 0;
+            sub.vacant   += parseFloat(row[dataOffset + 2]) || 0;
+            sub.excess   += parseFloat(row[dataOffset + 3]) || 0;
+            sub.male     += parseFloat(row[dataOffset + 4]) || 0;
+            sub.female   += parseFloat(row[dataOffset + 5]) || 0;
+          });
+          var subFilledPct = sub.approved > 0 ? (100 * sub.filled / sub.approved).toFixed(1) : 0;
+          var subVacantPct = sub.approved > 0 ? (100 * sub.vacant / sub.approved).toFixed(1) : 0;
+          var subMalePct   = sub.filled > 0 ? (100 * sub.male / sub.filled).toFixed(1) : 0;
+          var subFemalePct = sub.filled > 0 ? (100 * sub.female / sub.filled).toFixed(1) : 0;
+          var subRow = '<tr class="table-secondary font-weight-bold"><th>Subtotal</th>' + (showSalary ? '<th></th>' : '') + '<th>' + sub.approved + '</th><th>' + sub.filled + '</th><th>' + sub.vacant + '</th><th>' + sub.excess + '</th><th>' + sub.male + '</th><th>' + sub.female + '</th><th>' + subFilledPct + '%</th><th>' + subVacantPct + '%</th><th>' + subMalePct + '%</th><th>' + subFemalePct + '%</th></tr>';
+          $multi.append('<div class="audit-section mb-4"><h5 class="audit-section-heading font-weight-bold mb-2">' + escapeHtml(sectionName) + '</h5></div>');
           var $last = $multi.children('.audit-section').last();
           var tbl = '<table class="table table-striped table-bordered table-sm audit-table" style="width:100%"><thead>' + headerRow + '</thead><tbody>';
           $.each(rows, function(j, row) {
@@ -381,13 +405,13 @@
             for (var c = 2; c < row.length; c++) tbl += '<td>' + (row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : '') + '</td>';
             tbl += '</tr>';
           });
-          tbl += '</tbody></table>';
+          tbl += '</tbody><tfoot>' + subRow + '</tfoot></table>';
           $last.append(tbl);
         });
         if (json.totals) {
           var t = json.totals;
-          var totRow = '<tr><th>TOTALS</th>' + (showSalaryScaleCol ? '<th></th>' : '') + '<th>' + (t.totalApproved || 0) + '</th><th>' + (t.totalFilled || 0) + '</th><th>' + (t.totalVacant || 0) + '</th><th>' + (t.totalExcess || 0) + '</th><th>' + (t.totalMale || 0) + '</th><th>' + (t.totalFemale || 0) + '</th><th>' + (t.filledPct || 0) + '%</th><th>' + (t.vacantPct || 0) + '%</th><th>' + (t.malePct || 0) + '%</th><th>' + (t.femalePct || 0) + '%</th></tr>';
-          $multi.append('<div class="audit-section mt-2"><table class="table table-bordered table-sm"><thead><tr><th>TOTALS</th>' + (showSalaryScaleCol ? '<th></th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody>' + totRow + '</tbody></table></div>');
+          var totRow = '<tr><th>TOTALS</th>' + (showSalary ? '<th></th>' : '') + '<th>' + (t.totalApproved || 0) + '</th><th>' + (t.totalFilled || 0) + '</th><th>' + (t.totalVacant || 0) + '</th><th>' + (t.totalExcess || 0) + '</th><th>' + (t.totalMale || 0) + '</th><th>' + (t.totalFemale || 0) + '</th><th>' + (t.filledPct || 0) + '%</th><th>' + (t.vacantPct || 0) + '%</th><th>' + (t.malePct || 0) + '%</th><th>' + (t.femalePct || 0) + '%</th></tr>';
+          $multi.append('<div class="audit-section mt-2"><table class="table table-bordered table-sm"><thead><tr><th>TOTALS</th>' + (showSalary ? '<th></th>' : '') + '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody>' + totRow + '</tbody></table></div>');
         }
       } else {
         $('#auditReportMultiTables').hide().empty();

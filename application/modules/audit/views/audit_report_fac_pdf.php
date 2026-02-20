@@ -81,7 +81,7 @@ table tr:nth-child(even){
 
   <table>
       <tr>
-        <td><img src="<?php echo base_url(); ?>assets/images/MOH.png" width="80px" /></td>
+        <td><img src="<?php echo base_url(); ?>assets/images/MOH.png" width="48" height="48" style="width:48px; height:48px; object-fit:contain;" alt="Logo" /></td>
         <td>
             <br/>
             <h2> Staff Audit Report</h2>

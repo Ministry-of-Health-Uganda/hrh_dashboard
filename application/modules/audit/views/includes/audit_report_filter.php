@@ -175,33 +175,38 @@
 		<small class="form-text text-muted">Leave empty for all.</small>
 	</div>
 
+	<!-- 1st: Rows by (side) – default Job -->
 	<div class="form-group col-md-2">
-		<label>Section by (top – one table per value)</label>
-		<select class="select form-control" name="aggregate">
-			<option value="job_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'job_name') ? 'selected' : ''; ?>>Job</option>
-			<option value="institution_type" <?php echo (isset($search->aggregate) && $search->aggregate == 'institution_type') ? 'selected' : ''; ?>>Institution Type</option>
-			<option value="district_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'district_name') ? 'selected' : ''; ?>>District</option>
-			<option value="facility_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'facility_name') ? 'selected' : ''; ?>>Facility</option>
-			<option value="facility_type_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'facility_type_name') ? 'selected' : ''; ?>>Facility Type</option>
-			<option value="cadre_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'cadre_name') ? 'selected' : ''; ?>>Cadre</option>
-			<option value="job_classification" <?php echo (isset($search->aggregate) && $search->aggregate == 'job_classification') ? 'selected' : ''; ?>>Classification</option>
-			<option value="region_name" <?php echo (isset($search->aggregate) && $search->aggregate == 'region_name') ? 'selected' : ''; ?>>Region</option>
-		</select>
-		<small class="form-text text-muted">Default: Job (single table).</small>
-	</div>
-	<div class="form-group col-md-2">
-		<label>Rows by (side – default Job)</label>
+		<label>Rows (side – default Job)</label>
 		<select class="select form-control" name="aggregate2">
-			<option value="">None</option>
-			<option value="job_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'job_name') ? 'selected' : ''; ?>>Job</option>
-			<option value="institution_type" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'institution_type') ? 'selected' : ''; ?>>Institution Type</option>
-			<option value="district_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'district_name') ? 'selected' : ''; ?>>District</option>
-			<option value="facility_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'facility_name') ? 'selected' : ''; ?>>Facility</option>
-			<option value="facility_type_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'facility_type_name') ? 'selected' : ''; ?>>Facility Type</option>
-			<option value="cadre_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'cadre_name') ? 'selected' : ''; ?>>Cadre</option>
-			<option value="job_classification" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'job_classification') ? 'selected' : ''; ?>>Classification</option>
-			<option value="region_name" <?php echo (isset($search->aggregate2) && $search->aggregate2 == 'region_name') ? 'selected' : ''; ?>>Region</option>
+			<?php $sel2 = isset($search->aggregate2) ? $search->aggregate2 : 'job_name'; ?>
+			<option value="job_name" <?php echo ($sel2 === 'job_name') ? 'selected' : ''; ?>>Job</option>
+			<option value="institution_type" <?php echo ($sel2 === 'institution_type') ? 'selected' : ''; ?>>Institution Type</option>
+			<option value="district_name" <?php echo ($sel2 === 'district_name') ? 'selected' : ''; ?>>District</option>
+			<option value="facility_name" <?php echo ($sel2 === 'facility_name') ? 'selected' : ''; ?>>Facility</option>
+			<option value="facility_type_name" <?php echo ($sel2 === 'facility_type_name') ? 'selected' : ''; ?>>Facility Type</option>
+			<option value="cadre_name" <?php echo ($sel2 === 'cadre_name') ? 'selected' : ''; ?>>Cadre</option>
+			<option value="job_classification" <?php echo ($sel2 === 'job_classification') ? 'selected' : ''; ?>>Classification</option>
+			<option value="region_name" <?php echo ($sel2 === 'region_name') ? 'selected' : ''; ?>>Region</option>
 		</select>
+		<small class="form-text text-muted">1st: table rows (default Job).</small>
+	</div>
+	<!-- 2nd: Section by (top) – optional, one table per value -->
+	<div class="form-group col-md-2">
+		<label>Section (top - optional)</label>
+		<select class="select form-control" name="aggregate" id="filterAggregate">
+			<?php $aggVal = (isset($search->aggregate) && $search->aggregate !== '' && $search->aggregate !== 'job_name') ? $search->aggregate : ''; ?>
+			<option value="" <?php echo ($aggVal === '') ? 'selected' : ''; ?>>None (single table)</option>
+			<option value="job_name" disabled="disabled">Job</option>
+			<option value="institution_type" <?php echo ($aggVal === 'institution_type') ? 'selected' : ''; ?>>Institution Type</option>
+			<option value="district_name" <?php echo ($aggVal === 'district_name') ? 'selected' : ''; ?>>District</option>
+			<option value="facility_name" id="aggregateOptFacility" <?php echo ($aggVal === 'facility_name') ? 'selected' : ''; ?>>Facility</option>
+			<option value="facility_type_name" <?php echo ($aggVal === 'facility_type_name') ? 'selected' : ''; ?>>Facility Type</option>
+			<option value="cadre_name" <?php echo ($aggVal === 'cadre_name') ? 'selected' : ''; ?>>Cadre</option>
+			<option value="job_classification" <?php echo ($aggVal === 'job_classification') ? 'selected' : ''; ?>>Classification</option>
+			<option value="region_name" <?php echo ($aggVal === 'region_name') ? 'selected' : ''; ?>>Region</option>
+		</select>
+		<small class="form-text text-muted">2nd: optional – one table per value. Facility requires District selected.</small>
 	</div>
 		<div class="form-group col-md-2">
 		<label>Month Year</label>
@@ -243,10 +248,32 @@ function resetFilters() {
 		if ($s.length) $s.val(null).trigger('change.select2');
 	});
 	$('.select2').val(null).trigger('change');
+	updateSectionFacilityOption();
 	if (typeof $.fn.DataTable !== 'undefined' && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('.audit-table')) {
 		$('.audit-table').DataTable().ajax.reload();
 	} else if ($form.length) {
 		$form.submit();
 	}
 }
+
+/** Enable Facility in Section (top) only when at least one district is selected. */
+function updateSectionFacilityOption() {
+	var districtVal = $('#filterDistrict').val();
+	var hasDistrict = districtVal && (Array.isArray(districtVal) ? districtVal.length > 0 : true);
+	var $agg = $('#filterAggregate');
+	var $opt = $agg.find('option[value="facility_name"]');
+	if ($opt.length) {
+		if (hasDistrict) {
+			$opt.prop('disabled', false);
+		} else {
+			$opt.prop('disabled', true);
+			if ($agg.val() === 'facility_name') $agg.val('').trigger('change');
+		}
+	}
+}
+
+$(function() {
+	updateSectionFacilityOption();
+	$('#filterDistrict').on('change', updateSectionFacilityOption);
+});
 </script>

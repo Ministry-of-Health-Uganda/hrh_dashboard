@@ -28,8 +28,8 @@ body {
 }
 p { margin: 0 0 0.15em 0; }
 .logo-cell img {
-  width: 80px;
-  height: 80px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
 }
 table.items {
@@ -73,7 +73,7 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
 
   <table class="header-table">
     <tr>
-      <td class="logo-cell" style="width:90px;"><img src="<?php echo base_url(); ?>assets/images/MOH.png" width="80" height="80" alt="Logo" /></td>
+      <td class="logo-cell" style="width:44px;"><img src="<?php echo base_url(); ?>assets/images/MOH.png" width="36" height="36" alt="Logo" /></td>
       <td>
         <h2>Staff Audit Report</h2>
         <?php if (!empty($legend)): ?>
@@ -84,7 +84,7 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
   </table>
   <hr style="margin: 4px 0;" />
 
-  <?php $hasAgg2 = !empty($search->aggregate2) && !empty($aggColumn2);
+  <?php $hasAgg2 = !empty($search->aggregate);
         $totalApproved = 0; $totalFilled = 0; $totalVacant = 0; $totalExcess = 0; $totalMales = 0; $totalFemales = 0;
         if ($hasAgg2):
           $groups = array();
@@ -95,9 +95,10 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
           }
           $sideLabel = isset($aggTitle2) ? $aggTitle2 : 'Job';
           foreach ($groups as $sectionVal => $rows):
+            $subApproved = 0; $subFilled = 0; $subVacant = 0; $subExcess = 0; $subMales = 0; $subFemales = 0;
             echo '<p style="font-weight:bold; margin-top:0.5em; font-size:7pt;">' . htmlspecialchars($sectionVal) . '</p>';
             echo '<table class="items" style="margin-bottom:0.5em;"><thead><tr><th style="width:14%;">' . htmlspecialchars($sideLabel) . '</th>';
-            if ($search->aggregate == 'job_name') echo '<th style="width:5%;">Salary</th>';
+            if (!empty($showSalaryScale)) echo '<th style="width:5%;">Salary</th>';
             echo '<th style="width:4%;">Appr</th><th style="width:4%;">Fill</th><th style="width:4%;">Vac</th><th style="width:4%;">Exc</th><th style="width:4%;">M</th><th style="width:4%;">F</th><th style="width:4%;">Fill%</th><th style="width:4%;">Vac%</th><th style="width:4%;">M%</th><th style="width:4%;">F%</th></tr></thead><tbody>';
             foreach ($rows as $row):
               $structure = $row->approved;
@@ -108,18 +109,25 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
               $female = ($structure > 0 && $row->filled > 0) ? ($row->female/$row->filled)*100 : 0;
               $vacant = ($structure > 0) ? ($vacantPosts/$structure)*100 : 0;
               $filled = ($structure > 0) ? ($row->filled/$structure)*100 : 0;
+              $subApproved += $structure; $subFilled += $row->filled; $subVacant += $vacantPosts; $subExcess += $excessPosts; $subMales += $row->male; $subFemales += $row->female;
               $totalApproved += $structure; $totalFilled += $row->filled; $totalVacant += $vacantPosts; $totalExcess += $excessPosts; $totalFemales += $row->female; $totalMales += $row->male;
               echo '<tr><td>' . htmlspecialchars($row->$aggColumn2) . '</td>';
-              if ($search->aggregate == 'job_name') echo '<td>' . htmlspecialchars($row->salary_scale) . '</td>';
+              if (!empty($showSalaryScale)) echo '<td>' . htmlspecialchars($row->salary_scale) . '</td>';
               echo '<td>' . $row->approved . '</td><td>' . $row->filled . '</td><td>' . $vacantPosts . '</td><td>' . $excessPosts . '</td><td>' . $row->male . '</td><td>' . $row->female . '</td>';
               echo '<td class="text-bold">' . (($filled>0)?number_format($filled,1):0) . '%</td><td class="text-bold">' . (($vacant>0)?number_format($vacant,1):0) . '%</td><td class="text-bold">' . (($male>0)?number_format($male,1):0) . '%</td><td class="text-bold">' . (($female>0)?number_format($female,1):0) . '%</td></tr>';
             endforeach;
-            echo '</tbody></table>';
+            $subFilledPct = $subApproved > 0 ? number_format(($subFilled/$subApproved)*100, 1) : 0;
+            $subVacantPct = $subApproved > 0 ? number_format(($subVacant/$subApproved)*100, 1) : 0;
+            $subMalePct = $subFilled > 0 ? number_format(($subMales/$subFilled)*100, 1) : 0;
+            $subFemalePct = $subFilled > 0 ? number_format(($subFemales/$subFilled)*100, 1) : 0;
+            echo '</tbody><tfoot><tr style="background-color:#e0e0e0; font-weight:bold;"><th>Subtotal</th>';
+            if (!empty($showSalaryScale)) echo '<th></th>';
+            echo '<th>' . $subApproved . '</th><th>' . $subFilled . '</th><th>' . $subVacant . '</th><th>' . $subExcess . '</th><th>' . $subMales . '</th><th>' . $subFemales . '</th><th>' . $subFilledPct . '%</th><th>' . $subVacantPct . '%</th><th>' . $subMalePct . '%</th><th>' . $subFemalePct . '%</th></tr></tfoot></table>';
           endforeach;
           echo '<table class="items" style="margin-top:0.5em;"><thead><tr><th>TOTALS</th>';
-          if ($search->aggregate == 'job_name') echo '<th></th>';
+          if (!empty($showSalaryScale)) echo '<th></th>';
           echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody><tr><th>TOTALS</th>';
-          if ($search->aggregate == 'job_name') echo '<th></th>';
+          if (!empty($showSalaryScale)) echo '<th></th>';
           echo '<th>' . $totalApproved . '</th><th>' . $totalFilled . '</th><th>' . $totalVacant . '</th><th>' . $totalExcess . '</th><th>' . $totalMales . '</th><th>' . $totalFemales . '</th>';
           echo '<th>' . ($totalApproved > 0 ? number_format(($totalFilled/$totalApproved)*100,1) : 0) . '%</th><th>' . ($totalApproved > 0 ? number_format(($totalVacant/$totalApproved)*100,1) : 0) . '%</th>';
           echo '<th>' . ($totalFilled > 0 ? number_format(($totalMales/$totalFilled)*100,1) : 0) . '%</th><th>' . ($totalFilled > 0 ? number_format(($totalFemales/$totalFilled)*100,1) : 0) . '%</th></tr></tbody></table>';
@@ -128,7 +136,7 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
     <thead>
       <tr>
         <th style="width:14%; text-transform: capitalize;"><?php echo $aggTitle; ?></th>
-        <?php if ($search->aggregate == 'job_name') { ?><th style="width:5%;">Salary</th><?php } ?>
+        <?php if (!empty($showSalaryScale)) { ?><th style="width:5%;">Salary</th><?php } ?>
         <th style="width:4%;">Appr</th>
         <th style="width:4%;">Fill</th>
         <th style="width:4%;">Vac</th>
@@ -160,7 +168,7 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
       ?>
         <tr>
           <td><?php echo $row->$aggColumn; ?></td>
-          <?php if ($search->aggregate == 'job_name') { ?><td><?php echo $row->salary_scale; ?></td><?php } ?>
+          <?php if (!empty($showSalaryScale)) { ?><td><?php echo $row->salary_scale; ?></td><?php } ?>
           <td><?php echo $row->approved; ?></td>
           <td><?php echo $row->filled; ?></td>
           <td><?php echo $vacantPosts; ?></td>
@@ -177,7 +185,7 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
     <tfoot>
       <tr>
         <th>TOTALS</th>
-        <?php if ($search->aggregate == 'job_name') { ?><th></th><?php } ?>
+        <?php if (!empty($showSalaryScale)) { ?><th></th><?php } ?>
         <th><?php echo $totalApproved; ?></th>
         <th><?php echo $totalFilled; ?></th>
         <th><?php echo $totalVacant; ?></th>

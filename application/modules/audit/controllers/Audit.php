@@ -31,6 +31,28 @@ class Audit extends MX_Controller {
 	}
 
 	/**
+	 * Resolve aggregation columns for audit report: side (rows) defaults to Job and is first; top (section) is optional.
+	 * Returns array('aggColumn','aggTitle','aggColumn2','aggTitle2','showSalaryScale').
+	 */
+	private function _auditReportAggregation($search) {
+		$rowsCol   = !empty($search->aggregate2) ? $search->aggregate2 : 'job_name';
+		$sectionCol = !empty($search->aggregate) ? $search->aggregate : null;
+		if ($sectionCol) {
+			$aggColumn  = $sectionCol;
+			$aggTitle   = $this->auditMdl->getAggregateLabel($sectionCol);
+			$aggColumn2 = $rowsCol;
+			$aggTitle2  = $this->auditMdl->getAggregateLabel($rowsCol);
+		} else {
+			$aggColumn  = $rowsCol;
+			$aggTitle   = $this->auditMdl->getAggregateLabel($rowsCol);
+			$aggColumn2 = null;
+			$aggTitle2  = null;
+		}
+		$showSalaryScale = ($rowsCol === 'job_name');
+		return compact('aggColumn', 'aggTitle', 'aggColumn2', 'aggTitle2', 'showSalaryScale');
+	}
+
+	/**
 	 * Send CORS and embed headers so the audit view can be embedded in external systems and JS avoids CORS errors.
 	 * Call before any output. When $for_html is true, also allows framing (frame-ancestors *).
 	 */
@@ -73,13 +95,13 @@ class Audit extends MX_Controller {
 		$data['title']      = "Audit Report";
 		$data['uptitle']    = "HRH Audit Report";
 		$data['search']     = $search;
+		$agg = $this->_auditReportAggregation($search);
+		$data['aggTitle']   = $agg['aggTitle'];
+		$data['aggColumn']  = $agg['aggColumn'];
+		$data['aggTitle2']  = $agg['aggTitle2'];
+		$data['aggColumn2'] = $agg['aggColumn2'];
+		$data['showSalaryScale'] = $agg['showSalaryScale'];
 
-		$data['aggTitle']   = $this->auditMdl->getAggregateLabel(@$search->aggregate);
-		$data['aggColumn']  = (!empty($search->aggregate))?$search->aggregate:"job_name";
-		$data['aggTitle2']  = $this->auditMdl->getAggregateLabel(@$search->aggregate2);
-		$data['aggColumn2'] = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
-
-		
 		$data['filters'] = $this->DataPrep_mdl->getFilters(true);
 		// Unchained: each dropdown gets full list from national_jobs (no parent dependency)
 		$data['institution_types_for_chain'] = $this->DataPrep_mdl->getInstitutionTypesForChain('');
@@ -243,9 +265,11 @@ class Audit extends MX_Controller {
 		$totals = $this->auditMdl->getAuditReportTotals(FALSE);
 		
 		$search = (Object) $this->input->post();
-		$aggColumn = (!empty($search->aggregate)) ? $search->aggregate : "job_name";
-		$aggColumn2 = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
-		
+		$agg = $this->_auditReportAggregation($search);
+		$aggColumn = $agg['aggColumn'];
+		$aggColumn2 = $agg['aggColumn2'];
+		$showSalaryScale = $agg['showSalaryScale'];
+
 		$data = array();
 		foreach ($result['data'] as $row) {
 			$structure = $row->approved;
@@ -260,8 +284,8 @@ class Audit extends MX_Controller {
 			
 			$rowData = array($row->$aggColumn);
 			if ($aggColumn2) $rowData[] = $row->$aggColumn2;
+			if ($showSalaryScale) $rowData[] = $row->salary_scale;
 			$rowData = array_merge($rowData, array(
-				(($search->aggregate == 'job_name') || ($search->aggregate == '')) ? $row->salary_scale : '',
 				$row->approved,
 				$row->filled,
 				$vacantPosts,
@@ -290,85 +314,27 @@ class Audit extends MX_Controller {
 	}
 
 	/**
-	 * Export audit report to Excel (CSV). Uses same filters and excludes approved=0 and filled=0. Streams in chunks.
+	 * Export audit report to Excel (HTML as .xls). Formatted with logo, title, and modern tables. Opens in same window as download.
 	 */
 	public function auditReportExcel() {
 		$this->_setCorsAndEmbedHeaders(false);
+		Modules::run('dataprep/shareModel');
 		$search = (object) $this->input->post();
-		$aggColumn = (!empty($search->aggregate)) ? $search->aggregate : 'job_name';
-		$aggTitle = $this->auditMdl->getAggregateLabel(@$search->aggregate);
-		$aggColumn2 = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
-		$aggTitle2 = $aggColumn2 ? $this->auditMdl->getAggregateLabel($search->aggregate2) : '';
-		$showSalaryScale = ($search->aggregate == 'job_name' || $search->aggregate == '');
-		$legend = $this->auditMdl->auditReportLegend($search);
-		$filename = 'audit_report_' . date('Y-m-d_His') . '.csv';
-		header('Content-Type: text/csv; charset=UTF-8');
-		header('Content-Disposition: inline; filename="' . $filename . '"');
-		$out = fopen('php://output', 'w');
-		fprintf($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel
-		// Filters heading (bold when opened in Excel: user can format row 1)
-		fputcsv($out, array('Filters applied:'));
-		fputcsv($out, array($legend));
-		fputcsv($out, array());
-		$headers = array($aggTitle);
-		if ($aggColumn2) $headers[] = $aggTitle2;
-		$headers = array_merge($headers, array('Salary Scale', 'Approved', 'Filled', 'Vacant', 'Excess', 'Male', 'Female', 'Filled %', 'Vacant %', 'Male %', 'Female %'));
-		if (!$showSalaryScale) array_splice($headers, $aggColumn2 ? 2 : 1, 1);
-		fputcsv($out, $headers);
-		$pageSize = 5000;
-		$start = 0;
-		do {
-			$result = $this->auditMdl->getAuditReport(FALSE, true, $start, $pageSize, '', 0, 'asc');
-			foreach ($result['data'] as $row) {
-				$difference = $row->approved - $row->filled;
-				$vacantPosts = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference > 0) ? $difference : 0);
-				$excessPosts = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference < 0) ? $difference * -1 : 0);
-				$male = ($row->approved > 0 && $row->filled > 0) ? ($row->male / $row->filled) * 100 : 0;
-				$female = ($row->approved > 0 && $row->filled > 0) ? ($row->female / $row->filled) * 100 : 0;
-				$vacant = ($row->approved > 0) ? ($vacantPosts / $row->approved) * 100 : 0;
-				$filled = ($row->approved > 0) ? ($row->filled / $row->approved) * 100 : 0;
-				$r = array($row->$aggColumn);
-				if ($aggColumn2) $r[] = $row->$aggColumn2;
-				$r = array_merge($r, array(
-					$showSalaryScale ? $row->salary_scale : '',
-					$row->approved,
-					$row->filled,
-					$vacantPosts,
-					$excessPosts,
-					$row->male,
-					$row->female,
-					$filled > 0 ? number_format($filled, 1) . '%' : '0%',
-					$vacant > 0 ? number_format($vacant, 1) . '%' : '0%',
-					$male > 0 ? number_format($male, 1) . '%' : '0%',
-					$female > 0 ? number_format($female, 1) . '%' : '0%'
-				));
-				if (!$showSalaryScale) array_splice($r, $aggColumn2 ? 2 : 1, 1);
-				fputcsv($out, $r);
-			}
-			$start += $pageSize;
-			if (ob_get_level()) ob_flush();
-			flush();
-		} while (count($result['data']) == $pageSize);
-		// Always append summary totals row
-		$totals = $this->auditMdl->getAuditReportTotals(FALSE);
-		fputcsv($out, array());
-		$totalRow = array('TOTALS');
-		if ($aggColumn2) $totalRow[] = '';
-		if ($showSalaryScale) $totalRow[] = '';
-		$totalRow = array_merge($totalRow, array(
-			$totals['totalApproved'],
-			$totals['totalFilled'],
-			$totals['totalVacant'],
-			$totals['totalExcess'],
-			$totals['totalMale'],
-			$totals['totalFemale'],
-			$totals['filledPct'] . '%',
-			$totals['vacantPct'] . '%',
-			$totals['malePct'] . '%',
-			$totals['femalePct'] . '%'
-		));
-		fputcsv($out, $totalRow);
-		fclose($out);
+		$agg = $this->_auditReportAggregation($search);
+		$data['search'] = $search;
+		$data['aggColumn'] = $agg['aggColumn'];
+		$data['aggTitle'] = $agg['aggTitle'];
+		$data['aggColumn2'] = $agg['aggColumn2'];
+		$data['aggTitle2'] = $agg['aggTitle2'];
+		$data['showSalaryScale'] = $agg['showSalaryScale'];
+		$data['legend'] = $this->auditMdl->auditReportLegend($search);
+		$data['audit'] = $this->auditMdl->getAuditReport(FALSE);
+		$data['totals'] = $this->auditMdl->getAuditReportTotals(FALSE);
+		$filename = 'audit_report_' . date('Y-m-d_His') . '.xls';
+		header('Content-Type: application/vnd.ms-excel; charset=UTF-8');
+		header('Content-Disposition: attachment; filename="' . $filename . '"');
+		header('Cache-Control: private, max-age=0, must-revalidate');
+		echo $this->load->view('audit/audit_report_excel', $data, true);
 		exit;
 	}
 
@@ -380,16 +346,18 @@ class Audit extends MX_Controller {
 		Modules::run('dataprep/shareModel');
 		$search = (object) $this->input->post();
 		$data['search']     = $search;
-		$data['aggTitle']   = $this->auditMdl->getAggregateLabel(@$search->aggregate);
-		$data['aggColumn']  = (!empty($search->aggregate)) ? $search->aggregate : 'job_name';
-		$data['aggTitle2']  = $this->auditMdl->getAggregateLabel(@$search->aggregate2);
-		$data['aggColumn2'] = (!empty($search->aggregate2)) ? $search->aggregate2 : null;
+		$agg = $this->_auditReportAggregation($search);
+		$data['aggTitle']   = $agg['aggTitle'];
+		$data['aggColumn']  = $agg['aggColumn'];
+		$data['aggTitle2']  = $agg['aggTitle2'];
+		$data['aggColumn2'] = $agg['aggColumn2'];
+		$data['showSalaryScale'] = $agg['showSalaryScale'];
 		$data['audit']      = $this->auditMdl->getAuditReport(FALSE);
 		$data['legend']     = $this->auditMdl->auditReportLegend($search);
-		$html = $this->load->view('audit/audit_report_pdf', $data, true);
+		$html = $this->load->view('audit/audit_report_word', $data, true);
 		$filename = 'audit_report_' . date('Y-m-d_His') . '.doc';
 		header('Content-Type: application/msword');
-		header('Content-Disposition: inline; filename="' . $filename . '"');
+		header('Content-Disposition: attachment; filename="' . $filename . '"');
 		header('Cache-Control: private, max-age=0, must-revalidate');
 		echo $html;
 		exit;
