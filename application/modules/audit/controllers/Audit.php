@@ -318,7 +318,7 @@ class Audit extends MX_Controller {
 	}
 
 	/**
-	 * Export audit report to Excel (HTML as .xls). Formatted with logo, title, and modern tables. Opens in same window as download.
+	 * Export audit report to Excel (HTML as .htm). Formatted with logo, title, and modern tables. Opens in same window as download.
 	 */
 	public function auditReportExcel() {
 		$this->_setCorsAndEmbedHeaders(false);
@@ -334,7 +334,7 @@ class Audit extends MX_Controller {
 		$data['legend'] = $this->auditMdl->auditReportLegend($search);
 		$data['audit'] = $this->auditMdl->getAuditReport(FALSE);
 		$data['totals'] = $this->auditMdl->getAuditReportTotals(FALSE);
-		$filename = 'audit_report_' . date('Y-m-d_His') . '.xls';
+		$filename = 'audit_report_' . date('Y-m-d_His') . '.htm';
 		header('Content-Type: application/vnd.ms-excel; charset=UTF-8');
 		header('Content-Disposition: attachment; filename="' . $filename . '"');
 		header('Cache-Control: private, max-age=0, must-revalidate');

@@ -91,6 +91,13 @@
     font-weight: 700;
     text-align: center;
   }
+  /* Counter column: fixed width for up to 100000 */
+  #auditReportTable th:first-child, #auditReportTable td:first-child,
+  .audit-section table th:first-child, .audit-section table td:first-child {
+    width: 3.5em;
+    min-width: 3em;
+    max-width: 3.5em;
+  }
   .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(0,0,0,.02);
   }
@@ -209,7 +216,7 @@
         <table id="auditReportTable" class="table table-striped table-bordered table-hover audit-table" style="width:100%">
           <thead>
             <tr>
-              <th style="width:3%;">#</th>
+              <th>#</th>
               <th width="25%" class="audit-sort" data-col="0" style="cursor:pointer; text-transform: capitalize;" title="Sort"><?php echo $aggTitle; ?> <i class="fas fa-sort ml-1"></i></th>
               <?php if ($showSalaryScaleCol) { ?><th class="audit-sort" data-col="1" style="cursor:pointer" title="Sort">Salary Scale <i class="fas fa-sort ml-1"></i></th><?php } ?>
               <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? 2 : 1; ?>" style="cursor:pointer" title="Sort">Approved <i class="fas fa-sort ml-1"></i></th>

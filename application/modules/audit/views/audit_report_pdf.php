@@ -102,7 +102,7 @@ table tr:nth-child(even){
             $subApproved = 0; $subFilled = 0; $subVacant = 0; $subExcess = 0; $subMales = 0; $subFemales = 0;
             echo '<p style="font-weight:bold; margin-top:1em; font-size:9pt;">' . htmlspecialchars($sectionVal) . '</p>';
             echo '<table class="items" style="font-size:' . $tableFont . '; border-collapse: collapse; margin-bottom: 0.8em;" cellpadding="4" width="100%"><thead><tr>';
-            echo '<th>#</th><th width="25%" style="text-transform: capitalize;">' . htmlspecialchars($sideLabel) . '</th>';
+            echo '<th style="width:3.5em;">#</th><th width="25%" style="text-transform: capitalize;">' . htmlspecialchars($sideLabel) . '</th>';
             if (!empty($showSalaryScale)) echo '<th>Salary Scale</th>';
             echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody>';
             foreach ($rows as $idx => $row):
@@ -129,7 +129,7 @@ table tr:nth-child(even){
             if (!empty($showSalaryScale)) echo '<th></th>';
             echo '<th>' . $subApproved . '</th><th>' . $subFilled . '</th><th>' . $subVacant . '</th><th>' . $subExcess . '</th><th>' . $subMales . '</th><th>' . $subFemales . '</th><th>' . $subFilledPct . '%</th><th>' . $subVacantPct . '%</th><th>' . $subMalePct . '%</th><th>' . $subFemalePct . '%</th></tr></tfoot></table>';
           endforeach;
-          echo '<table class="items" style="font-size:' . $tableFont . '; border-collapse: collapse;" cellpadding="4" width="100%"><thead><tr><th>#</th><th>TOTALS</th>';
+          echo '<table class="items" style="font-size:' . $tableFont . '; border-collapse: collapse;" cellpadding="4" width="100%"><thead><tr><th style="width:3.5em;">#</th><th>TOTALS</th>';
           if (!empty($showSalaryScale)) echo '<th></th>';
           echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody><tr><th></th><th>TOTALS</th>';
           if (!empty($showSalaryScale)) echo '<th></th>';
@@ -140,7 +140,7 @@ table tr:nth-child(even){
   <table class="items" style="font-size: 8pt; border-collapse: collapse;" cellpadding="4" width="100%">
     <thead>
         <tr>
-            <th>#</th>
+            <th style="width:3.5em;">#</th>
             <th width="25%" style="text-transform: capitalize;"><?php echo $aggTitle; ?></th>
             <?php if (!empty($showSalaryScale)) { ?><th>Salary Scale</th><?php } ?>
             <th>Approved</th>
