@@ -277,7 +277,7 @@
               <?php if ($showSalaryScaleCol) { ?><th class="audit-sort" data-col="1" style="cursor:pointer" title="Sort">Salary Scale <i class="fas fa-sort ml-1"></i></th><?php } ?>
               <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? 2 : 1; ?>" style="cursor:pointer" title="Sort">Approved <i class="fas fa-sort ml-1"></i></th>
               <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? 3 : 2; ?>" style="cursor:pointer" title="Sort">Filled <i class="fas fa-sort ml-1"></i></th>
-              <th>Vacant</th>
+              <th class="audit-sort" data-col="<?php echo $showSalaryScaleCol ? 4 : 3; ?>" style="cursor:pointer" title="Sort">Vacant <i class="fas fa-sort ml-1"></i></th>
               <th>Excess</th>
               <th>Male</th>
               <th>Female</th>
@@ -330,7 +330,7 @@
   var colOffset = hasAggregate2 ? (showSalaryScaleCol ? 3 : 2) : (showSalaryScaleCol ? 2 : 1);
   var page = 0;
   var pageSize = 25;
-  var sortCol = colOffset;
+  var sortCol = 0;
   var sortDir = 'asc';
   var filteredRecords = 0;
   var draw = 0;

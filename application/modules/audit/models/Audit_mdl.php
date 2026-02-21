@@ -133,13 +133,13 @@ class Audit_mdl extends CI_Model
 			
 			$this->db->group_by($groupByCols);
 			
-			// Apply ordering: section then rows (when section present)
-			if ($aggregation) $this->db->order_by($aggregation, 'asc');
-			$this->db->order_by($aggregation2, 'asc');
+			// Apply ordering: user-selected column first, then section/rows as tie-breakers
 			$colMap = array_values(array_filter(array($aggregation, $aggregation2, 'salary_scale', 'approved', 'filled', 'vacant', 'excess', 'male', 'female'), function($c) { return $c !== null && $c !== ''; }));
 			if (isset($colMap[$orderColumn])) {
 				$this->db->order_by($colMap[$orderColumn], $orderDir);
 			}
+			if ($aggregation) $this->db->order_by($aggregation, 'asc');
+			$this->db->order_by($aggregation2, 'asc');
 			
 			// Apply pagination
 			if ($length > 0) {
