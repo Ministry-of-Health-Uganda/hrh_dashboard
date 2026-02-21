@@ -102,9 +102,8 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
             echo '<th style="width:4%;">Appr</th><th style="width:4%;">Fill</th><th style="width:4%;">Vac</th><th style="width:4%;">Exc</th><th style="width:4%;">M</th><th style="width:4%;">F</th><th style="width:4%;">Fill%</th><th style="width:4%;">Vac%</th><th style="width:4%;">M%</th><th style="width:4%;">F%</th></tr></thead><tbody>';
             foreach ($rows as $idx => $row):
               $structure = $row->approved;
-              $difference = $row->approved - $row->filled;
-              $vacantPosts = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
-              $excessPosts = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference<0) ? $difference * -1 : 0);
+              $vacantPosts = ($row->approved >= $row->filled) ? ((int)$row->approved - (int)$row->filled) : 0;
+              $excessPosts = ($row->filled > $row->approved) ? ((int)$row->filled - (int)$row->approved) : 0;
               $male = ($structure > 0 && $row->filled > 0) ? ($row->male/$row->filled)*100 : 0;
               $female = ($structure > 0 && $row->filled > 0) ? ($row->female/$row->filled)*100 : 0;
               $vacant = ($structure > 0) ? ($vacantPosts/$structure)*100 : 0;
@@ -152,9 +151,8 @@ h2 { margin: 0 0 0.15em 0; font-size: 10pt; }
     <tbody>
       <?php foreach ($audit as $row):
             $structure    = $row->approved;
-            $difference   = $row->approved - $row->filled;
-            $vacantPosts  = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
-            $excessPosts  = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference<0) ? $difference * -1 : 0);
+            $vacantPosts  = ($row->approved >= $row->filled) ? ((int)$row->approved - (int)$row->filled) : 0;
+            $excessPosts  = ($row->filled > $row->approved) ? ((int)$row->filled - (int)$row->approved) : 0;
             $male    = ($structure >0 && $row->filled > 0) ? ($row->male/$row->filled)* 100 : 0;
             $female  = ($structure >0 && $row->filled > 0) ? ($row->female/$row->filled) * 100 : 0;
             $vacant  = ($structure >0)?($vacantPosts/$structure) * 100:0;

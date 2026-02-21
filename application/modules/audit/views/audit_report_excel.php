@@ -50,9 +50,8 @@ if ($hasAgg2):
     $rowIndex = 0;
     foreach ($rows as $row):
       $structure = $row->approved;
-      $difference = $row->approved - $row->filled;
-      $vacantPosts = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
-      $excessPosts = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference<0) ? $difference * -1 : 0);
+      $vacantPosts = ($row->approved >= $row->filled) ? ((int)$row->approved - (int)$row->filled) : 0;
+      $excessPosts = ($row->filled > $row->approved) ? ((int)$row->filled - (int)$row->approved) : 0;
       $male = ($structure > 0 && $row->filled > 0) ? ($row->male/$row->filled)*100 : 0;
       $female = ($structure > 0 && $row->filled > 0) ? ($row->female/$row->filled)*100 : 0;
       $vacant = ($structure > 0) ? ($vacantPosts/$structure)*100 : 0;
@@ -98,9 +97,8 @@ else:
   foreach ($audit as $row):
     $rowNum++;
     $structure = $row->approved;
-    $difference = $row->approved - $row->filled;
-    $vacantPosts = (isset($row->vacant) && $row->vacant !== null && $row->vacant !== '') ? (int)$row->vacant : (($difference>0) ? $difference : 0);
-    $excessPosts = (isset($row->excess) && $row->excess !== null && $row->excess !== '') ? (int)$row->excess : (($difference<0) ? $difference * -1 : 0);
+    $vacantPosts = ($row->approved >= $row->filled) ? ((int)$row->approved - (int)$row->filled) : 0;
+    $excessPosts = ($row->filled > $row->approved) ? ((int)$row->filled - (int)$row->approved) : 0;
     $male = ($structure > 0 && $row->filled > 0) ? ($row->male/$row->filled)*100 : 0;
     $female = ($structure > 0 && $row->filled > 0) ? ($row->female/$row->filled)*100 : 0;
     $vacant = ($structure > 0) ? ($vacantPosts/$structure)*100 : 0;

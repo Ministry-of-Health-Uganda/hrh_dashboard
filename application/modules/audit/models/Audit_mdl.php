@@ -59,8 +59,8 @@ class Audit_mdl extends CI_Model
 				sum(total)  as filled,
 				sum(male)   as male,
 				sum(female) as female,
-				sum(excess) as excess,
-				sum(vacant) as vacant
+				SUM(CASE WHEN total > approved THEN total - approved ELSE 0 END) as excess,
+				SUM(CASE WHEN approved >= total THEN approved - total ELSE 0 END) as vacant
 				");
 			$this->db->from($table);
 			$this->auditReportFilters($search);
@@ -106,8 +106,8 @@ class Audit_mdl extends CI_Model
 				sum(total)  as filled,
 				sum(male)   as male,
 				sum(female) as female,
-				sum(excess) as excess,
-				sum(vacant) as vacant
+				SUM(CASE WHEN total > approved THEN total - approved ELSE 0 END) as excess,
+				SUM(CASE WHEN approved >= total THEN approved - total ELSE 0 END) as vacant
 				");
 			$this->db->from($table);
 			$this->auditReportFilters($search);
@@ -182,8 +182,8 @@ class Audit_mdl extends CI_Model
 				sum(total)  as filled,
 				sum(male)   as male,
 				sum(female) as female,
-				sum(excess) as excess,
-				sum(vacant) as vacant
+				SUM(CASE WHEN total > approved THEN total - approved ELSE 0 END) as excess,
+				SUM(CASE WHEN approved >= total THEN approved - total ELSE 0 END) as vacant
 				");
 			if ($aggregation) $this->db->order_by($aggregation, 'asc');
 			$this->db->order_by($aggregation2, 'asc');
@@ -391,8 +391,8 @@ class Audit_mdl extends CI_Model
 			sum(total)  as total_filled,
 			sum(male)   as total_male,
 			sum(female) as total_female,
-			sum(vacant) as total_vacant,
-			sum(excess) as total_excess
+			SUM(CASE WHEN approved >= total THEN approved - total ELSE 0 END) as total_vacant,
+			SUM(CASE WHEN total > approved THEN total - approved ELSE 0 END) as total_excess
 			");
 		$this->db->from($table);
 		$this->auditReportFilters($search);
@@ -413,14 +413,13 @@ class Audit_mdl extends CI_Model
 			$totalFilled = (int)$result->total_filled;
 			$totalMale = (int)$result->total_male;
 			$totalFemale = (int)$result->total_female;
-			// Use DB sum(vacant) and sum(excess) so table, Excel and PDF match row-level data
+			// Vacant = max(0, Approved - Filled); Excess = max(0, Filled - Approved). Same logic as row-level.
 			if (property_exists($result, 'total_vacant') && $result->total_vacant !== null && property_exists($result, 'total_excess') && $result->total_excess !== null) {
 				$totalVacant = (int)$result->total_vacant;
 				$totalExcess = (int)$result->total_excess;
 			} else {
-				$difference = $totalApproved - $totalFilled;
-				$totalVacant = ($difference > 0) ? $difference : 0;
-				$totalExcess = ($difference < 0) ? $difference * -1 : 0;
+				$totalVacant = $totalApproved >= $totalFilled ? $totalApproved - $totalFilled : 0;
+				$totalExcess = $totalFilled > $totalApproved ? $totalFilled - $totalApproved : 0;
 			}
 			
 			// Calculate percentages
