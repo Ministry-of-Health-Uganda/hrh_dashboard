@@ -423,7 +423,7 @@ class Audit_mdl extends CI_Model
 			}
 			
 			// Calculate percentages
-			$filledPct = ($totalApproved > 0) ? ($totalFilled / $totalApproved) * 100 : 0;
+			$filledPct = ($totalApproved > 0) ? (($totalFilled >= $totalApproved) ? 100 : ($totalFilled / $totalApproved) * 100) : 0;
 			$vacantPct = ($totalApproved > 0) ? ($totalVacant / $totalApproved) * 100 : 0;
 			$malePct = ($totalFilled > 0) ? ($totalMale / $totalFilled) * 100 : 0;
 			$femalePct = ($totalFilled > 0) ? ($totalFemale / $totalFilled) * 100 : 0;

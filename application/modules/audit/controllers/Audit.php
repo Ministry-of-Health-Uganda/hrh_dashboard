@@ -284,7 +284,7 @@ class Audit extends MX_Controller {
 			$male = ($structure > 0 && $row->filled > 0) ? ($row->male / $row->filled) * 100 : 0;
 			$female = ($structure > 0 && $row->filled > 0) ? ($row->female / $row->filled) * 100 : 0;
 			$vacant = ($structure > 0) ? ($vacantPosts / $structure) * 100 : 0;
-			$filled = ($structure > 0) ? ($row->filled / $structure) * 100 : 0;
+			$filled = ($structure > 0) ? (($row->filled >= $structure) ? 100 : ($row->filled / $structure) * 100) : 0;
 			
 			$rowData = array($row->$aggColumn);
 			if ($aggColumn2) $rowData[] = $row->$aggColumn2;

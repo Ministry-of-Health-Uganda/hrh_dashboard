@@ -459,7 +459,7 @@
             sub.male     += parseFloat(row[dataOffset + 4]) || 0;
             sub.female   += parseFloat(row[dataOffset + 5]) || 0;
           });
-          var subFilledPct = sub.approved > 0 ? (100 * sub.filled / sub.approved).toFixed(1) : 0;
+          var subFilledPct = sub.approved > 0 ? (sub.filled >= sub.approved ? 100 : (100 * sub.filled / sub.approved).toFixed(1)) : 0;
           var subVacantPct = sub.approved > 0 ? (100 * sub.vacant / sub.approved).toFixed(1) : 0;
           var subMalePct   = sub.filled > 0 ? (100 * sub.male / sub.filled).toFixed(1) : 0;
           var subFemalePct = sub.filled > 0 ? (100 * sub.female / sub.filled).toFixed(1) : 0;

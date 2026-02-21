@@ -146,7 +146,7 @@ foreach ($facilities as $fac):
               $male    = ($structure >0 && $row->filled > 0) ? ($row->male/$row->filled)* 100 : 0;
               $female  = ($structure >0 && $row->filled > 0) ? ($row->female/$row->filled) * 100 : 0;
               $vacant  = ($structure >0)?($vacantPosts/$structure) * 100:0;
-              $filled  = ($structure >0)?($row->filled/$structure) * 100:0;
+              $filled  = ($structure > 0) ? (($row->filled >= $structure) ? 100 : ($row->filled/$structure)*100) : 0;
 
             $totalApproved += $structure;
             $totalFilled   += $row->filled;
@@ -194,7 +194,7 @@ foreach ($facilities as $fac):
             <th><?php echo $totalMales; ?></th>
             <th><?php echo $totalFemales; ?></th>
             <th>
-              <?php echo ($totalApproved > 0) ? number_format(($totalFilled/$totalApproved)*100,1) : 0; ?>%   
+              <?php echo ($totalApproved > 0) ? number_format(($totalFilled >= $totalApproved) ? 100 : ($totalFilled/$totalApproved)*100, 1) : 0; ?>%   
               </th>
               <th>
               <?php echo ($totalApproved > 0) ? number_format(($totalVacant/$totalApproved)*100,1) : 0; ?>%   

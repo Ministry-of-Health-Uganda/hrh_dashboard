@@ -112,7 +112,7 @@ table tr:nth-child(even){
               $male = ($structure > 0 && $row->filled > 0) ? ($row->male/$row->filled)*100 : 0;
               $female = ($structure > 0 && $row->filled > 0) ? ($row->female/$row->filled)*100 : 0;
               $vacant = ($structure > 0) ? ($vacantPosts/$structure)*100 : 0;
-              $filled = ($structure > 0) ? ($row->filled/$structure)*100 : 0;
+              $filled = ($structure > 0) ? (($row->filled >= $structure) ? 100 : ($row->filled/$structure)*100) : 0;
               $subApproved += $structure; $subFilled += $row->filled; $subVacant += $vacantPosts; $subExcess += $excessPosts; $subMales += $row->male; $subFemales += $row->female;
               $totalApproved += $structure; $totalFilled += $row->filled; $totalVacant += $vacantPosts; $totalExcess += $excessPosts; $totalFemales += $row->female; $totalMales += $row->male;
               echo '<tr><td>' . ($idx + 1) . '</td><td>' . htmlspecialchars($row->$aggColumn2) . '</td>';
@@ -120,7 +120,7 @@ table tr:nth-child(even){
               echo '<td>' . $row->approved . '</td><td>' . $row->filled . '</td><td>' . $vacantPosts . '</td><td>' . $excessPosts . '</td><td>' . $row->male . '</td><td>' . $row->female . '</td>';
               echo '<td class="text-bold">' . (($filled>0)?number_format($filled,1):0) . '%</td><td class="text-bold">' . (($vacant>0)?number_format($vacant,1):0) . '%</td><td class="text-bold">' . (($male>0)?number_format($male,1):0) . '%</td><td class="text-bold">' . (($female>0)?number_format($female,1):0) . '%</td></tr>';
             endforeach;
-            $subFilledPct = $subApproved > 0 ? number_format(($subFilled/$subApproved)*100, 1) : 0;
+            $subFilledPct = $subApproved > 0 ? number_format(($subFilled >= $subApproved) ? 100 : ($subFilled/$subApproved)*100, 1) : 0;
             $subVacantPct = $subApproved > 0 ? number_format(($subVacant/$subApproved)*100, 1) : 0;
             $subMalePct = $subFilled > 0 ? number_format(($subMales/$subFilled)*100, 1) : 0;
             $subFemalePct = $subFilled > 0 ? number_format(($subFemales/$subFilled)*100, 1) : 0;
@@ -133,7 +133,7 @@ table tr:nth-child(even){
           echo '<th>Approved</th><th>Filled</th><th>Vacant</th><th>Excess</th><th>Male</th><th>Female</th><th>Filled %</th><th>Vacant %</th><th>Male %</th><th>Female %</th></tr></thead><tbody><tr><th></th><th>TOTALS</th>';
           if (!empty($showSalaryScale)) echo '<th></th>';
           echo '<th>' . $totalApproved . '</th><th>' . $totalFilled . '</th><th>' . $totalVacant . '</th><th>' . $totalExcess . '</th><th>' . $totalMales . '</th><th>' . $totalFemales . '</th>';
-          echo '<th>' . ($totalApproved > 0 ? number_format(($totalFilled/$totalApproved)*100,1) : 0) . '%</th><th>' . ($totalApproved > 0 ? number_format(($totalVacant/$totalApproved)*100,1) : 0) . '%</th>';
+          echo '<th>' . ($totalApproved > 0 ? number_format(($totalFilled >= $totalApproved) ? 100 : ($totalFilled/$totalApproved)*100, 1) : 0) . '%</th><th>' . ($totalApproved > 0 ? number_format(($totalVacant/$totalApproved)*100,1) : 0) . '%</th>';
           echo '<th>' . ($totalFilled > 0 ? number_format(($totalMales/$totalFilled)*100,1) : 0) . '%</th><th>' . ($totalFilled > 0 ? number_format(($totalFemales/$totalFilled)*100,1) : 0) . '%</th></tr></tbody></table>';
         else: ?>
   <table class="items" style="font-size: 8pt; border-collapse: collapse;" cellpadding="4" width="100%">
@@ -166,7 +166,7 @@ table tr:nth-child(even){
               $male    = ($structure >0 && $row->filled > 0) ? ($row->male/$row->filled)* 100 : 0;
               $female  = ($structure >0 && $row->filled > 0) ? ($row->female/$row->filled) * 100 : 0;
               $vacant  = ($structure >0)?($vacantPosts/$structure) * 100:0;
-              $filled  = ($structure >0)?($row->filled/$structure) * 100:0;
+              $filled  = ($structure > 0) ? (($row->filled >= $structure) ? 100 : ($row->filled/$structure)*100) : 0;
 
             $totalApproved += $structure;
             $totalFilled   += $row->filled;
@@ -216,7 +216,7 @@ table tr:nth-child(even){
             <th><?php echo $totalMales; ?></th>
             <th><?php echo $totalFemales; ?></th>
             <th>
-              <?php echo ($totalApproved > 0) ? number_format(($totalFilled/$totalApproved)*100,1) : 0; ?>%   
+              <?php echo ($totalApproved > 0) ? number_format(($totalFilled >= $totalApproved) ? 100 : ($totalFilled/$totalApproved)*100, 1) : 0; ?>%   
               </th>
               <th>
               <?php echo ($totalApproved > 0) ? number_format(($totalVacant/$totalApproved)*100,1) : 0; ?>%   
