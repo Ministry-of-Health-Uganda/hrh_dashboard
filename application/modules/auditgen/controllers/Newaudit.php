@@ -307,8 +307,9 @@ public function index(){
 			SELECT DISTINCT facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name
 			FROM staff
 			WHERE facility_type_name IN ($national_list)
+			AND LOWER(TRIM(job_name)) NOT LIKE 'delete%'
 		) st
-		INNER JOIN structure s ON (s.facility_facility_level LIKE CONCAT(st.facility_name, '%') OR s.facility_facility_level = st.facility_name))
+		INNER JOIN structure s ON ((s.facility_facility_level LIKE CONCAT(st.facility_name, '%') OR s.facility_facility_level = st.facility_name) AND LOWER(TRIM(s.job)) NOT LIKE 'delete%')
 		";
 
 		$district_approved = "
@@ -333,8 +334,9 @@ public function index(){
 				$norm_ftype_inner AS level
 			FROM staff
 			WHERE facility_type_name IN ($district_list)
+			AND LOWER(TRIM(job_name)) NOT LIKE 'delete%'
 		) st
-		INNER JOIN structure s ON $norm_struct = st.level)
+		INNER JOIN structure s ON ($norm_struct = st.level AND LOWER(TRIM(s.job)) NOT LIKE 'delete%'))
 		";
 
 		return "($national_approved UNION $district_approved)";
@@ -365,6 +367,7 @@ public function index(){
 			SUM(CASE WHEN TRIM(gender) = 'Female' THEN 1 ELSE 0 END) AS female,
 			COUNT(*) AS total
 		FROM staff
+		WHERE LOWER(TRIM(job_name)) NOT LIKE 'delete%'
 		GROUP BY facility_id, dhis_facility_id, facility_name, facility_type_name, region_name, institution_type, district_name, job_id, dhis_job_id, job_name, job_classification, job_category, cadre_name, salary_scale)
 		";
 	}
