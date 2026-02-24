@@ -310,6 +310,7 @@ public function index(){
 			AND LOWER(TRIM(job_name)) NOT LIKE 'delete%'
 		) st
 		INNER JOIN structure s ON ((s.facility_facility_level LIKE CONCAT(st.facility_name, '%') OR s.facility_facility_level = st.facility_name) AND LOWER(TRIM(s.job)) NOT LIKE 'delete%')
+		)
 		";
 
 		$district_approved = "
