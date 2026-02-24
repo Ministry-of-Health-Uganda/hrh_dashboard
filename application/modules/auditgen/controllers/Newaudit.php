@@ -7,7 +7,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * SOURCES:
  * - staff: one row per person per job; (person_id, job_id) unique; has approved (positions), filled (count);
  *   facility level for structure match: for "Specialised National Facility", "National Referral Hospital",
- *   "Regional Referral Hospital", "Ministry" use facility_name; else use facility_type_name.
+ *   "Ministry" use facility_name; "Regional Referral Hospital" and district types (HCII, HCIII, HCIV, etc.) use facility_type_name.
  * - structure: establishment per facility level (facility_facility_level) and job; approved = positions.
  *
  * TARGET: national_jobs – one row per (facility, job): approved (structure), male/female/total (staff),
@@ -263,26 +263,25 @@ public function index(){
 
 	/**
 	 * Facility types that use facility_name (not facility_type_name) to match structure.facility_facility_level.
+	 * Regional Referral Hospital is excluded; it uses facility_type_name like HCIV (see district_list in _sql_approved_base).
 	 */
 	private static function _national_level_types(){
 		return array(
 			'Specialised National Facility',
 			'National Referral Hospital',
-			'Regional Referral Hospital',
 			'Ministry'
 		);
 	}
 
 	/**
 	 * Build approved rows: national-level (LIKE facility_name%) + district-level (exact facility_type_name).
-	 * National: structure.facility_facility_level is like 'GULU Regional Referral Hospital - Regional Referral Hospital';
-	 * staff.facility_name is 'GULU Regional Referral Hospital' – match with LIKE facility_name% (same as cache_structure).
-	 * District: exact match on facility_type_name (HCII, HCIII, General Hospital, etc.).
+	 * National: structure.facility_facility_level LIKE staff.facility_name% for Specialised National Facility, National Referral Hospital, Ministry.
+	 * District: exact match on facility_type_name (HCII, HCIII, HCIV, Regional Referral Hospital, General Hospital, etc.).
 	 */
 	private function _sql_approved_base(){
 		$national_types = self::_national_level_types();
 		$national_list = implode(',', array_map(function($t) { return $this->db->escape($t); }, $national_types));
-		$district_list = "'HCII','HCIII','HCIV','General Hospital','DHOs Office','Town Council','Municipal Health Office','Blood Bank Main Office','Blood Bank Regional Office','Medical Bureau Main Office','City Health Office'";
+		$district_list = "'HCII','HCIII','HCIV','Regional Referral Hospital','General Hospital','DHOs Office','Town Council','Municipal Health Office','Blood Bank Main Office','Blood Bank Regional Office','Medical Bureau Main Office','City Health Office'";
 
 		$norm_struct = self::_norm_sql('s.facility_facility_level');
 		$norm_ftype_inner = self::_norm_sql('facility_type_name'); /* inner SELECT has no alias */
