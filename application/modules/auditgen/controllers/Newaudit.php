@@ -227,9 +227,9 @@ public function index(){
 		echo "National Jobs Pipeline: starting...$lb";
 		flush();
 
-		$this->fetch_ihrisdata();
-		echo "iHRIS data fetched and inserted into ihrisdata table.$lb";
-		flush();
+		// $this->fetch_ihrisdata();
+		// echo "iHRIS data fetched and inserted into ihrisdata table.$lb";
+		// flush();
 
 		try {
 			// Step 1: Normalize staff (gender default Male; facility/job name special chars for search/filter safety)
