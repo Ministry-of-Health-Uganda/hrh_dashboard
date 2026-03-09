@@ -18,18 +18,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *   remove '.', remove ')', replace '(' with '-', remove single quote.
  */
 class Newaudit extends MX_Controller {
-
-	/** Africa CDC APM approval trail: matrix 44 URL (fetch/store snapshot when pipeline runs). */
-	const APM_APPROVAL_TRAIL_URL = 'https://cbp.africacdc.org/demo_staff/apm/api/apm/v1/matrices/44';
-	const APM_MATRIX_ID = 44;
-
-	/**
-	 * APM documents category base URL (all document endpoints under /documents/...).
-	 * Rule for all documents category endpoints: do not add a matrix relationship to matrix memos
-	 * unless the document being passed is a matrix.
-	 */
-	const APM_DOCUMENTS_BASE_URL = 'https://cbp.africacdc.org/demo_staff/apm/api/apm/v1/documents';
-	const APM_DOCUMENTS_ACTIVITY_URL = 'https://cbp.africacdc.org/demo_staff/apm/api/apm/v1/documents/activity/408';
 	
 	public function __Construct(){
 		// parent if needed
@@ -254,7 +242,6 @@ public function index(){
 			$inserted = $this->_step2_merge_into_national_jobs();
 			echo "Step 2–4: national_jobs populated: " . number_format($inserted) . " rows.$lb";
 
-			$this->_record_approval_trail($is_cli, $lb);
 			echo "Pipeline COMPLETED.$lb";
 		} catch (Exception $e) {
 			echo "Pipeline ERROR: " . $e->getMessage() . $lb;
@@ -263,37 +250,6 @@ public function index(){
 			throw $e;
 		}
 		if (!$is_cli) echo "</pre>";
-	}
-
-	/**
-	 * Record approval trail: insert pipeline run and optionally fetch APM matrix 44 snapshot.
-	 * Table approval_trail must exist (see approval_trail.sql). If GET to APM URL fails (e.g. auth required), we still record the run.
-	 */
-	private function _record_approval_trail($is_cli, $lb) {
-		$url = self::APM_APPROVAL_TRAIL_URL;
-		$snapshot = null;
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
-		$result = @curl_exec($ch);
-		$http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		curl_close($ch);
-		if ($result !== false && $http === 200) {
-			$snapshot = $result;
-		}
-		// Insert into approval_trail if table exists
-		if ($this->db->table_exists('approval_trail')) {
-			$this->db->insert('approval_trail', array(
-				'source_url'       => $url,
-				'event_type'       => 'national_audit_completed',
-				'matrix_id'        => self::APM_MATRIX_ID,
-				'response_snapshot'=> $snapshot,
-				'created_at'       => date('Y-m-d H:i:s')
-			));
-			if ($is_cli) echo "Approval trail recorded (APM matrix " . self::APM_MATRIX_ID . ").$lb";
-		}
 	}
 
 	/**
@@ -311,7 +267,7 @@ public function index(){
 	 */
 	private static function _national_level_types(){
 		return array(
-			'Specialised National Facility',
+			'facility_type|12',
 			'National Referral Hospital',
 			'Ministry'
 		);
