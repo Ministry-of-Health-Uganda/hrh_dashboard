@@ -267,7 +267,7 @@ public function index(){
 	 */
 	private static function _national_level_types(){
 		return array(
-			'facility_type|12',
+			'Specialised National Facility',
 			'National Referral Hospital',
 			'Ministry'
 		);
